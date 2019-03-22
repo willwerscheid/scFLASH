@@ -6,4 +6,4 @@ output:
     toc: false
 ---
 
-Welcome to my research website.
+[Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)

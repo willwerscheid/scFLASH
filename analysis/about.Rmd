@@ -5,4 +5,4 @@ output:
     toc: false
 ---
 
-Describe your project.
+Applying EBMF to single-cell data.
