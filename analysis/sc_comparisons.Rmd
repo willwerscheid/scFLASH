@@ -129,6 +129,8 @@ In both cases, the magnitude of the sampling errors should be similar across all
 Note that almost all gene proportions are small, and that the arcsine function is approximately linear for small $x$. Thus the arcsine transformation is not much different from a square-root transformation of the proportions, which in turn might not be much different from the untransformed proportions. For purposes of comparison, then, I also fit a flash object to the untransformed proportions:
 $$ Y_{ij} = \frac{X_{ij}}{\sum_j X_{ij}} $$
 
+Finally, I fit a flash object to Pearson residuals, using a binomial approximation to the multinomial distribution as recommended by [Townes et al.](https://www.biorxiv.org/content/10.1101/574574v1) (The authors prefer to use deviance residuals, but transforming predicted deviance residuals to raw counts is not trivial.)
+
 In all cases, I calculate mean-squared error on the log1p scale. While it is true that this might bias the results in favor of the log1p transform, it can be justified as the relative error in the fitted counts (adding a pseudocount to avoid division by zero).
 
 For the log1p and Anscombe transforms, I fit an additional rank-one "mean" factor (which simply amounts to fitting 6 factors instead of 5). Since the other transforms fit scaled data, no additional mean factor needs to be fitted.
@@ -145,15 +147,16 @@ ggplot(trans.df, aes(x = category, y = value)) +
        title = "Data transformations (reference: log1p)") +
   scale_x_discrete(labels = c("Anscombe", 
                               "Arcsine", 
+                              "Pearson",
                               "Proportions (untransformed)")) +
-  ylim(-0.025, 0.1)
+  ylim(-0.025, 0.105)
 ```
 
 ### Discussion
 
 The log1p and Anscombe transforms imply very different assumptions about the model: with the log1p transform, factors are (roughly) multiplicative, whereas they are closer to additive under the Anscombe transform. Nonetheless, they do surprisingly similarly in terms of mean squared error. 
 
-The arcsine transform does worse than either of the two, and (unsurprisingly) fitting the untransformed matrix of proportions does poorly (but maybe not as poorly as expected).
+The arcsine transform does worse than either of the two, and (unsurprisingly) fitting the untransformed matrix of proportions does poorly (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs worst among all methods.
 
 Given these results, I prefer the log1p transform since it allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.
 
