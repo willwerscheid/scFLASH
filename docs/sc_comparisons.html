@@ -436,7 +436,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2019-03-22</p>
+<p><strong>Last updated:</strong> 2019-03-25</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -460,15 +460,21 @@ div.section {
 </details>
 </li>
 <li>
-<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> b792cfe </summary></p>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/d4e825505480c6837454945ee399204689a82757" target="_blank">d4e8255</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    data/GSE103354_Trachea_droplet_UMIcounts.txt
     Ignored:    output/.DS_Store
     Ignored:    output/sc_comparisons/.DS_Store
+
+Unstaged changes:
+    Modified:   .gitignore
+    Modified:   code/sc_comparisons.R
+    Modified:   output/sc_comparisons/allres.rds
 
 </code></pre>
 Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes. </details>
@@ -502,7 +508,41 @@ Message
 Rmd
 </td>
 <td style="text-align:left;">
-b792cfe
+<a href="https://github.com/willwerscheid/scFLASH/blob/d4e825505480c6837454945ee399204689a82757/analysis/sc_comparisons.Rmd" target="_blank">d4e8255</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-25
+</td>
+<td style="text-align:left;">
+wflow_publish(“analysis/sc_comparisons.Rmd”)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/willwerscheid/scFLASH/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/sc_comparisons.html" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/b792cfefaff6c69992dfdc4eae61a6a0c00b1326/analysis/sc_comparisons.Rmd" target="_blank">b792cfe</a>
 </td>
 <td style="text-align:left;">
 Jason Willwerscheid
@@ -587,7 +627,7 @@ create.df &lt;- function(names) {
 var.df &lt;- create.df(c(&quot;constant&quot;, &quot;genewise&quot;, &quot;fixed&quot;, &quot;noisyA&quot;, &quot;noisyB&quot;))
 
 # Test 2: data transformation.
-trans.df &lt;- create.df(c(&quot;log1p&quot;, &quot;anscombe&quot;, &quot;arcsin&quot;, &quot;raw&quot;))
+trans.df &lt;- create.df(c(&quot;log1p&quot;, &quot;anscombe&quot;, &quot;arcsin&quot;, &quot;raw&quot;, &quot;Pearson&quot;))
 
 # Test 3: normalization method.
 norm.df &lt;- create.df(c(&quot;none&quot;, &quot;fitmean&quot;, &quot;scale&quot;))
@@ -706,17 +746,30 @@ for (i in 1:ntrials) {
 
   fl.raw &lt;- flashier(props, var.type = 0,
                      prior.type = &quot;normal.mix&quot;,
-                     greedy.Kmax = K,
-                     backfit.after = 2, final.backfit = FALSE,
+                     greedy.Kmax = K, backfit = &quot;none&quot;,
                      verbose.lvl = 2L * verbose)
   raw.preds &lt;- log1p(preds(fl.raw, missing.idx) * cell.sums[missing.cols])
   raw.preds[is.nan(raw.preds)] &lt;- 0
+
+  gene.props &lt;- rowSums(samp, na.rm = TRUE) / sum(samp, na.rm = TRUE)
+  mu &lt;- outer(gene.props, cell.sums)
+  sd.mat &lt;- sqrt(mu - mu^2 / rep(cell.sums, each = nrow(samp)))
+  resid &lt;- (samp - mu) / sd.mat
+
+  fl.pearson &lt;- flashier(resid, var.type = 0,
+                         prior.type = &quot;normal.mix&quot;,
+                         greedy.Kmax = K, backfit = &quot;none&quot;,
+                         verbose.lvl = 2L * verbose)
+  pearson.preds &lt;- log1p(mu[missing.idx]
+                         + sd.mat[missing.idx] * preds(fl.pearson, missing.idx))
+  pearson.preds[is.nan(pearson.preds)] &lt;- 0
 
   trans.df[i, ] &lt;- all.mse(true.vals,
                            list(preds(fl.log1p, missing.idx),
                                 ans.preds,
                                 arcsin.preds,
-                                raw.preds))
+                                raw.preds,
+                                pearson.preds))
 
   # Test 3: scaling method.
   cat(&quot;  Running scaling tests.\n&quot;)
@@ -896,6 +949,36 @@ ggplot(var.df, aes(x = category, y = value)) +
        title = &quot;Variance structures (reference: Constant)&quot;) +
   scale_x_discrete(labels = c(&quot;Fixed&quot;, &quot;Gene-wise&quot;, &quot;Noisy A&quot;, &quot;Noisy B&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/var_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of var_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/var_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>ggplot(var.df, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
@@ -906,6 +989,36 @@ ggplot(var.df, aes(x = category, y = value)) +
   scale_x_discrete(labels = c(&quot;Fixed&quot;, &quot;Gene-wise&quot;, &quot;Noisy (no zero SEs)&quot;, &quot;Noisy (zero SEs)&quot;)) +
   ylim(-0.025, 0.1)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/var_df-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of var_df-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/var_df-2.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion" class="section level3">
 <h3>Discussion</h3>
 <p>The constant variance structure clearly works best. A gene-wise variance structure can do as well (and occasionally better), but also results in a lot of very poor fits. I’ve found that a gene-wise variance structure often estimates the variances for genes with few non-zero counts to be very small, and that this can lead to severe overfitting.</p>
@@ -916,6 +1029,7 @@ ggplot(var.df, aes(x = category, y = value)) +
 <h2>Data transformations</h2>
 <p>Another way to handle unequal sampling errors is to use a variance-stabilizing transformation. I compare the log1p transform to the Anscombe transform (which stabilizes variance for Poisson data): <span class="math display">\[ Y_{ij} = \sqrt{X_{ij} + \frac{3}{8}},\]</span> and the arcsine transform (which stabilizes variance for proportions): <span class="math display">\[ Y_{ij} = \text{arcsin}\left(\sqrt{\frac{X_{ij}}{\sum_j X_{ij}}}\right)\]</span> In both cases, the magnitude of the sampling errors should be similar across all entries, so it should suffice to fit a constant variance structure.</p>
 <p>Note that almost all gene proportions are small, and that the arcsine function is approximately linear for small <span class="math inline">\(x\)</span>. Thus the arcsine transformation is not much different from a square-root transformation of the proportions, which in turn might not be much different from the untransformed proportions. For purposes of comparison, then, I also fit a flash object to the untransformed proportions: <span class="math display">\[ Y_{ij} = \frac{X_{ij}}{\sum_j X_{ij}} \]</span></p>
+<p>Finally, I fit a flash object to Pearson residuals, using a binomial approximation to the multinomial distribution as recommended by <a href="https://www.biorxiv.org/content/10.1101/574574v1">Townes et al.</a> (The authors prefer to use deviance residuals, but transforming predicted deviance residuals to raw counts is not trivial.)</p>
 <p>In all cases, I calculate mean-squared error on the log1p scale. While it is true that this might bias the results in favor of the log1p transform, it can be justified as the relative error in the fitted counts (adding a pseudocount to avoid division by zero).</p>
 <p>For the log1p and Anscombe transforms, I fit an additional rank-one “mean” factor (which simply amounts to fitting 6 factors instead of 5). Since the other transforms fit scaled data, no additional mean factor needs to be fitted.</p>
 <pre class="r"><code>trans.df &lt;- get.plot.df(allres$trans.df, ref.lvl = &quot;log1p&quot;)
@@ -929,13 +1043,44 @@ ggplot(trans.df, aes(x = category, y = value)) +
        title = &quot;Data transformations (reference: log1p)&quot;) +
   scale_x_discrete(labels = c(&quot;Anscombe&quot;, 
                               &quot;Arcsine&quot;, 
+                              &quot;Pearson&quot;,
                               &quot;Proportions (untransformed)&quot;)) +
-  ylim(-0.025, 0.1)</code></pre>
+  ylim(-0.025, 0.105)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/trans_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of trans_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/trans_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion-1" class="section level3">
 <h3>Discussion</h3>
 <p>The log1p and Anscombe transforms imply very different assumptions about the model: with the log1p transform, factors are (roughly) multiplicative, whereas they are closer to additive under the Anscombe transform. Nonetheless, they do surprisingly similarly in terms of mean squared error.</p>
-<p>The arcsine transform does worse than either of the two, and (unsurprisingly) fitting the untransformed matrix of proportions does poorly (but maybe not as poorly as expected).</p>
+<p>The arcsine transform does worse than either of the two, and (unsurprisingly) fitting the untransformed matrix of proportions does poorly (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs worst among all methods.</p>
 <p>Given these results, I prefer the log1p transform since it allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.</p>
 </div>
 </div>
@@ -957,6 +1102,36 @@ ggplot(norm.df, aes(x = category, y = value)) +
                               &quot;Pre-scaled cells&quot;)) +
   ylim(-0.025, 0.1)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/norm_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of norm_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/norm_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion-2" class="section level3">
 <h3>Discussion</h3>
 <p>All methods do about equally well. Since it is difficult to understand exactly what the rank-one mean factor is fitting, I prefer using fixed ones vectors or pre-scaling cells when doing an in-depth analysis of a particular dataset. But the rank-one approach is easier to implement (and a bit faster), so I adopt it as the default scaling method in all other tests throughout this analysis.</p>
@@ -978,6 +1153,36 @@ ggplot(prior.df, aes(x = category, y = value)) +
                               &quot;NN genes (shrink)&quot;,
                               &quot;NN genes (fdr)&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/prior_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of prior_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/prior_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>ggplot(prior.df, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
@@ -991,6 +1196,36 @@ ggplot(prior.df, aes(x = category, y = value)) +
                               &quot;NN genes (fdr)&quot;)) +
   ylim(-0.025, 0.1)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/prior_df-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of prior_df-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/prior_df-2.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion-3" class="section level3">
 <h3>Discussion</h3>
 <p>In each case, there is at least one outlying fit that has very poor mean squared error. This problem is much worse when the nonnegative prior is on genes rather than cells. There doesn’t seem to be any consistent difference between <code>method = &quot;fdr&quot;</code> and <code>method = &quot;shrink&quot;</code>.</p>
@@ -1012,6 +1247,36 @@ ggplot(nfactors.df, aes(x = category, y = value)) +
                               &quot;Greedy, 10 f.&quot;, 
                               &quot;Greedy, 15 f.&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/nfactors_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of nfactors_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/nfactors_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>ggplot(nfactors.df, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
@@ -1026,6 +1291,36 @@ ggplot(nfactors.df, aes(x = category, y = value)) +
                               &quot;Greedy, 15 f.&quot;)) +
   ylim(-0.025, 0.1)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/nfactors_df-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of nfactors_df-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/nfactors_df-2.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion-4" class="section level3">
 <h3>Discussion</h3>
 <p>The results suggest that overfitting (in the sense of predictive accuracy) occurs well before the log likelihood of the model stops improving. The ten- and fifteen-factor fits are nearly always worse than the five-factor fits, and the backfits are on average worse than the corresponding greedy fits. In surprisingly many cases, backfitting turns out to be disastrous.</p>
@@ -1037,10 +1332,70 @@ ggplot(mse.df, aes(x = k, y = mse)) + geom_point() +
   labs(x = &quot;Number of factors&quot;, y = &quot;Mean squared error&quot;,
        title = &quot;Incremental greedy additions (full dataset)&quot;)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/mse_df-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of mse_df-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/mse_df-1.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <pre class="r"><code>ggplot(subset(mse.df, k &gt; 19), aes(x = k, y = mse)) + geom_point() +
   labs(x = &quot;Number of factors&quot;, y = &quot;Mean squared error&quot;,
        title = &quot;Incremental greedy additions (zoom)&quot;)</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/mse_df-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of mse_df-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/mse_df-2.png" target="_blank">60843e0</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-03-22
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 </div>
 </div>
 <div id="session-information" class="section level2">
@@ -1064,20 +1419,20 @@ other attached packages:
 [1] ggplot2_3.1.0
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.0        compiler_3.4.3    pillar_1.2.1     
- [4] git2r_0.21.0      plyr_1.8.4        workflowr_1.0.1  
- [7] bindr_0.1         R.methodsS3_1.7.1 R.utils_2.6.0    
-[10] tools_3.4.3       digest_0.6.18     evaluate_0.12    
-[13] tibble_1.4.2      gtable_0.2.0      pkgconfig_2.0.1  
-[16] rlang_0.3.0.1     yaml_2.2.0        xfun_0.4         
-[19] bindrcpp_0.2      withr_2.1.2.9000  stringr_1.3.1    
-[22] dplyr_0.7.4       knitr_1.21.6      rprojroot_1.3-2  
-[25] grid_3.4.3        glue_1.3.0        R6_2.3.0         
-[28] rmarkdown_1.11    magrittr_1.5      whisker_0.3-2    
-[31] backports_1.1.2   scales_1.0.0      htmltools_0.3.6  
-[34] assertthat_0.2.0  colorspace_1.3-2  labeling_0.3     
-[37] stringi_1.2.4     lazyeval_0.2.1    munsell_0.5.0    
-[40] R.oo_1.21.0      </code></pre>
+ [1] Rcpp_1.0.0        bindr_0.1         knitr_1.21.6     
+ [4] whisker_0.3-2     magrittr_1.5      workflowr_1.0.1  
+ [7] munsell_0.5.0     colorspace_1.3-2  R6_2.3.0         
+[10] rlang_0.3.0.1     dplyr_0.7.4       stringr_1.3.1    
+[13] plyr_1.8.4        tools_3.4.3       grid_3.4.3       
+[16] gtable_0.2.0      xfun_0.4          R.oo_1.21.0      
+[19] withr_2.1.2.9000  git2r_0.21.0      htmltools_0.3.6  
+[22] assertthat_0.2.0  yaml_2.2.0        lazyeval_0.2.1   
+[25] digest_0.6.18     rprojroot_1.3-2   tibble_1.4.2     
+[28] bindrcpp_0.2      R.utils_2.6.0     glue_1.3.0       
+[31] evaluate_0.12     rmarkdown_1.11    labeling_0.3     
+[34] stringi_1.2.4     pillar_1.2.1      compiler_3.4.3   
+[37] scales_1.0.0      backports_1.1.2   R.methodsS3_1.7.1
+[40] pkgconfig_2.0.1  </code></pre>
 </div>
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
