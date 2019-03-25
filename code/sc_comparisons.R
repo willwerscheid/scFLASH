@@ -57,7 +57,7 @@ create.df <- function(names) {
 var.df <- create.df(c("constant", "genewise", "fixed", "noisyA", "noisyB"))
 
 # Test 2: data transformation.
-trans.df <- create.df(c("log1p", "anscombe", "arcsin", "raw"))
+trans.df <- create.df(c("log1p", "anscombe", "arcsin", "raw", "Pearson"))
 
 # Test 3: normalization method.
 norm.df <- create.df(c("none", "fitmean", "scale"))
@@ -176,17 +176,30 @@ for (i in 1:ntrials) {
 
   fl.raw <- flashier(props, var.type = 0,
                      prior.type = "normal.mix",
-                     greedy.Kmax = K,
-                     backfit.after = 2, final.backfit = FALSE,
+                     greedy.Kmax = K, backfit = "none",
                      verbose.lvl = 2L * verbose)
   raw.preds <- log1p(preds(fl.raw, missing.idx) * cell.sums[missing.cols])
   raw.preds[is.nan(raw.preds)] <- 0
+
+  gene.props <- rowSums(samp, na.rm = TRUE) / sum(samp, na.rm = TRUE)
+  mu <- outer(gene.props, cell.sums)
+  sd.mat <- sqrt(mu - mu^2 / rep(cell.sums, each = nrow(samp)))
+  resid <- (samp - mu) / sd.mat
+
+  fl.pearson <- flashier(resid, var.type = 0,
+                         prior.type = "normal.mix",
+                         greedy.Kmax = K, backfit = "none",
+                         verbose.lvl = 2L * verbose)
+  pearson.preds <- log1p(mu[missing.idx]
+                         + sd.mat[missing.idx] * preds(fl.pearson, missing.idx))
+  pearson.preds[is.nan(pearson.preds)] <- 0
 
   trans.df[i, ] <- all.mse(true.vals,
                            list(preds(fl.log1p, missing.idx),
                                 ans.preds,
                                 arcsin.preds,
-                                raw.preds))
+                                raw.preds,
+                                pearson.preds))
 
   # Test 3: scaling method.
   cat("  Running scaling tests.\n")
@@ -322,3 +335,4 @@ all.res <- list(var.df = var.df,
                 nfactors.df = nfactors.df,
                 mse.df = mse.df)
 saveRDS(all.res, "./output/sc_comparisons/allres.rds")
+
