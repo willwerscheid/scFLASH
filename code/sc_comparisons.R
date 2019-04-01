@@ -8,16 +8,11 @@ library(ggplot2)
 
 # Load data ---------------------------------------------------------------
 
-# Only keep basal cells from the drop-seq dataset in Montoro et al. The data
-#   can be downloaded here:
+# The drop-seq dataset in Montoro et al. can be downloaded here:
 #     https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103354
 trachea <- read.table("./data/GSE103354_Trachea_droplet_UMIcounts.txt")
 trachea <- as.matrix(trachea)
 trachea <- Matrix(trachea)
-
-cell.names <- colnames(trachea)
-cell.types <- as.factor(sapply(strsplit(cell.names, "_"), `[`, 3))
-basal <- trachea[, cell.types == 'Basal']
 
 
 # Set test parameters -----------------------------------------------------
@@ -47,7 +42,7 @@ verbose <- FALSE
 
 create.df <- function(names) {
   names <- paste0(names, ".")
-  df.names <- outer(names, c("overall", "zero", "nonzero"), FUN = paste0)
+  df.names <- outer(names, c("mse", "elbo"), FUN = paste0)
   df <- data.frame(rep(list(numeric(0)), length(df.names)))
   names(df) <- t(df.names)
   return(df)
@@ -57,7 +52,7 @@ create.df <- function(names) {
 var.df <- create.df(c("constant", "genewise", "fixed", "noisyA", "noisyB"))
 
 # Test 2: data transformation.
-trans.df <- create.df(c("log1p", "anscombe", "arcsin", "raw", "Pearson"))
+trans.df <- create.df(c("log1p", "anscombe", "arcsin", "raw", "pearson"))
 
 # Test 3: normalization method.
 norm.df <- create.df(c("none", "fitmean", "scale"))
@@ -69,25 +64,53 @@ prior.df <- create.df(c("normal", "nngeneA", "nngeneB", "nncellA", "nncellB"))
 nfactors.df <- create.df(c("g1", "bf1", "g2", "bf2", "g3", "bf3"))
 
 
-# Create functions for populating data frames -----------------------------
+# Functions for populating data frames ------------------------------------
 
-preds <- function(fl, idx) {
-  return(flashier:::lowrank.expand(fl$fit$EF)[idx])
+get.fitted <- function(fl) {
+  # Get fitted values on the log1p scale.
+  fitted.vals <- flashier:::lowrank.expand(fl$fit$EF)
+  # Convert to raw counts.
+  return(exp(fitted.vals) - 1)
 }
 
-mse <- function(true, preds, idx) {
-  return(mean((true[idx] - preds[idx])^2))
+log1p.mse <- function(true, preds) {
+  # Threshold out negative counts.
+  preds <- pmax(preds, 0)
+  return(mean((log1p(true) - log1p(preds))^2))
 }
 
-mse.by.lvl <- function(true, preds) {
-  zero.idx <- (true.vals == 0)
-  return(list(overall.mse = mse(true, preds, rep(TRUE, length(preds))),
-              zero.mse = mse(true, preds, zero.idx),
-              nz.mse = mse(true, preds, !zero.idx)))
+get.elbo <- function(fl, adjustment) {
+  return(fl$objective + adjustment)
 }
 
-all.mse <- function(true, preds.list) {
-  return(unlist(lapply(preds.list, function(preds) mse.by.lvl(true, preds))))
+all.metrics <- function(data, missing.vals,
+                        fl, fitted.vals, elbo.adjustment) {
+  missing.idx <- which(is.na(data))
+  if (is.null(fitted.vals)) {
+    fitted.vals <- get.fitted(fl)
+  }
+  return(list(mse = log1p.mse(missing.vals, fitted.vals[missing.idx]),
+              elbo = get.elbo(fl, elbo.adjustment)))
+}
+
+get.df.row <- function(data, missing.vals,
+                       fl.list,
+                       mean.factors = NULL,
+                       fitted.vals = NULL,
+                       elbo.adjustment = NULL) {
+  if (is.null(fitted.vals)) {
+    fitted.vals = rep(list(NULL), length(fl.list))
+  }
+  if (is.null(elbo.adjustment)) {
+    elbo.adjustment = rep(list(0), length(fl.list))
+  }
+
+  return(unlist(mapply(all.metrics,
+                       fl = fl.list,
+                       fitted.vals = fitted.vals,
+                       elbo.adjustment = elbo.adjustment,
+                       MoreArgs = list(data = data,
+                                       missing.vals = missing.vals))))
 }
 
 
@@ -97,14 +120,14 @@ for (i in 1:ntrials) {
   cat("TRIAL", i, "\n")
 
   set.seed(i)
-  rand.cells <- sample(1:ncol(basal), ncells)
-  samp <- basal[, rand.cells]
+  rand.cells <- sample(1:ncol(trachea), ncells)
+  samp <- trachea[, rand.cells]
 
   rand.genes <- sample(which(rowSums(samp > 0) >= min.cts), ngenes)
   samp <- samp[rand.genes, ]
 
-  missing.idx <- sample(length(samp), nmissing)
-  true.vals <- log1p(samp[missing.idx])
+  missing.idx <- sample(1:length(samp), nmissing)
+  missing.vals <- samp[missing.idx]
   samp[missing.idx] <- NA
 
   # Test 1: variance structure.
@@ -113,12 +136,12 @@ for (i in 1:ntrials) {
   fl.var0 <- flashier(log1p(samp), var.type = 0,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
-                      verbose.lvl = 2L * verbose)
+                      verbose.lvl = 1L * verbose)
 
   fl.var1 <- flashier(log1p(samp), var.type = 1,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
-                      verbose.lvl = 2L * verbose)
+                      verbose.lvl = 1L * verbose)
 
   S <- sqrt(samp) / (samp + 1)
   nz.prop <- sum(samp > 0, na.rm = TRUE) / (length(samp) - length(missing.idx))
@@ -128,14 +151,14 @@ for (i in 1:ntrials) {
                       var.type = NULL,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
-                      verbose.lvl = 2L * verbose)
+                      verbose.lvl = 1L * verbose)
 
   suppressMessages({
     fl.noisyA <- flashier(log1p(samp), S = S,
                           var.type = 0,
                           prior.type = "normal.mix",
                           greedy.Kmax = K + 1, backfit = "none",
-                          verbose.lvl = 2L * verbose)
+                          verbose.lvl = 1L * verbose)
   })
 
   suppressMessages({
@@ -143,43 +166,43 @@ for (i in 1:ntrials) {
                           var.type = 0,
                           prior.type = "normal.mix",
                           greedy.Kmax = K + 1, backfit = "none",
-                          verbose.lvl = 2L * verbose)
+                          verbose.lvl = 1L * verbose)
   })
 
-  var.df[i, ] <- all.mse(true.vals,
-                         list(preds(fl.var0, missing.idx),
-                              preds(fl.var1, missing.idx),
-                              preds(fl.fixS, missing.idx),
-                              preds(fl.noisyA, missing.idx),
-                              preds(fl.noisyB, missing.idx)))
+  var.df[i, ] <- get.df.row(samp, missing.vals,
+                            fl.list = list(fl.var0, fl.var1, fl.fixS,
+                                           fl.noisyA, fl.noisyB))
 
   # Test 2: data transformation.
   cat("  Running data transformation tests.\n")
 
   fl.log1p <- fl.var0
+  log1p.adj <- -sum(log1p(samp), na.rm = TRUE)
 
   fl.ans <- flashier(sqrt(samp + 0.375), var.type = 0,
                      prior.type = "normal.mix",
                      greedy.Kmax = K + 1, backfit = "none",
-                     verbose.lvl = 2L * verbose)
-  ans.preds <- log1p(preds(fl.ans, missing.idx)^2 - 0.375)
+                     verbose.lvl = 1L * verbose)
+  ans.fitted <- flashier:::lowrank.expand(fl.ans$fit$EF)^2 - 0.375
+  ans.adj <- -sum(log(2) + 0.5 * log(samp + 0.375), na.rm = TRUE)
 
   cell.sums <- colSums(samp, na.rm = TRUE)
   props <- samp / rep(cell.sums, each = nrow(samp))
   fl.arcsin <- flashier(asin(sqrt(props)), var.type = 0,
                         prior.type = "normal.mix",
-                        greedy.Kmax = K, backfit = "none",
-                        verbose.lvl = 2L * verbose)
-  missing.cols <- col(samp)[missing.idx]
-  arcsin.preds <- log1p(sin(preds(fl.arcsin, missing.idx))^2
-                        * cell.sums[missing.cols])
+                        greedy.Kmax = K + 1, backfit = "none",
+                        verbose.lvl = 1L * verbose)
+  arcsin.fitted <- (sin(flashier:::lowrank.expand(fl.arcsin$fit$EF)^2)
+                    * rep(cell.sums, each = nrow(samp)))
+  arcsin.adj <- NA
 
   fl.raw <- flashier(props, var.type = 0,
                      prior.type = "normal.mix",
-                     greedy.Kmax = K, backfit = "none",
-                     verbose.lvl = 2L * verbose)
-  raw.preds <- log1p(preds(fl.raw, missing.idx) * cell.sums[missing.cols])
-  raw.preds[is.nan(raw.preds)] <- 0
+                     greedy.Kmax = K + 1, backfit = "none",
+                     verbose.lvl = 1L * verbose)
+  raw.fitted <- (flashier:::lowrank.expand(fl.raw$fit$EF)
+                 * rep(cell.sums, each = nrow(samp)))
+  raw.adj <- -sum(rep(log(cell.sums), each = nrow(samp))[-missing.idx])
 
   gene.props <- rowSums(samp, na.rm = TRUE) / sum(samp, na.rm = TRUE)
   mu <- outer(gene.props, cell.sums)
@@ -188,44 +211,53 @@ for (i in 1:ntrials) {
 
   fl.pearson <- flashier(resid, var.type = 0,
                          prior.type = "normal.mix",
-                         greedy.Kmax = K, backfit = "none",
-                         verbose.lvl = 2L * verbose)
-  pearson.preds <- log1p(mu[missing.idx]
-                         + sd.mat[missing.idx] * preds(fl.pearson, missing.idx))
-  pearson.preds[is.nan(pearson.preds)] <- 0
+                         greedy.Kmax = K + 1, backfit = "none",
+                         verbose.lvl = 1L * verbose)
+  pearson.fitted <- mu + sd.mat * flashier:::lowrank.expand(fl.pearson$fit$EF)
+  pearson.adj <- -sum(log(sd.mat)[-missing.idx])
 
-  trans.df[i, ] <- all.mse(true.vals,
-                           list(preds(fl.log1p, missing.idx),
-                                ans.preds,
-                                arcsin.preds,
-                                raw.preds,
-                                pearson.preds))
+  trans.df[i, ] <- get.df.row(samp, missing.vals,
+                              fl.list = list(fl.log1p, fl.ans, fl.arcsin,
+                                             fl.raw, fl.pearson),
+                              fitted.vals = list(get.fitted(fl.log1p),
+                                                 ans.fitted, arcsin.fitted,
+                                                 raw.fitted, pearson.fitted),
+                              elbo.adjustment = list(log1p.adj,
+                                                     ans.adj, arcsin.adj,
+                                                     raw.adj, pearson.adj))
 
   # Test 3: scaling method.
   cat("  Running scaling tests.\n")
 
   fl.none <- fl.var0
+  none.adj <- log1p.adj
 
   fl.ones <- flashier(log1p(samp), var.type = 0,
                       prior.type = "normal.mix",
                       fixed.factors = c(ones.factor(2), ones.factor(1)),
                       greedy.Kmax = K,
                       backfit.after = 2, final.backfit = FALSE,
-                      verbose.lvl = 2L * verbose)
+                      verbose.lvl = 1L * verbose)
+  ones.adj <- log1p.adj
 
   scaled.samp <- samp * median(cell.sums) / rep(cell.sums, each = nrow(samp))
   fl.scale <- flashier(log1p(scaled.samp), var.type = 0,
                        prior.type = "normal.mix",
                        fixed.factors = ones.factor(2),
                        greedy.Kmax = K, backfit = "none",
-                       verbose.lvl = 2L * verbose)
-  scale.preds <- log1p((exp(preds(fl.scale, missing.idx)) - 1)
-                       * cell.sums[missing.cols] / median(cell.sums))
+                       verbose.lvl = 1L * verbose)
+  scale.fitted <- (get.fitted(fl.scale)
+                   * rep(cell.sums, each = nrow(samp)) / median(cell.sums))
+  scale.adj <- sum(log(median(cell.sums)) - rep(log(cell.sums), each = nrow(samp))
+                   - log1p(scaled.samp), na.rm = TRUE)
 
-  norm.df[i, ] <- all.mse(true.vals,
-                          list(preds(fl.none, missing.idx),
-                               preds(fl.ones, missing.idx),
-                               scale.preds))
+  norm.df[i, ] <- get.df.row(samp, missing.vals,
+                             fl.list = list(fl.none, fl.ones, fl.scale),
+                             fitted.vals = list(get.fitted(fl.none),
+                                                get.fitted(fl.ones),
+                                                scale.fitted),
+                             elbo.adjustment = list(none.adj, ones.adj,
+                                                    scale.adj))
 
   # Test 4: prior type.
   cat("  Running prior type tests.\n")
@@ -235,31 +267,29 @@ for (i in 1:ntrials) {
   fl.nngenes <- flashier(log1p(samp), var.type = 0,
                          prior.type = c("nonnegative", "normal.mix"),
                          greedy.Kmax = K + 1, backfit = "none",
-                         verbose.lvl = 2L * verbose)
+                         verbose.lvl = 1L * verbose)
 
   fl.nngenes.pm <- flashier(log1p(samp), var.type = 0,
                             prior.type = c("nonnegative", "normal.mix"),
                             ash.param = list(method = "fdr"),
                             greedy.Kmax = K + 1, backfit = "none",
-                            verbose.lvl = 2L * verbose)
+                            verbose.lvl = 1L * verbose)
 
   fl.nncells <- flashier(log1p(samp), var.type = 0,
                          prior.type = c("normal.mix", "nonnegative"),
                          greedy.Kmax = K + 1, backfit = "none",
-                         verbose.lvl = 2L * verbose)
+                         verbose.lvl = 1L * verbose)
 
   fl.nncells.pm <- flashier(log1p(samp), var.type = 0,
                             prior.type = c("normal.mix", "nonnegative"),
                             ash.param = list(method = "fdr"),
                             greedy.Kmax = K + 1, backfit = "none",
-                            verbose.lvl = 2L * verbose)
+                            verbose.lvl = 1L * verbose)
 
-  prior.df[i, ] <- all.mse(true.vals,
-                           list(preds(fl.normalmix, missing.idx),
-                                preds(fl.nngenes, missing.idx),
-                                preds(fl.nngenes.pm, missing.idx),
-                                preds(fl.nncells, missing.idx),
-                                preds(fl.nncells.pm, missing.idx)))
+  prior.df[i, ] <- get.df.row(samp, missing.vals,
+                              fl.list = list(fl.normalmix,
+                                             fl.nngenes, fl.nngenes.pm,
+                                             fl.nncells, fl.nncells.pm))
 
   # Test 5: number of factors and backfit.
   cat("  Running backfitting tests.\n")
@@ -273,32 +303,29 @@ for (i in 1:ntrials) {
   # Add K more factors, then K more.
   fl.g2 <- flashier(flash.init = fl.g,
                     greedy.Kmax = K, backfit = "none",
-                    verbose.lvl = 2L * verbose)
+                    verbose.lvl = 1L * verbose)
   fl.b2 <- flashier(flash.init = fl.b,
                     greedy.Kmax = K, backfit = "final",
                     backfit.reltol = 10,
                     verbose.lvl = 3L * verbose)
   fl.g3 <- flashier(flash.init = fl.g2,
                     greedy.Kmax = K, backfit = "none",
-                    verbose.lvl = 2L * verbose)
+                    verbose.lvl = 1L * verbose)
   fl.b3 <- flashier(flash.init = fl.b2,
                     greedy.Kmax = K, backfit = "final",
                     backfit.reltol = 10,
                     verbose.lvl = 3L * verbose)
 
-  nfactors.df[i, ] <- all.mse(true.vals,
-                              list(preds(fl.g, missing.idx),
-                                   preds(fl.b, missing.idx),
-                                   preds(fl.g2, missing.idx),
-                                   preds(fl.b2, missing.idx),
-                                   preds(fl.g3, missing.idx),
-                                   preds(fl.b3, missing.idx)))
+  nfactors.df[i, ] <- get.df.row(samp, missing.vals,
+                                 fl.list = list(fl.g, fl.b,
+                                                fl.g2, fl.b2,
+                                                fl.g3, fl.b3))
 }
 
 # Test 6: incremental addition of factors
 
 set.seed(666)
-data <- log1p(trachea[rowSums(trachea > 0) > 2, ])
+data <- log1p(trachea[rowSums(trachea > 0) >= min.cts, ])
 missing.idx <- sample(1:length(data), ceiling(prop.missing * length(data)))
 true.vals <- data[missing.idx]
 data[missing.idx] <- NA
