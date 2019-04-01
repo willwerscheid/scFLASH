@@ -14,11 +14,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
 
 ## Introduction
 
-Here I compare various methods for fitting flash objects to single-cell data. I use the drop-seq dataset discussed in [Montoro et al.](https://www.nature.com/articles/s41586-018-0393-7), which includes counts for approximately 18000 genes and 7000 cells. Here, I only retain basal cells, of which there are approximately 3000. Close to 90% of the basal counts are equal to zero.
+Here I compare various methods for fitting flash objects to single-cell data. I use the drop-seq dataset discussed in [Montoro et al.](https://www.nature.com/articles/s41586-018-0393-7), which includes counts for approximately 18000 genes and 7000 cells. Close to 90% of counts are equal to zero.
 
-I perform 50 trials. For each trial, I subsample 200 basal cells, then I subsample 500 genes from the set of genes that have at least 3 non-zero counts among the subsampled cells. I remove 1000 entries at random from the resulting data matrix, fit a series of flash objects, and calculate mean squared errors, using flash posterior means as fitted values and the original data as ground truth. I compare different variance structures, data transformations, scaling methods, priors, and numbers of factors. 
+I perform 50 trials. For each trial, I subsample 200 cells, then I subsample 500 genes from the set of genes that have at least 3 non-zero counts among the subsampled cells. I remove 1000 entries at random from the resulting data matrix, fit a series of flash objects, and calculate mean squared errors, using flash posterior means as fitted values and the original data as ground truth. I compare different variance structures, data transformations, scaling methods, priors, and numbers of factors. 
 
-Additionally, to paint a more granular picture of how additional factors affect mean squared error, I incrementally fit "greedy" flash objects with 1 to 60 factors using the full drop-seq dataset (not just a subsample of basal cells). 
+Additionally, to paint a more granular picture of how additional factors affect mean squared error, I incrementally fit "greedy" flash objects with 1 to 60 factors using the full drop-seq dataset (not just a subsample). 
 
 
 ## Code
@@ -39,6 +39,8 @@ For each comparison, I choose a "reference" method and plot the difference in me
 Note that the violin plots all have the same y-axis limits (from -0.025 to +0.1). This is to underscore the relative importance of each aspect. For example, the scrunched-up appearance of the scaling methods plot is intentional: as it turns out, the scaling method used does not affect the mean squared error nearly as much as, say, the variance structure. In several cases, there are a few outlying fits with very large MSEs. When this occurs, I display all trials in addition to displaying a "zoom" view with y-axis limits from -0.025 to +0.1.
 
 The red horizontal lines indicate the median and the 10% and 90% quantiles (unfortunately, `ggplot2` ignores any outlying data points when calculating these quantities).
+
+For reference, I also plot (without comment) differences in ELBO, adjusting via a change-of-variables formula where necessary. In principle, a higher ELBO should indicate a better fit.
 
 
 ## Variance structures
@@ -74,15 +76,15 @@ Using `flashier`, one can also fit a model that includes both fixed sampling err
 $$E_{ij} \sim N(0, S_{ij}^2 + \sigma^2)$$
 I try two approaches. One fixes the standard errors as described above, replacing $S_{ij} = 0$ with $S_{ij} = \sqrt{\lambda_0} / (\lambda_0 + 1)$. The other leaves standard errors of zero as they are and hopes that the estimated $\sigma^2$ will be able to make up the difference. In both cases, the estimated $\sigma^2$ is constant across genes and cells (estimating a noisy gene-wise variance structure is at present far too slow for large datasets).
 
-```{r var_df}
+```{r var_mse}
 library(ggplot2)
 
-get.plot.df <- function(df, ref.lvl) {
+get.plot.df <- function(df, ref.lvl, type) {
   tests <- colnames(df)
   category <- sapply(strsplit(tests, '[.]'), `[`, 1)
-  exp.lvl <- sapply(strsplit(tests, '[.]'), `[`, 2)
-  df <- df[, which(exp.lvl == "overall")]
-  category <- category[which(exp.lvl == "overall")]
+  metric <- sapply(strsplit(tests, '[.]'), `[`, 2)
+  df <- df[, which(metric == type)]
+  category <- category[which(metric == type)]
   which.ref <- which(category == ref.lvl)
   df <- df - df[, which.ref]
   df <- df[, -which.ref]
@@ -92,30 +94,57 @@ get.plot.df <- function(df, ref.lvl) {
                     category = rep(category, each = nrow(df))))
 }
 
-var.df <- get.plot.df(allres$var.df, ref.lvl = "constant")
+var.mse <- get.plot.df(allres$var.df, ref.lvl = "constant", type = "mse")
 
-ggplot(var.df, aes(x = category, y = value)) +
+ggplot(var.mse, aes(x = category, y = value)) +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Variance structures (reference: Constant)") +
-  scale_x_discrete(labels = c("Fixed", "Gene-wise", "Noisy A", "Noisy B"))
+       title = "Variance structures, MSE (reference: Constant)") +
+  scale_x_discrete(limits = c("genewise", "fixed", "noisyA", "noisyB"),
+                   labels = c("Gene-wise", "Fixed", "Noisy (no zero SEs)",
+                              "Noisy (zero SEs)"))
 
-ggplot(var.df, aes(x = category, y = value)) +
+ggplot(var.mse, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
               color = "red") +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Variance structures (zoom)") +
-  scale_x_discrete(labels = c("Fixed", "Gene-wise", "Noisy (no zero SEs)", "Noisy (zero SEs)")) +
-  ylim(-0.025, 0.1)
+       title = "Variance structures, MSE (zoom)") +
+  scale_x_discrete(limits = c("genewise", "fixed", "noisyA", "noisyB"),
+                   labels = c("Gene-wise", "Fixed", "Noisy (no zero SEs)",
+                              "Noisy (zero SEs)")) +
+  ylim(-0.1, 0.2)
 ```
 
 ### Discussion
 
-The constant variance structure clearly works best. A gene-wise variance structure can do as well (and occasionally better), but also results in a lot of very poor fits. I've found that a gene-wise variance structure often estimates the variances for genes with few non-zero counts to be very small, and that this can lead to severe overfitting. 
+The constant variance structure clearly works best. A gene-wise variance structure can do as well (and occasionally better), but also results in some very poor fits. I've found that a gene-wise variance structure often estimates the variances for genes with few non-zero counts to be very small, and that this can lead to severe overfitting. 
 
-Results for fixed standard errors are nearly identical to results for the noisy variance structure that uses the same standard errors, and the noisy variance structure that allows standard errors of zero does much worse. I've found that in both cases, $\sigma^2$ is almost always estimated to be close to zero. In the latter case, this leads to an estimated error variance that is far too low for most counts (as mentioned, approximately 90% of counts are equal to zero).
+Results for fixed standard errors are nearly identical to results for the noisy variance structure that uses the same standard errors. With the latter, $\sigma^2$ is almost always estimated to be close to zero.
+
+### ELBO comparison
+
+```{r var_elbo}
+var.elbo <- get.plot.df(allres$var.df, ref.lvl = "constant", type = "elbo")
+
+ggplot(var.elbo, aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Variance structures, ELBO (reference: Constant)") +
+  scale_x_discrete(limits = c("genewise", "fixed", "noisyA", "noisyB"),
+                   labels = c("Gene-wise", "Fixed", "Noisy (no zero SEs)",
+                              "Noisy (zero SEs)"))
+
+ggplot(subset(var.elbo, category %in% c("fixed", "noisyA")), 
+       aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Variance structures, ELBO (zoom)") + 
+  scale_x_discrete(labels = c("Fixed", "Noisy (no zero SEs)"))
+```
 
 
 ## Data transformations
@@ -135,30 +164,45 @@ In all cases, I calculate mean-squared error on the log1p scale. While it is tru
 
 For the log1p and Anscombe transforms, I fit an additional rank-one "mean" factor (which simply amounts to fitting 6 factors instead of 5). Since the other transforms fit scaled data, no additional mean factor needs to be fitted.
 
-```{r trans_df}
-trans.df <- get.plot.df(allres$trans.df, ref.lvl = "log1p")
+```{r trans_mse}
+trans.mse <- get.plot.df(allres$trans.df, ref.lvl = "log1p", type = "mse")
 
-ggplot(trans.df, aes(x = category, y = value)) +
+ggplot(trans.mse, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
               color = "red") +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Data transformations (reference: log1p)") +
-  scale_x_discrete(labels = c("Anscombe", 
-                              "Arcsine", 
-                              "Pearson",
-                              "Proportions (untransformed)")) +
-  ylim(-0.025, 0.105)
+       title = "Data transformations, MSE (reference: log1p)") +
+  scale_x_discrete(limits = c("anscombe", "arcsin", "raw", "pearson"),
+                   labels = c("Anscombe", "Arcsine",
+                              "Proportions (raw)", "Pearson")) +
+  ylim(-0.1, 0.2)
 ```
 
 ### Discussion
 
-The log1p and Anscombe transforms imply very different assumptions about the model: with the log1p transform, factors are (roughly) multiplicative, whereas they are closer to additive under the Anscombe transform. Nonetheless, they do surprisingly similarly in terms of mean squared error. 
+The Anscombe and arcsine transforms are both outperformed by the log1p transform, and (unsurprisingly) fitting the untransformed matrix of proportions does worst of all (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs nearly as poorly as fitting the matrix of raw proportions.
 
-The arcsine transform does worse than either of the two, and (unsurprisingly) fitting the untransformed matrix of proportions does poorly (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs worst among all methods.
+The log1p transform performs best in terms of mean squared error, but it also allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). (Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.)
 
-Given these results, I prefer the log1p transform since it allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.
+### ELBO comparison
+
+In each case, the ELBO has been adjusted using a change-of-variables formula. Since the arcsine transformation is not differentiable at zero, its ELBO cannot be adjusted.
+
+```{r trans_elbo}
+trans.elbo <- get.plot.df(allres$trans.df, ref.lvl = "log1p", type = "elbo")
+
+ggplot(subset(trans.elbo, category != "arcsin"), 
+       aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Data transformations, ELBO (reference: log1p)") +
+  scale_x_discrete(limits = c("anscombe", "raw", "pearson"),
+                   labels = c("Anscombe", "Proportions (raw)", "Pearson")) +
+  ylim(NA, 0)
+```
 
 
 ## Scaling methods
@@ -176,24 +220,51 @@ A third possible method scales the cells in advance (that is, before the log1p t
 $$ \frac{\text{median}(R_i)}{R_i} $$
 so that, in particular, each scaled cell has the same total count. (A mean factor for genes still needs to be fit so that gene loadings are comparable.) Although this method is conceptually simpler, it risks over-relying on a few genes with large counts. In principle, a bi-scaling method like the two discussed above should be more accurate.
 
-```{r norm_df}
-norm.df <- get.plot.df(allres$norm.df, ref.lvl = "none")
+```{r norm_mse}
+norm.mse <- get.plot.df(allres$norm.df, ref.lvl = "none", type = "mse")
 
-ggplot(norm.df, aes(x = category, y = value)) +
+ggplot(norm.mse, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
               color = "red") +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Scaling methods (reference: Rank-1 mean factor)") +
+       title = "Scaling methods, MSE (reference: Rank-1 mean factor)") +
   scale_x_discrete(labels = c("Fixed ones vectors", 
                               "Pre-scaled cells")) +
-  ylim(-0.025, 0.1)
+  ylim(-0.1, 0.2)
 ```
 
 ### Discussion
 
 All methods do about equally well. Since it is difficult to understand exactly what the rank-one mean factor is fitting, I prefer using fixed ones vectors or pre-scaling cells when doing an in-depth analysis of a particular dataset. But the rank-one approach is easier to implement (and a bit faster), so I adopt it as the default scaling method in all other tests throughout this analysis.
+
+### ELBO comparison
+
+As above, the ELBOs have been adjusted using a change-of-variables formula.
+
+```{r norm_elbo}
+norm.elbo <- get.plot.df(allres$norm.df, ref.lvl = "none", type = "elbo")
+
+ggplot(norm.elbo, 
+       aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Scaling methods, ELBO (reference: Rank-1 mean factor)") +
+  scale_x_discrete(labels = c("Fixed ones vectors", 
+                              "Pre-scaled cells"))
+
+ggplot(norm.elbo, 
+       aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Scaling methods, ELBO (zoom)") +
+  scale_x_discrete(labels = c("Fixed ones vectors", 
+                              "Pre-scaled cells")) +
+  ylim(-3000, 3000)
+```
 
 
 ## Priors
@@ -204,25 +275,25 @@ In both cases, I test two `ashr` parameter settings. `method = "fdr"` includes a
 
 Since the normal-mixture prior is in principle the most flexible of all of these priors, I don't expect the other priors to improve on the mean squared error. The primary reason for choosing to put a nonnegative prior along one of the two dimensions is interpretability, not accuracy. 
 
-```{r prior_df}
-prior.df <- get.plot.df(allres$prior.df, ref.lvl = "normal")
+```{r prior_mse}
+prior.mse <- get.plot.df(allres$prior.df, ref.lvl = "normal", type = "mse")
 
-ggplot(prior.df, aes(x = category, y = value)) +
+ggplot(prior.mse, aes(x = category, y = value)) +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Priors (reference: Normal mixture)") +
+       title = "Priors, MSE (reference: Normal mixture)") +
   scale_x_discrete(labels = c("NN cells (shrink)",
                               "NN cells (fdr)",
                               "NN genes (shrink)",
                               "NN genes (fdr)"))
 
-ggplot(prior.df, aes(x = category, y = value)) +
+ggplot(prior.mse, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
               color = "red") +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Priors (zoom)") +
+       title = "Priors, MSE (zoom)") +
   scale_x_discrete(labels = c("NN cells (shrink)",
                               "NN cells (fdr)",
                               "NN genes (shrink)",
@@ -232,9 +303,27 @@ ggplot(prior.df, aes(x = category, y = value)) +
 
 ### Discussion
 
-In each case, there is at least one outlying fit that has very poor mean squared error. This problem is much worse when the nonnegative prior is on genes rather than cells. There doesn't seem to be any consistent difference between `method = "fdr"` and `method = "shrink"`.
+When the nonnegative prior is on genes rather than cells, there are a few outlying fits that have very poor mean squared error.
 
 If the outlying fits are ignored, each type of prior does approximately as well as normal-mixture priors. This is fairly surprising since 5 normal-mixture factors is in some sense equivalent to 10 semi-nonnegative factors. I'm not sure whether most of the useful information in a given factor is in one direction, or whether 5 normal-mixture factors are already beginning to overfit the data (as discussed in the following section).
+
+### ELBO comparison
+
+```{r prior_elbo}
+prior.elbo <- get.plot.df(allres$prior.df, ref.lvl = "normal", type = "elbo")
+
+ggplot(prior.elbo, 
+       aes(x = category, y = value)) +
+  geom_boxplot(colour = "blue", outlier.shape = NA) + 
+  geom_jitter(position = position_jitter(0.25)) +
+  labs(x = NULL, y = "Difference in ELBO",
+       title = "Priors, ELBO (reference: Normal mixture)") +
+  scale_x_discrete(labels = c("NN cells (shrink)",
+                              "NN cells (fdr)",
+                              "NN genes (shrink)",
+                              "NN genes (fdr)")) +
+  ylim(NA, 0)
+```
 
 
 ## Number of factors and backfitting
@@ -242,38 +331,40 @@ If the outlying fits are ignored, each type of prior does approximately as well 
 In all previous tests, I fit 5 factors to each flash object. Here, I also fit 10 and 15 factors to see whether there's any evidence of overfitting. Additionally, I look at how backfitting changes mean squared error.
 
 ```{r nfactors_df}
-nfactors.df <- get.plot.df(allres$nfactors.df, ref.lvl = "g1")
+nfactors.mse <- get.plot.df(allres$nfactors.df, ref.lvl = "g1", type = "mse")
 
-ggplot(nfactors.df, aes(x = category, y = value)) +
+ggplot(nfactors.mse, aes(x = category, y = value)) +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Number of factors (reference: Greedy, 5 factors)") +
-  scale_x_discrete(labels = c("Backfit, 5 f.", 
-                              "Backfit, 10 f.", 
-                              "Backfit, 15 f.",
+       title = "Number of factors, MSE (reference: Greedy, 5 factors)") +
+  scale_x_discrete(limits = c("bf1", "g2", "bf2", "g3", "bf3"),
+                   labels = c("Backfit, 5 f.", 
                               "Greedy, 10 f.", 
-                              "Greedy, 15 f."))
+                              "Backfit, 10 f.", 
+                              "Greedy, 15 f.",
+                              "Backfit, 15 f."))
 
-ggplot(nfactors.df, aes(x = category, y = value)) +
+ggplot(nfactors.mse, aes(x = category, y = value)) +
   geom_violin(adjust = 1.5, 
               draw_quantiles = c(0.1, 0.5, 0.9), 
               color = "red") +
   geom_jitter(position = position_jitter(0.25)) +
   labs(x = NULL, y = "Difference in MSE",
-       title = "Number of factors (zoom)") +
-  scale_x_discrete(labels = c("Backfit, 5 f.", 
-                              "Backfit, 10 f.", 
-                              "Backfit, 15 f.",
+       title = "Number of factors, MSE (zoom)") +
+  scale_x_discrete(limits = c("bf1", "g2", "bf2", "g3", "bf3"),
+                   labels = c("Backfit, 5 f.", 
                               "Greedy, 10 f.", 
-                              "Greedy, 15 f.")) +
-  ylim(-0.025, 0.1)
+                              "Backfit, 10 f.", 
+                              "Greedy, 15 f.",
+                              "Backfit, 15 f.")) +
+  ylim(-0.1, 0.2)
 ```
 
 ### Discussion
 
 The results suggest that overfitting (in the sense of predictive accuracy) occurs well before the log likelihood of the model stops improving. The ten- and fifteen-factor fits are nearly always worse than the five-factor fits, and the backfits are on average worse than the corresponding greedy fits. In surprisingly many cases, backfitting turns out to be disastrous.
 
-To further analyze the dynamics of overfitting, I fit a single factor to the full drop-seq dataset (after removing 1% of entries at random) and calculate mean squared error, then a second factor, and so on until 60 factors have been added. Even though `flashier` continues to add factors throughout the process, the mean squared error no longer improves monotonically after 32 factors, and bottoms out at 40 factors. 
+To further analyze the dynamics of overfitting, I fit a single factor to the full drop-seq dataset (after removing 1% of entries at random) and calculate mean squared error, then I fit a second factor, and so on until 60 factors have been added. Even though `flashier` continues to add factors throughout the process, the mean squared error no longer improves monotonically after 32 factors, and bottoms out at 40 factors. 
 
 The results imply that `flashier` is unable to add the "correct" number of factors for count data, and that some type of cross validation might be needed.
 
