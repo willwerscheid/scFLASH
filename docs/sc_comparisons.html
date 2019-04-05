@@ -436,7 +436,7 @@ div.section {
 </div>
 
 
-<p><strong>Last updated:</strong> 2019-04-01</p>
+<p><strong>Last updated:</strong> 2019-04-05</p>
 <strong>workflowr checks:</strong> <small>(Click a bullet for more information)</small>
 <ul>
 <li>
@@ -460,7 +460,7 @@ div.section {
 </details>
 </li>
 <li>
-<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/57d374a362662a09b302465a7b76bcce42645b6b" target="_blank">57d374a</a> </summary></p>
+<p><details> <summary> <strong style="color:blue;">✔</strong> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/5c408417ac47251433806645a599025b9838680e" target="_blank">5c40841</a> </summary></p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
 <pre><code>
 Ignored files:
@@ -502,6 +502,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td style="text-align:left;">
+Rmd
+</td>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/5c408417ac47251433806645a599025b9838680e/analysis/sc_comparisons.Rmd" target="_blank">5c40841</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-05
+</td>
+<td style="text-align:left;">
+wflow_publish(“analysis/sc_comparisons.Rmd”)
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+html
+</td>
+<td style="text-align:left;">
+<a href="https://cdn.rawgit.com/willwerscheid/scFLASH/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/sc_comparisons.html" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+<td style="text-align:left;">
+Build site.
+</td>
+</tr>
 <tr>
 <td style="text-align:left;">
 Rmd
@@ -595,7 +629,7 @@ wflow_publish(“analysis/sc_comparisons.Rmd”)
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
 <p>Here I compare various methods for fitting flash objects to single-cell data. I use the drop-seq dataset discussed in <a href="https://www.nature.com/articles/s41586-018-0393-7">Montoro et al.</a>, which includes counts for approximately 18000 genes and 7000 cells. Close to 90% of counts are equal to zero.</p>
-<p>I perform 50 trials. For each trial, I subsample 200 cells, then I subsample 500 genes from the set of genes that have at least 3 non-zero counts among the subsampled cells. I remove 1000 entries at random from the resulting data matrix, fit a series of flash objects, and calculate mean squared errors, using flash posterior means as fitted values and the original data as ground truth. I compare different variance structures, data transformations, scaling methods, priors, and numbers of factors.</p>
+<p>I perform 50 trials. For each trial, I subsample 200 cells, then I subsample 500 genes from the set of genes that have at least 3 non-zero counts among the subsampled cells. I remove 1000 entries at random from the resulting data matrix, fit a series of flash objects, and calculate mean squared errors on the log1p scale, using flash posterior means as fitted values and the original data as ground truth. I compare different variance structures, data transformations, scaling methods, priors, and numbers of factors.</p>
 <p>Additionally, to paint a more granular picture of how additional factors affect mean squared error, I incrementally fit “greedy” flash objects with 1 to 60 factors using the full drop-seq dataset (not just a subsample).</p>
 </div>
 <div id="code" class="section level2">
@@ -636,6 +670,10 @@ nmissing &lt;- ceiling(prop.missing * ncells * ngenes)
 
 # Number of factors to add to each fit.
 K &lt;- 5
+
+# &quot;Nonmissingness threshold&quot;, which deals with an issue that can occur when
+#   some data is missing. I will discuss it elsewhere.
+nonmissing.thresh &lt;- c(0.5, 0.5)
 
 # Verbose flag for flashier output.
 verbose &lt;- FALSE
@@ -739,11 +777,13 @@ for (i in 1:ntrials) {
   fl.var0 &lt;- flashier(log1p(samp), var.type = 0,
                       prior.type = &quot;normal.mix&quot;,
                       greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   fl.var1 &lt;- flashier(log1p(samp), var.type = 1,
                       prior.type = &quot;normal.mix&quot;,
                       greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   S &lt;- sqrt(samp) / (samp + 1)
@@ -754,6 +794,7 @@ for (i in 1:ntrials) {
                       var.type = NULL,
                       prior.type = &quot;normal.mix&quot;,
                       greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   suppressMessages({
@@ -761,6 +802,7 @@ for (i in 1:ntrials) {
                           var.type = 0,
                           prior.type = &quot;normal.mix&quot;,
                           greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                          nonmissing.thresh = nonmissing.thresh,
                           verbose.lvl = 1L * verbose)
   })
 
@@ -769,6 +811,7 @@ for (i in 1:ntrials) {
                           var.type = 0,
                           prior.type = &quot;normal.mix&quot;,
                           greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                          nonmissing.thresh = nonmissing.thresh,
                           verbose.lvl = 1L * verbose)
   })
 
@@ -785,6 +828,7 @@ for (i in 1:ntrials) {
   fl.ans &lt;- flashier(sqrt(samp + 0.375), var.type = 0,
                      prior.type = &quot;normal.mix&quot;,
                      greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                     nonmissing.thresh = nonmissing.thresh,
                      verbose.lvl = 1L * verbose)
   ans.fitted &lt;- flashier:::lowrank.expand(fl.ans$fit$EF)^2 - 0.375
   ans.adj &lt;- -sum(log(2) + 0.5 * log(samp + 0.375), na.rm = TRUE)
@@ -794,6 +838,7 @@ for (i in 1:ntrials) {
   fl.arcsin &lt;- flashier(asin(sqrt(props)), var.type = 0,
                         prior.type = &quot;normal.mix&quot;,
                         greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                        nonmissing.thresh = nonmissing.thresh,
                         verbose.lvl = 1L * verbose)
   arcsin.fitted &lt;- (sin(flashier:::lowrank.expand(fl.arcsin$fit$EF)^2)
                     * rep(cell.sums, each = nrow(samp)))
@@ -802,6 +847,7 @@ for (i in 1:ntrials) {
   fl.raw &lt;- flashier(props, var.type = 0,
                      prior.type = &quot;normal.mix&quot;,
                      greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                     nonmissing.thresh = nonmissing.thresh,
                      verbose.lvl = 1L * verbose)
   raw.fitted &lt;- (flashier:::lowrank.expand(fl.raw$fit$EF)
                  * rep(cell.sums, each = nrow(samp)))
@@ -815,6 +861,7 @@ for (i in 1:ntrials) {
   fl.pearson &lt;- flashier(resid, var.type = 0,
                          prior.type = &quot;normal.mix&quot;,
                          greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
   pearson.fitted &lt;- mu + sd.mat * flashier:::lowrank.expand(fl.pearson$fit$EF)
   pearson.adj &lt;- -sum(log(sd.mat)[-missing.idx])
@@ -840,6 +887,7 @@ for (i in 1:ntrials) {
                       fixed.factors = c(ones.factor(2), ones.factor(1)),
                       greedy.Kmax = K,
                       backfit.after = 2, final.backfit = FALSE,
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
   ones.adj &lt;- log1p.adj
 
@@ -848,6 +896,7 @@ for (i in 1:ntrials) {
                        prior.type = &quot;normal.mix&quot;,
                        fixed.factors = ones.factor(2),
                        greedy.Kmax = K, backfit = &quot;none&quot;,
+                       nonmissing.thresh = nonmissing.thresh,
                        verbose.lvl = 1L * verbose)
   scale.fitted &lt;- (get.fitted(fl.scale)
                    * rep(cell.sums, each = nrow(samp)) / median(cell.sums))
@@ -870,23 +919,27 @@ for (i in 1:ntrials) {
   fl.nngenes &lt;- flashier(log1p(samp), var.type = 0,
                          prior.type = c(&quot;nonnegative&quot;, &quot;normal.mix&quot;),
                          greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
 
   fl.nngenes.pm &lt;- flashier(log1p(samp), var.type = 0,
                             prior.type = c(&quot;nonnegative&quot;, &quot;normal.mix&quot;),
                             ash.param = list(method = &quot;fdr&quot;),
                             greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                            nonmissing.thresh = nonmissing.thresh,
                             verbose.lvl = 1L * verbose)
 
   fl.nncells &lt;- flashier(log1p(samp), var.type = 0,
                          prior.type = c(&quot;normal.mix&quot;, &quot;nonnegative&quot;),
                          greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
 
   fl.nncells.pm &lt;- flashier(log1p(samp), var.type = 0,
                             prior.type = c(&quot;normal.mix&quot;, &quot;nonnegative&quot;),
                             ash.param = list(method = &quot;fdr&quot;),
                             greedy.Kmax = K + 1, backfit = &quot;none&quot;,
+                            nonmissing.thresh = nonmissing.thresh,
                             verbose.lvl = 1L * verbose)
 
   prior.df[i, ] &lt;- get.df.row(samp, missing.vals,
@@ -930,18 +983,20 @@ for (i in 1:ntrials) {
 set.seed(666)
 data &lt;- log1p(trachea[rowSums(trachea &gt; 0) &gt;= min.cts, ])
 missing.idx &lt;- sample(1:length(data), ceiling(prop.missing * length(data)))
-true.vals &lt;- data[missing.idx]
+true.vals &lt;- exp(data[missing.idx]) - 1
 data[missing.idx] &lt;- NA
 
 Kmax &lt;- 60
 
 fl &lt;- flashier(data, var.type = 0,
-               prior.type = &quot;normal.mix&quot;,
+               prior.type = &quot;point.normal&quot;,
                fixed.factors = c(ones.factor(1), ones.factor(2)),
-               greedy.Kmax = 1, backfit = &quot;none&quot;,
+               backfit.after = 2, final.backfit = FALSE,
+               greedy.Kmax = 1,
                final.nullchk = FALSE,
+               nonmissing.thresh = nonmissing.thresh,
                verbose.lvl = 3)
-mse.vec &lt;- mse(true.vals, preds(fl, missing.idx), 1:length(true.vals))
+mse.vec &lt;- log1p.mse(true.vals, get.fitted(fl)[missing.idx])
 
 for (k in 2:Kmax) {
   fl &lt;- flashier(flash.init = fl,
@@ -949,7 +1004,7 @@ for (k in 2:Kmax) {
                  final.nullchk = FALSE,
                  verbose.lvl = 3)
   mse.vec &lt;- c(mse.vec,
-               mse(true.vals, preds(fl, missing.idx), 1:length(true.vals)))
+               log1p.mse(true.vals, get.fitted(fl)[missing.idx]))
 }
 
 mse.diff &lt;- c(NA, mse.vec[2:length(mse.vec)] - mse.vec[1:(length(mse.vec) - 1)])
@@ -970,9 +1025,9 @@ saveRDS(all.res, &quot;./output/sc_comparisons/allres.rds&quot;)</code></pre>
 <div id="introduction-to-plots" class="section level2">
 <h2>Introduction to plots</h2>
 <p>For each comparison, I choose a “reference” method and plot the difference in mean squared error for each other method over all 50 trials. A positive value indicates worse performance. Importantly, mean squared error is calculated on the log1p scale in all cases.</p>
-<p>Note that the violin plots all have the same y-axis limits (from -0.025 to +0.1). This is to underscore the relative importance of each aspect. For example, the scrunched-up appearance of the scaling methods plot is intentional: as it turns out, the scaling method used does not affect the mean squared error nearly as much as, say, the variance structure. In several cases, there are a few outlying fits with very large MSEs. When this occurs, I display all trials in addition to displaying a “zoom” view with y-axis limits from -0.025 to +0.1.</p>
-<p>The red horizontal lines indicate the median and the 10% and 90% quantiles (unfortunately, <code>ggplot2</code> ignores any outlying data points when calculating these quantities).</p>
-<p>For reference, I also plot (without comment) differences in ELBO, adjusting via a change-of-variables formula where necessary. In principle, a higher ELBO should indicate a better fit.</p>
+<p>Note that the MSE plots all have the same y-axis limits (from -0.15 to +0.1). This is to underscore the relative importance of each aspect. For example, the scrunched-up appearance of the scaling methods plot is intentional: as it turns out, the scaling method used does not affect the mean squared error nearly as much as, say, the variance structure.</p>
+<p>The red horizontal lines indicate the median and the 10% and 90% quantiles.</p>
+<p>For reference, I also plot (usually without comment) differences in ELBO, adjusting via a change-of-variables formula where necessary. In principle, a higher ELBO should indicate a better fit.</p>
 </div>
 <div id="variance-structures" class="section level2">
 <h2>Variance structures</h2>
@@ -1002,54 +1057,100 @@ get.plot.df &lt;- function(df, ref.lvl, type) {
                     category = rep(category, each = nrow(df))))
 }
 
-var.mse &lt;- get.plot.df(allres$var.df, ref.lvl = &quot;constant&quot;, type = &quot;mse&quot;)
+do.plots &lt;- function(df, ref.lvl, title, xlimits, xlabels) {
+  mse.df &lt;- get.plot.df(df, ref.lvl, type = &quot;mse&quot;)
+  elbo.df &lt;- get.plot.df(df, ref.lvl, type = &quot;elbo&quot;)
+  
+  mse.plot &lt;- ggplot(mse.df, aes(x = category, y = value)) +
+    geom_violin(adjust = 1.5, 
+                draw_quantiles = c(0.1, 0.5, 0.9), 
+                color = &quot;red&quot;) +
+    geom_jitter(position = position_jitter(0.25)) +
+    labs(x = NULL, y = &quot;Difference in MSE&quot;, title = title) +
+    scale_x_discrete(limits = xlimits, labels = xlabels) +
+    ylim(-0.15, 0.1)
+  
+  elbo.plot &lt;- ggplot(elbo.df, aes(x = category, y = value)) +
+    geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
+    geom_jitter(position = position_jitter(0.25)) +
+    labs(x = NULL, y = &quot;Difference in ELBO&quot;, title = title) +
+    scale_x_discrete(limits = xlimits, labels = xlabels)
+  
+  print(mse.plot)
+  print(elbo.plot)
+}
 
-ggplot(var.mse, aes(x = category, y = value)) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Variance structures, MSE (reference: Constant)&quot;) +
-  scale_x_discrete(limits = c(&quot;genewise&quot;, &quot;fixed&quot;, &quot;noisyA&quot;, &quot;noisyB&quot;),
-                   labels = c(&quot;Gene-wise&quot;, &quot;Fixed&quot;, &quot;Noisy (no zero SEs)&quot;,
-                              &quot;Noisy (zero SEs)&quot;))</code></pre>
+do.plots(allres$var.df, ref.lvl = &quot;constant&quot;,
+         title = &quot;Variance structures (reference: Constant)&quot;,
+         xlimits = c(&quot;genewise&quot;, &quot;fixed&quot;, &quot;noisyA&quot;, &quot;noisyB&quot;),
+         xlabels = c(&quot;Gene-wise&quot;, &quot;Fixed&quot;, 
+                     &quot;Noisy (no zero SEs)&quot;, &quot;Noisy (zero SEs)&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/var_mse-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(var.mse, aes(x = category, y = value)) +
-  geom_violin(adjust = 1.5, 
-              draw_quantiles = c(0.1, 0.5, 0.9), 
-              color = &quot;red&quot;) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Variance structures, MSE (zoom)&quot;) +
-  scale_x_discrete(limits = c(&quot;genewise&quot;, &quot;fixed&quot;, &quot;noisyA&quot;, &quot;noisyB&quot;),
-                   labels = c(&quot;Gene-wise&quot;, &quot;Fixed&quot;, &quot;Noisy (no zero SEs)&quot;,
-                              &quot;Noisy (zero SEs)&quot;)) +
-  ylim(-0.1, 0.2)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/var_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of var_mse-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/var_mse-1.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details> <img src="figure/sc_comparisons.Rmd/var_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of var_mse-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/var_mse-2.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion" class="section level3">
 <h3>Discussion</h3>
-<p>The constant variance structure clearly works best. A gene-wise variance structure can do as well (and occasionally better), but also results in some very poor fits. I’ve found that a gene-wise variance structure often estimates the variances for genes with few non-zero counts to be very small, and that this can lead to severe overfitting.</p>
-<p>Results for fixed standard errors are nearly identical to results for the noisy variance structure that uses the same standard errors. With the latter, <span class="math inline">\(\sigma^2\)</span> is almost always estimated to be close to zero.</p>
-</div>
-<div id="elbo-comparison" class="section level3">
-<h3>ELBO comparison</h3>
-<pre class="r"><code>var.elbo &lt;- get.plot.df(allres$var.df, ref.lvl = &quot;constant&quot;, type = &quot;elbo&quot;)
-
-ggplot(var.elbo, aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Variance structures, ELBO (reference: Constant)&quot;) +
-  scale_x_discrete(limits = c(&quot;genewise&quot;, &quot;fixed&quot;, &quot;noisyA&quot;, &quot;noisyB&quot;),
-                   labels = c(&quot;Gene-wise&quot;, &quot;Fixed&quot;, &quot;Noisy (no zero SEs)&quot;,
-                              &quot;Noisy (zero SEs)&quot;))</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/var_elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(subset(var.elbo, category %in% c(&quot;fixed&quot;, &quot;noisyA&quot;)), 
-       aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Variance structures, ELBO (zoom)&quot;) + 
-  scale_x_discrete(labels = c(&quot;Fixed&quot;, &quot;Noisy (no zero SEs)&quot;))</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/var_elbo-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>A gene-wise variance structure is probably the best choice. The noisy variance structure that includes SEs of zero can also work very well, but is much more variable and does not scale well to large datasets.</p>
+<p>Fixing standard errors generally results in a poorer fit. It’s likely that my choice of standard error for entries with zero counts is too large, since the noisy variance structure that uses the same standard errors (“Noisy (no zero SEs)”) almost always estimates <span class="math inline">\(\sigma^2\)</span> to be very close to zero (this is why results for these two variance structures are nearly identical).</p>
+<p>The ELBO comparisons are not terribly meaningful. The reason why the ELBO is so high for “Noisy (zero SEs)” is simply that entries with zero counts are estimated to have very low standard errors.</p>
 </div>
 </div>
 <div id="data-transformations" class="section level2">
@@ -1059,40 +1160,46 @@ ggplot(var.elbo, aes(x = category, y = value)) +
 <p>Finally, I fit a flash object to Pearson residuals, using a binomial approximation to the multinomial distribution as recommended by <a href="https://www.biorxiv.org/content/10.1101/574574v1">Townes et al.</a> (The authors prefer to use deviance residuals, but transforming predicted deviance residuals to raw counts is not trivial.)</p>
 <p>In all cases, I calculate mean-squared error on the log1p scale. While it is true that this might bias the results in favor of the log1p transform, it can be justified as the relative error in the fitted counts (adding a pseudocount to avoid division by zero).</p>
 <p>For the log1p and Anscombe transforms, I fit an additional rank-one “mean” factor (which simply amounts to fitting 6 factors instead of 5). Since the other transforms fit scaled data, no additional mean factor needs to be fitted.</p>
-<pre class="r"><code>trans.mse &lt;- get.plot.df(allres$trans.df, ref.lvl = &quot;log1p&quot;, type = &quot;mse&quot;)
-
-ggplot(trans.mse, aes(x = category, y = value)) +
-  geom_violin(adjust = 1.5, 
-              draw_quantiles = c(0.1, 0.5, 0.9), 
-              color = &quot;red&quot;) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Data transformations, MSE (reference: log1p)&quot;) +
-  scale_x_discrete(limits = c(&quot;anscombe&quot;, &quot;arcsin&quot;, &quot;raw&quot;, &quot;pearson&quot;),
-                   labels = c(&quot;Anscombe&quot;, &quot;Arcsine&quot;,
-                              &quot;Proportions (raw)&quot;, &quot;Pearson&quot;)) +
-  ylim(-0.1, 0.2)</code></pre>
+<pre class="r"><code>do.plots(allres$trans.df, ref.lvl = &quot;log1p&quot;,
+         title = &quot;Data transformations (reference: log1p)&quot;,
+         xlimits = c(&quot;anscombe&quot;, &quot;arcsin&quot;, &quot;raw&quot;, &quot;pearson&quot;),
+         xlabels = c(&quot;Anscombe&quot;, &quot;Arcsine&quot;, &quot;Proportions (raw)&quot;, &quot;Pearson&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/trans_mse-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of trans_mse-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/trans_mse-1.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details> <img src="figure/sc_comparisons.Rmd/trans_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="discussion-1" class="section level3">
 <h3>Discussion</h3>
-<p>The Anscombe and arcsine transforms are both outperformed by the log1p transform, and (unsurprisingly) fitting the untransformed matrix of proportions does worst of all (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs nearly as poorly as fitting the matrix of raw proportions.</p>
-<p>The log1p transform performs best in terms of mean squared error, but it also allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). (Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.)</p>
-</div>
-<div id="elbo-comparison-1" class="section level3">
-<h3>ELBO comparison</h3>
-<p>In each case, the ELBO has been adjusted using a change-of-variables formula. Since the arcsine transformation is not differentiable at zero, its ELBO cannot be adjusted.</p>
-<pre class="r"><code>trans.elbo &lt;- get.plot.df(allres$trans.df, ref.lvl = &quot;log1p&quot;, type = &quot;elbo&quot;)
-
-ggplot(subset(trans.elbo, category != &quot;arcsin&quot;), 
-       aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Data transformations, ELBO (reference: log1p)&quot;) +
-  scale_x_discrete(limits = c(&quot;anscombe&quot;, &quot;raw&quot;, &quot;pearson&quot;),
-                   labels = c(&quot;Anscombe&quot;, &quot;Proportions (raw)&quot;, &quot;Pearson&quot;)) +
-  ylim(NA, 0)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/trans_elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The Anscombe and arcsine transforms are both outperformed by the log1p transform, and (unsurprisingly) fitting the untransformed matrix of proportions generally does worse than either (but maybe not as poorly as expected). Interestingly, fitting the Pearson residuals performs worst of all.</p>
+<p>The log1p transform performs best in terms of both MSE and ELBO, but it also allows for a simple interpretation of factors as multiplicative effects. Further, it is possible to fit scaling factors so that loadings are comparable among one another (as discussed in the following section). (Since factors are not multiplicative under the Anscombe transform, one cannot directly fit scaling factors.)</p>
+<p>(Note that in each case, the ELBO has been adjusted using a change-of-variables formula. Since the arcsine transformation is not differentiable at zero, its ELBO cannot be adjusted.)</p>
 </div>
 </div>
 <div id="scaling-methods" class="section level2">
@@ -1100,47 +1207,46 @@ ggplot(subset(trans.elbo, category != &quot;arcsin&quot;),
 <p>Ideally, one would like factor loadings to be comparable across genes even though mean expression can vary by several orders of magnitude. Mean expression varies much less across cells, but one should also account for differences in cell size. One way to achieve both of these goals is to add fixed mean factors to perform row- and column-specific scaling. Specifically, I fit a fixed row vector of all ones with column loadings <span class="math inline">\(c_j\)</span> to be estimated and a fixed column vector of all ones with row loadings <span class="math inline">\(r_i\)</span> to be estimated. This is approximately equivalent to estimating separate scaling factors for the rows and columns of the count data: <span class="math display">\[ X_{ij} + 1 = e^{r_i}e^{c_j} \]</span></p>
 <p>Compare to the case where FLASH estimates a single rank-one factor with row loadings <span class="math inline">\(r_i\)</span> and column loadings <span class="math inline">\(c_j\)</span>: <span class="math display">\[ X_{ij} + 1 = e^{r_i c_j} \]</span> Here, the scaling factors are not independent. Do note, however, that when <span class="math inline">\(r_i\)</span> and <span class="math inline">\(c_j\)</span> are both small, <span class="math display">\[ X_{ij} = e^{r_i c_j} - 1 \approx r_i c_j, \]</span> so fitting a single factor might actually work well for small counts.</p>
 <p>A third possible method scales the cells in advance (that is, before the log1p transform). Letting <span class="math inline">\(R_i\)</span> be the total count for cell <span class="math inline">\(i\)</span>, I scale each cell by the factor <span class="math display">\[ \frac{\text{median}(R_i)}{R_i} \]</span> so that, in particular, each scaled cell has the same total count. (A mean factor for genes still needs to be fit so that gene loadings are comparable.) Although this method is conceptually simpler, it risks over-relying on a few genes with large counts. In principle, a bi-scaling method like the two discussed above should be more accurate.</p>
-<pre class="r"><code>norm.mse &lt;- get.plot.df(allres$norm.df, ref.lvl = &quot;none&quot;, type = &quot;mse&quot;)
-
-ggplot(norm.mse, aes(x = category, y = value)) +
-  geom_violin(adjust = 1.5, 
-              draw_quantiles = c(0.1, 0.5, 0.9), 
-              color = &quot;red&quot;) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Scaling methods, MSE (reference: Rank-1 mean factor)&quot;) +
-  scale_x_discrete(labels = c(&quot;Fixed ones vectors&quot;, 
-                              &quot;Pre-scaled cells&quot;)) +
-  ylim(-0.1, 0.2)</code></pre>
+<pre class="r"><code>do.plots(allres$norm.df, ref.lvl = &quot;none&quot;,
+         title = &quot;Scaling methods (reference: Rank-1 mean factor)&quot;,
+         xlimits = c(&quot;fitmean&quot;, &quot;scale&quot;),
+         xlabels = c(&quot;Fixed ones vectors&quot;, &quot;Pre-scaled cells&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/norm_mse-1.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of norm_mse-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/norm_mse-1.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details> <img src="figure/sc_comparisons.Rmd/norm_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="discussion-2" class="section level3">
 <h3>Discussion</h3>
-<p>All methods do about equally well. Since it is difficult to understand exactly what the rank-one mean factor is fitting, I prefer using fixed ones vectors or pre-scaling cells when doing an in-depth analysis of a particular dataset. But the rank-one approach is easier to implement (and a bit faster), so I adopt it as the default scaling method in all other tests throughout this analysis.</p>
-</div>
-<div id="elbo-comparison-2" class="section level3">
-<h3>ELBO comparison</h3>
-<p>As above, the ELBOs have been adjusted using a change-of-variables formula.</p>
-<pre class="r"><code>norm.elbo &lt;- get.plot.df(allres$norm.df, ref.lvl = &quot;none&quot;, type = &quot;elbo&quot;)
-
-ggplot(norm.elbo, 
-       aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Scaling methods, ELBO (reference: Rank-1 mean factor)&quot;) +
-  scale_x_discrete(labels = c(&quot;Fixed ones vectors&quot;, 
-                              &quot;Pre-scaled cells&quot;))</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/norm_elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(norm.elbo, 
-       aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Scaling methods, ELBO (zoom)&quot;) +
-  scale_x_discrete(labels = c(&quot;Fixed ones vectors&quot;, 
-                              &quot;Pre-scaled cells&quot;)) +
-  ylim(-3000, 3000)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/norm_elbo-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>All methods do about equally well. Pre-scaling cells often yields a slightly better ELBO, but can also give an ELBO that’s much worse.</p>
+<p>Since it is difficult to understand exactly what the rank-one mean factor is fitting, I prefer using fixed ones vectors or pre-scaling cells when doing an in-depth analysis of a particular dataset. But the rank-one approach is easier to implement (and a bit faster), so I adopt it as the default scaling method in all other tests throughout this analysis.</p>
+<p>(As above, the ELBOs have been adjusted using a change-of-variables formula.)</p>
 </div>
 </div>
 <div id="priors" class="section level2">
@@ -1148,68 +1254,86 @@ ggplot(norm.elbo,
 <p>For simplicity, I use normal-mixture priors as the default priors throughout this analysis, but using nonnegative priors for either genes or cells can enhance interpretability. The former yields sets of genes that co-express in the same direction, with cell loadings indicating whether expression levels for the gene set are above or below the mean. The latter can work better for clustering cells, since it yields sets of cells with one set of genes that is overexpressed and a second set that is underexpressed.</p>
 <p>In both cases, I test two <code>ashr</code> parameter settings. <code>method = &quot;fdr&quot;</code> includes a point mass at zero in the prior, whereas <code>method = &quot;shrink&quot;</code> includes small mixture components but no point mass. In general, <code>fdr</code> is better for false discovery rate control while <code>shrink</code> tends to be slightly more accurate.</p>
 <p>Since the normal-mixture prior is in principle the most flexible of all of these priors, I don’t expect the other priors to improve on the mean squared error. The primary reason for choosing to put a nonnegative prior along one of the two dimensions is interpretability, not accuracy.</p>
-<pre class="r"><code>prior.mse &lt;- get.plot.df(allres$prior.df, ref.lvl = &quot;normal&quot;, type = &quot;mse&quot;)
-
-ggplot(prior.mse, aes(x = category, y = value)) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Priors, MSE (reference: Normal mixture)&quot;) +
-  scale_x_discrete(labels = c(&quot;NN cells (shrink)&quot;,
-                              &quot;NN cells (fdr)&quot;,
-                              &quot;NN genes (shrink)&quot;,
-                              &quot;NN genes (fdr)&quot;))</code></pre>
+<pre class="r"><code>do.plots(allres$prior.df, ref.lvl = &quot;normal&quot;,
+         title = &quot;Priors (reference: Normal mixture)&quot;,
+         xlimits = c(&quot;nncellA&quot;, &quot;nncellB&quot;, &quot;nngeneA&quot;, &quot;nngeneB&quot;),
+         xlabels = c(&quot;NN cells (shrink)&quot;, &quot;NN cells (fdr)&quot;,
+                     &quot;NN genes (shrink)&quot;, &quot;NN genes (fdr)&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/prior_mse-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>ggplot(prior.mse, aes(x = category, y = value)) +
-  geom_violin(adjust = 1.5, 
-              draw_quantiles = c(0.1, 0.5, 0.9), 
-              color = &quot;red&quot;) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Priors, MSE (zoom)&quot;) +
-  scale_x_discrete(labels = c(&quot;NN cells (shrink)&quot;,
-                              &quot;NN cells (fdr)&quot;,
-                              &quot;NN genes (shrink)&quot;,
-                              &quot;NN genes (fdr)&quot;)) +
-  ylim(-0.025, 0.1)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/prior_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of prior_mse-1.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/prior_mse-1.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details> <img src="figure/sc_comparisons.Rmd/prior_mse-2.png" width="672" style="display: block; margin: auto;" /></p>
+<details> <summary><em>Expand here to see past versions of prior_mse-2.png:</em></summary>
+<table style="border-collapse:separate; border-spacing:5px;">
+<thead>
+<tr>
+<th style="text-align:left;">
+Version
+</th>
+<th style="text-align:left;">
+Author
+</th>
+<th style="text-align:left;">
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/prior_mse-2.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+</tbody>
+</table>
+<p></details></p>
 <div id="discussion-3" class="section level3">
 <h3>Discussion</h3>
-<p>When the nonnegative prior is on genes rather than cells, there are a few outlying fits that have very poor mean squared error.</p>
-<p>If the outlying fits are ignored, each type of prior does approximately as well as normal-mixture priors. This is fairly surprising since 5 normal-mixture factors is in some sense equivalent to 10 semi-nonnegative factors. I’m not sure whether most of the useful information in a given factor is in one direction, or whether 5 normal-mixture factors are already beginning to overfit the data (as discussed in the following section).</p>
-</div>
-<div id="elbo-comparison-3" class="section level3">
-<h3>ELBO comparison</h3>
-<pre class="r"><code>prior.elbo &lt;- get.plot.df(allres$prior.df, ref.lvl = &quot;normal&quot;, type = &quot;elbo&quot;)
-
-ggplot(prior.elbo, 
-       aes(x = category, y = value)) +
-  geom_boxplot(colour = &quot;blue&quot;, outlier.shape = NA) + 
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in ELBO&quot;,
-       title = &quot;Priors, ELBO (reference: Normal mixture)&quot;) +
-  scale_x_discrete(labels = c(&quot;NN cells (shrink)&quot;,
-                              &quot;NN cells (fdr)&quot;,
-                              &quot;NN genes (shrink)&quot;,
-                              &quot;NN genes (fdr)&quot;)) +
-  ylim(NA, 0)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/prior_elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>In terms of mean squared error, each type of prior does approximately as well as normal-mixture priors. This is fairly surprising since 5 normal-mixture factors is in some sense equivalent to 10 semi-nonnegative factors. I’m not sure whether most of the useful information in a given factor is in one direction, or whether 5 normal-mixture factors are already beginning to overfit the data (as discussed in the following section).</p>
+<p>Putting a nonnegative prior on cells (rather than genes) gives slightly less variable results (in terms of MSE), but putting a nonnegative prior on genes generally gives a better ELBO, with marginally better results for <code>method = &quot;shrink&quot;</code>. Still, deciding whether and where to put a nonnegative prior largely comes down to a matter of preference.</p>
 </div>
 </div>
 <div id="number-of-factors-and-backfitting" class="section level2">
 <h2>Number of factors and backfitting</h2>
 <p>In all previous tests, I fit 5 factors to each flash object. Here, I also fit 10 and 15 factors to see whether there’s any evidence of overfitting. Additionally, I look at how backfitting changes mean squared error.</p>
-<pre class="r"><code>nfactors.mse &lt;- get.plot.df(allres$nfactors.df, ref.lvl = &quot;g1&quot;, type = &quot;mse&quot;)
-
-ggplot(nfactors.mse, aes(x = category, y = value)) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Number of factors, MSE (reference: Greedy, 5 factors)&quot;) +
-  scale_x_discrete(limits = c(&quot;bf1&quot;, &quot;g2&quot;, &quot;bf2&quot;, &quot;g3&quot;, &quot;bf3&quot;),
-                   labels = c(&quot;Backfit, 5 f.&quot;, 
-                              &quot;Greedy, 10 f.&quot;, 
-                              &quot;Backfit, 10 f.&quot;, 
-                              &quot;Greedy, 15 f.&quot;,
-                              &quot;Backfit, 15 f.&quot;))</code></pre>
+<pre class="r"><code>do.plots(allres$nfactors.df, ref.lvl = &quot;g1&quot;,
+         title = &quot;Number of factors (reference: Greedy, 5 factors)&quot;,
+         xlimits = c(&quot;bf1&quot;, &quot;g2&quot;, &quot;bf2&quot;, &quot;g3&quot;, &quot;bf3&quot;),
+         xlabels = c(&quot;Backfit, 5 f.&quot;, &quot;Greedy, 10 f.&quot;, &quot;Backfit, 10 f.&quot;,
+                     &quot;Greedy, 15 f.&quot;, &quot;Backfit, 15 f.&quot;))</code></pre>
 <p><img src="figure/sc_comparisons.Rmd/nfactors_df-1.png" width="672" style="display: block; margin: auto;" /></p>
 <details> <summary><em>Expand here to see past versions of nfactors_df-1.png:</em></summary>
 <table style="border-collapse:separate; border-spacing:5px;">
@@ -1229,6 +1353,17 @@ Date
 <tbody>
 <tr>
 <td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/nfactors_df-1.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 <a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/nfactors_df-1.png" target="_blank">60843e0</a>
 </td>
 <td style="text-align:left;">
@@ -1240,22 +1375,7 @@ Jason Willwerscheid
 </tr>
 </tbody>
 </table>
-<p></details></p>
-<pre class="r"><code>ggplot(nfactors.mse, aes(x = category, y = value)) +
-  geom_violin(adjust = 1.5, 
-              draw_quantiles = c(0.1, 0.5, 0.9), 
-              color = &quot;red&quot;) +
-  geom_jitter(position = position_jitter(0.25)) +
-  labs(x = NULL, y = &quot;Difference in MSE&quot;,
-       title = &quot;Number of factors, MSE (zoom)&quot;) +
-  scale_x_discrete(limits = c(&quot;bf1&quot;, &quot;g2&quot;, &quot;bf2&quot;, &quot;g3&quot;, &quot;bf3&quot;),
-                   labels = c(&quot;Backfit, 5 f.&quot;, 
-                              &quot;Greedy, 10 f.&quot;, 
-                              &quot;Backfit, 10 f.&quot;, 
-                              &quot;Greedy, 15 f.&quot;,
-                              &quot;Backfit, 15 f.&quot;)) +
-  ylim(-0.1, 0.2)</code></pre>
-<p><img src="figure/sc_comparisons.Rmd/nfactors_df-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p></details> <img src="figure/sc_comparisons.Rmd/nfactors_df-2.png" width="672" style="display: block; margin: auto;" /></p>
 <details> <summary><em>Expand here to see past versions of nfactors_df-2.png:</em></summary>
 <table style="border-collapse:separate; border-spacing:5px;">
 <thead>
@@ -1274,6 +1394,17 @@ Date
 <tbody>
 <tr>
 <td style="text-align:left;">
+<a href="https://github.com/willwerscheid/scFLASH/blob/8a15568b4a20547ba22c9b8b5de943e30a93cfcc/docs/figure/sc_comparisons.Rmd/nfactors_df-2.png" target="_blank">8a15568</a>
+</td>
+<td style="text-align:left;">
+Jason Willwerscheid
+</td>
+<td style="text-align:left;">
+2019-04-01
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 <a href="https://github.com/willwerscheid/scFLASH/blob/60843e039ef239f2434a2c5a38ad6d64facda2f3/docs/figure/sc_comparisons.Rmd/nfactors_df-2.png" target="_blank">60843e0</a>
 </td>
 <td style="text-align:left;">
@@ -1288,8 +1419,8 @@ Jason Willwerscheid
 <p></details></p>
 <div id="discussion-4" class="section level3">
 <h3>Discussion</h3>
-<p>The results suggest that overfitting (in the sense of predictive accuracy) occurs well before the log likelihood of the model stops improving. The ten- and fifteen-factor fits are nearly always worse than the five-factor fits, and the backfits are on average worse than the corresponding greedy fits. In surprisingly many cases, backfitting turns out to be disastrous.</p>
-<p>To further analyze the dynamics of overfitting, I fit a single factor to the full drop-seq dataset (after removing 1% of entries at random) and calculate mean squared error, then I fit a second factor, and so on until 60 factors have been added. Even though <code>flashier</code> continues to add factors throughout the process, the mean squared error no longer improves monotonically after 32 factors, and bottoms out at 40 factors.</p>
+<p>The results suggest that overfitting (in the sense of predictive accuracy) occurs well before the ELBO stops improving. The ten- and fifteen-factor fits are usually worse than the five-factor fits, and the backfits are on average worse than the corresponding greedy fits.</p>
+<p>To further analyze the dynamics of overfitting, I fit a single factor to the full drop-seq dataset (after removing 1% of entries at random) and calculate mean squared error, then I fit a second factor, and so on until 60 factors have been added. Even though <code>flashier</code> continues to add factors throughout the process, the mean squared error no longer improves monotonically after 31 factors, and bottoms out at 40 factors.</p>
 <p>The results imply that <code>flashier</code> is unable to add the “correct” number of factors for count data, and that some type of cross validation might be needed.</p>
 <pre class="r"><code>mse.df &lt;- allres$mse.df
 
