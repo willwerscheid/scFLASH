@@ -34,6 +34,10 @@ nmissing <- ceiling(prop.missing * ncells * ngenes)
 # Number of factors to add to each fit.
 K <- 5
 
+# "Nonmissingness threshold", which deals with an issue that can occur when
+#   some data is missing. I will discuss it elsewhere.
+nonmissing.thresh <- c(0.5, 0.5)
+
 # Verbose flag for flashier output.
 verbose <- FALSE
 
@@ -136,11 +140,13 @@ for (i in 1:ntrials) {
   fl.var0 <- flashier(log1p(samp), var.type = 0,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   fl.var1 <- flashier(log1p(samp), var.type = 1,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   S <- sqrt(samp) / (samp + 1)
@@ -151,6 +157,7 @@ for (i in 1:ntrials) {
                       var.type = NULL,
                       prior.type = "normal.mix",
                       greedy.Kmax = K + 1, backfit = "none",
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
 
   suppressMessages({
@@ -158,6 +165,7 @@ for (i in 1:ntrials) {
                           var.type = 0,
                           prior.type = "normal.mix",
                           greedy.Kmax = K + 1, backfit = "none",
+                          nonmissing.thresh = nonmissing.thresh,
                           verbose.lvl = 1L * verbose)
   })
 
@@ -166,6 +174,7 @@ for (i in 1:ntrials) {
                           var.type = 0,
                           prior.type = "normal.mix",
                           greedy.Kmax = K + 1, backfit = "none",
+                          nonmissing.thresh = nonmissing.thresh,
                           verbose.lvl = 1L * verbose)
   })
 
@@ -182,6 +191,7 @@ for (i in 1:ntrials) {
   fl.ans <- flashier(sqrt(samp + 0.375), var.type = 0,
                      prior.type = "normal.mix",
                      greedy.Kmax = K + 1, backfit = "none",
+                     nonmissing.thresh = nonmissing.thresh,
                      verbose.lvl = 1L * verbose)
   ans.fitted <- flashier:::lowrank.expand(fl.ans$fit$EF)^2 - 0.375
   ans.adj <- -sum(log(2) + 0.5 * log(samp + 0.375), na.rm = TRUE)
@@ -191,6 +201,7 @@ for (i in 1:ntrials) {
   fl.arcsin <- flashier(asin(sqrt(props)), var.type = 0,
                         prior.type = "normal.mix",
                         greedy.Kmax = K + 1, backfit = "none",
+                        nonmissing.thresh = nonmissing.thresh,
                         verbose.lvl = 1L * verbose)
   arcsin.fitted <- (sin(flashier:::lowrank.expand(fl.arcsin$fit$EF)^2)
                     * rep(cell.sums, each = nrow(samp)))
@@ -199,6 +210,7 @@ for (i in 1:ntrials) {
   fl.raw <- flashier(props, var.type = 0,
                      prior.type = "normal.mix",
                      greedy.Kmax = K + 1, backfit = "none",
+                     nonmissing.thresh = nonmissing.thresh,
                      verbose.lvl = 1L * verbose)
   raw.fitted <- (flashier:::lowrank.expand(fl.raw$fit$EF)
                  * rep(cell.sums, each = nrow(samp)))
@@ -212,6 +224,7 @@ for (i in 1:ntrials) {
   fl.pearson <- flashier(resid, var.type = 0,
                          prior.type = "normal.mix",
                          greedy.Kmax = K + 1, backfit = "none",
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
   pearson.fitted <- mu + sd.mat * flashier:::lowrank.expand(fl.pearson$fit$EF)
   pearson.adj <- -sum(log(sd.mat)[-missing.idx])
@@ -237,6 +250,7 @@ for (i in 1:ntrials) {
                       fixed.factors = c(ones.factor(2), ones.factor(1)),
                       greedy.Kmax = K,
                       backfit.after = 2, final.backfit = FALSE,
+                      nonmissing.thresh = nonmissing.thresh,
                       verbose.lvl = 1L * verbose)
   ones.adj <- log1p.adj
 
@@ -245,6 +259,7 @@ for (i in 1:ntrials) {
                        prior.type = "normal.mix",
                        fixed.factors = ones.factor(2),
                        greedy.Kmax = K, backfit = "none",
+                       nonmissing.thresh = nonmissing.thresh,
                        verbose.lvl = 1L * verbose)
   scale.fitted <- (get.fitted(fl.scale)
                    * rep(cell.sums, each = nrow(samp)) / median(cell.sums))
@@ -267,23 +282,27 @@ for (i in 1:ntrials) {
   fl.nngenes <- flashier(log1p(samp), var.type = 0,
                          prior.type = c("nonnegative", "normal.mix"),
                          greedy.Kmax = K + 1, backfit = "none",
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
 
   fl.nngenes.pm <- flashier(log1p(samp), var.type = 0,
                             prior.type = c("nonnegative", "normal.mix"),
                             ash.param = list(method = "fdr"),
                             greedy.Kmax = K + 1, backfit = "none",
+                            nonmissing.thresh = nonmissing.thresh,
                             verbose.lvl = 1L * verbose)
 
   fl.nncells <- flashier(log1p(samp), var.type = 0,
                          prior.type = c("normal.mix", "nonnegative"),
                          greedy.Kmax = K + 1, backfit = "none",
+                         nonmissing.thresh = nonmissing.thresh,
                          verbose.lvl = 1L * verbose)
 
   fl.nncells.pm <- flashier(log1p(samp), var.type = 0,
                             prior.type = c("normal.mix", "nonnegative"),
                             ash.param = list(method = "fdr"),
                             greedy.Kmax = K + 1, backfit = "none",
+                            nonmissing.thresh = nonmissing.thresh,
                             verbose.lvl = 1L * verbose)
 
   prior.df[i, ] <- get.df.row(samp, missing.vals,
@@ -327,18 +346,20 @@ for (i in 1:ntrials) {
 set.seed(666)
 data <- log1p(trachea[rowSums(trachea > 0) >= min.cts, ])
 missing.idx <- sample(1:length(data), ceiling(prop.missing * length(data)))
-true.vals <- data[missing.idx]
+true.vals <- exp(data[missing.idx]) - 1
 data[missing.idx] <- NA
 
 Kmax <- 60
 
 fl <- flashier(data, var.type = 0,
-               prior.type = "normal.mix",
+               prior.type = "point.normal",
                fixed.factors = c(ones.factor(1), ones.factor(2)),
-               greedy.Kmax = 1, backfit = "none",
+               backfit.after = 2, final.backfit = FALSE,
+               greedy.Kmax = 1,
                final.nullchk = FALSE,
+               nonmissing.thresh = nonmissing.thresh,
                verbose.lvl = 3)
-mse.vec <- mse(true.vals, preds(fl, missing.idx), 1:length(true.vals))
+mse.vec <- log1p.mse(true.vals, get.fitted(fl)[missing.idx])
 
 for (k in 2:Kmax) {
   fl <- flashier(flash.init = fl,
@@ -346,7 +367,7 @@ for (k in 2:Kmax) {
                  final.nullchk = FALSE,
                  verbose.lvl = 3)
   mse.vec <- c(mse.vec,
-               mse(true.vals, preds(fl, missing.idx), 1:length(true.vals)))
+               log1p.mse(true.vals, get.fitted(fl)[missing.idx]))
 }
 
 mse.diff <- c(NA, mse.vec[2:length(mse.vec)] - mse.vec[1:(length(mse.vec) - 1)])
