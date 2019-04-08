@@ -130,7 +130,7 @@ for (i in 1:ntrials) {
   rand.genes <- sample(which(rowSums(samp > 0) >= min.cts), ngenes)
   samp <- samp[rand.genes, ]
 
-  missing.idx <- sample(1:length(samp), nmissing)
+  missing.idx <- sort(sample(1:length(samp), nmissing))
   missing.vals <- samp[missing.idx]
   samp[missing.idx] <- NA
 
