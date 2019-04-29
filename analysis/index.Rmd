@@ -7,3 +7,5 @@ output:
 ---
 
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
+
+[Investigating backfits for flash-drift fits.](drift_backfit.html)
