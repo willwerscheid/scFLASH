@@ -117,14 +117,18 @@ structure_plot = function(gath_df, colset, facet_levels, facet_grp="Simple.Popul
   
 }
 
-plot_flash_loadings = function(flash_fit, n_per_pop){
+plot_flash_loadings = function(flash_fit, n_per_pop, rmv_k1 = TRUE){
   
   l_df = as.data.frame(flash_fit$loadings$normalized.loadings[[1]])
   colnames(l_df) = 1:ncol(l_df)
   l_df$ID = 1:nrow(l_df)
   l_df$pop = c(rep("Pop1", n_per_pop), rep("Pop2", n_per_pop),
                rep("Pop3", n_per_pop), rep("Pop4", n_per_pop))
-  gath_l_df = l_df %>% gather(K, value, -ID, -pop) %>% filter(K != 1)
+  if (rmv_k1) {
+    gath_l_df = l_df %>% gather(K, value, -ID, -pop) %>% filter(K != 1)
+  } else {
+    gath_l_df = l_df %>% gather(K, value, -ID, -pop) 
+  }
   
   p1 = ggplot(gath_l_df, aes(x=ID, y=value, color=pop)) + 
     geom_point() +
@@ -194,7 +198,7 @@ flash_bf = flashier::flashier(Y,
                               verbose.lvl=0)
 ```
 
-Here's what the greedy factors look like. It's very easy to reproduce the population tree from them.
+Here's what the greedy factors look like. It's very easy to recreate the population tree from them.
 ```{r greedy}
 p_res = plot_flash_loadings(flash_fit, n_per_pop)
 print(p_res$p1)
@@ -209,14 +213,13 @@ print(p_res$p1)
 Now I track the changes in mean factor loadings per population as the backfit progresses. Ideally I'd sink the output, but I was lazy and copy-and-pasted from the console. The data file is in the repo. 
 
 ```{r me, eval = FALSE}
-p_change = function(new, old, k, idx) {
-  signif(mean(flashier:::get.EF.k(new, k, 1)[idx]) 
-         - mean(flashier:::get.EF.k(old, k, 1)[idx])) 
+p_mean = function(new, old, k, idx) {
+  signif(mean(flashier:::get.EF.k(new, k, 1)[idx])) 
 }
-p1_change = function(new, old, k) p_change(new, old, k, 1:20)
-p2_change = function(new, old, k) p_change(new, old, k, 21:40)
-p3_change = function(new, old, k) p_change(new, old, k, 41:60)
-p4_change = function(new, old, k) p_change(new, old, k, 61:80)
+p1_mean = function(new, old, k) p_mean(new, old, k, 1:20)
+p2_mean = function(new, old, k) p_mean(new, old, k, 21:40)
+p3_mean = function(new, old, k) p_mean(new, old, k, 41:60)
+p4_mean = function(new, old, k) p_mean(new, old, k, 61:80)
 
 flash_bf = flashier::flashier(Y, 
                               flash.init = flash_fit,
@@ -229,8 +232,8 @@ flash_bf = flashier::flashier(Y,
                               backfit="only",
                               backfit.reltol=10,
                               verbose.lvl = -1,
-                              verbose.fns = c(p1_change, p2_change,
-                                              p3_change, p4_change),
+                              verbose.fns = c(p1_mean, p2_mean,
+                                              p3_mean, p4_mean),
                               verbose.colnames = c("P1", "P2", "P3", "P4"),
                               verbose.colwidths = rep(12, 4))
 ```
@@ -245,14 +248,48 @@ df <- reshape2::melt(df, id.vars = 1:2, measure.vars = 3:6)
 
 ggplot(subset(df, k != "1"), aes(x = iteration, y = value)) +
   geom_line(aes(color = k)) + facet_wrap(~ variable) +
-  labs(y = "change in loading", title = "By population")
+  labs(y = "mean loading", title = "By population")
 ```
 
 I do expect factors 2 and 3 to initially decrease since they're fit early on and some of the variability that they capture will be better captured by subsequent factors. 
 ```{r plots2}
 ggplot(subset(df, k != "1"), aes(x = iteration, y = value)) +
   geom_line(aes(color = variable)) + facet_wrap(~ k) + 
-  labs(y = "change in loading", title = "By factor")
+  labs(y = "mean loading", title = "By factor")
+```
+It's not totally clear that, in particular, factors 6 and 7 have converged.
+
+Two ideas comes to mind. I'm not sure we should be backfitting the "mean factor". Indeed, if we remove it from the backfitting process, we very quickly end up with 4 population-specific factors.
+```{r refit}
+flash_bf2 <- flashier::flashier(Y, 
+                                flash.init = flash_fit,
+                                backfit = "only",
+                                backfit.kset = 2:7,
+                                verbose.lvl = 0)
+p_res = plot_flash_loadings(flash_bf2, n_per_pop)
+print(p_res$p1)
 ```
 
-It's not totally clear that factor 6 has converged. It's very possible that different settings would lead to four factors that are entirely population-specific.
+Alternatively, we can remove the mean factor altogether and see what happens.
+```{r refit2}
+flash_bf3 <- flashier::flashier(Y, 
+                                greedy.Kmax = K, 
+                                prior.type = c("nonnegative", "point.normal"),
+                                ebnm.param = list(fixg=TRUE, 
+                                                  g=list(pi0 = 0, a=1, mu=0)),
+                                var.type = 0,
+                                backfit = "final",
+                                verbose.lvl = 0) 
+p_res = plot_flash_loadings(flash_bf3, n_per_pop, rmv_k1 = FALSE)
+print(p_res$p1)
+```
+
+The tree is back! It's still not as nice as the original, but it's a glimmer of hope. Let's compare ELBOs.
+```{r obj}
+list(greedy = flash_fit$objective,
+     backfit.all = flash_bf$objective,
+     backfit.all.but.mean = flash_bf2$objective,
+     no.mean.factor = flash_bf3$objective)
+```
+
+The last fit gives the best objective by far.
