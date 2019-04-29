@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9451bcb478ce40f2d9966c7d3f97c39f0cabacf4targetblank9451bcba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/9451bcb478ce40f2d9966c7d3f97c39f0cabacf4" target="_blank">9451bcb</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree7a018cf1af72d3f07d3f521e9b63e5b9ee5bc459targetblank7a018cfa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/7a018cf1af72d3f07d3f521e9b63e5b9ee5bc459" target="_blank">7a018cf</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9451bcb478ce40f2d9966c7d3f97c39f0cabacf4targetblank9451bcba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree7a018cf1af72d3f07d3f521e9b63e5b9ee5bc459targetblank7a018cfa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -560,12 +560,12 @@ Untracked files:
     Untracked:  analysis/NBapprox.Rmd
     Untracked:  code/missing_data.R
     Untracked:  code/pseudocounts.R
-    Untracked:  data/flash_drift_res.txt
     Untracked:  data/tuft.R
     Untracked:  data/tuft.rds
 
 Unstaged changes:
     Modified:   code/sc_comparisons.R
+    Modified:   data/flash_drift_res.txt
 
 </code></pre>
 <p>
@@ -604,6 +604,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/7a018cf1af72d3f07d3f521e9b63e5b9ee5bc459/analysis/drift_backfit.Rmd" target="_blank">7a018cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+<td>
+wflow_publish(“analysis/drift_backfit.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/b2fca272b33149a94f70b6493825c1c888613400/docs/drift_backfit.html" target="_blank">b2fca27</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -732,14 +766,18 @@ structure_plot = function(gath_df, colset, facet_levels, facet_grp=&quot;Simple.
   
 }
 
-plot_flash_loadings = function(flash_fit, n_per_pop){
+plot_flash_loadings = function(flash_fit, n_per_pop, rmv_k1 = TRUE){
   
   l_df = as.data.frame(flash_fit$loadings$normalized.loadings[[1]])
   colnames(l_df) = 1:ncol(l_df)
   l_df$ID = 1:nrow(l_df)
   l_df$pop = c(rep(&quot;Pop1&quot;, n_per_pop), rep(&quot;Pop2&quot;, n_per_pop),
                rep(&quot;Pop3&quot;, n_per_pop), rep(&quot;Pop4&quot;, n_per_pop))
-  gath_l_df = l_df %&gt;% gather(K, value, -ID, -pop) %&gt;% filter(K != 1)
+  if (rmv_k1) {
+    gath_l_df = l_df %&gt;% gather(K, value, -ID, -pop) %&gt;% filter(K != 1)
+  } else {
+    gath_l_df = l_df %&gt;% gather(K, value, -ID, -pop) 
+  }
   
   p1 = ggplot(gath_l_df, aes(x=ID, y=value, color=pop)) + 
     geom_point() +
@@ -807,23 +845,96 @@ flash_bf = flashier::flashier(Y,
                               backfit=&quot;only&quot;,
                               backfit.reltol=10,
                               verbose.lvl=0)</code></pre>
-<p>Here’s what the greedy factors look like. It’s very easy to reproduce the population tree from them.</p>
+<p>Here’s what the greedy factors look like. It’s very easy to recreate the population tree from them.</p>
 <pre class="r"><code>p_res = plot_flash_loadings(flash_fit, n_per_pop)
 print(p_res$p1)</code></pre>
 <p><img src="figure/drift_backfit.Rmd/greedy-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-greedy-1">
+Past versions of greedy-1.png
+</button>
+</p>
+<div id="fig-greedy-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/b2fca272b33149a94f70b6493825c1c888613400/docs/figure/drift_backfit.Rmd/greedy-1.png" target="_blank">b2fca27</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The backfitted factors are much less helpful.</p>
 <pre class="r"><code>p_res = plot_flash_loadings(flash_bf, n_per_pop)
 print(p_res$p1)</code></pre>
 <p><img src="figure/drift_backfit.Rmd/bf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bf-1">
+Past versions of bf-1.png
+</button>
+</p>
+<div id="fig-bf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/b2fca272b33149a94f70b6493825c1c888613400/docs/figure/drift_backfit.Rmd/bf-1.png" target="_blank">b2fca27</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Now I track the changes in mean factor loadings per population as the backfit progresses. Ideally I’d sink the output, but I was lazy and copy-and-pasted from the console. The data file is in the repo.</p>
-<pre class="r"><code>p_change = function(new, old, k, idx) {
-  signif(mean(flashier:::get.EF.k(new, k, 1)[idx]) 
-         - mean(flashier:::get.EF.k(old, k, 1)[idx])) 
+<pre class="r"><code>p_mean = function(new, old, k, idx) {
+  signif(mean(flashier:::get.EF.k(new, k, 1)[idx])) 
 }
-p1_change = function(new, old, k) p_change(new, old, k, 1:20)
-p2_change = function(new, old, k) p_change(new, old, k, 21:40)
-p3_change = function(new, old, k) p_change(new, old, k, 41:60)
-p4_change = function(new, old, k) p_change(new, old, k, 61:80)
+p1_mean = function(new, old, k) p_mean(new, old, k, 1:20)
+p2_mean = function(new, old, k) p_mean(new, old, k, 21:40)
+p3_mean = function(new, old, k) p_mean(new, old, k, 41:60)
+p4_mean = function(new, old, k) p_mean(new, old, k, 61:80)
 
 flash_bf = flashier::flashier(Y, 
                               flash.init = flash_fit,
@@ -836,8 +947,8 @@ flash_bf = flashier::flashier(Y,
                               backfit=&quot;only&quot;,
                               backfit.reltol=10,
                               verbose.lvl = -1,
-                              verbose.fns = c(p1_change, p2_change,
-                                              p3_change, p4_change),
+                              verbose.fns = c(p1_mean, p2_mean,
+                                              p3_mean, p4_mean),
                               verbose.colnames = c(&quot;P1&quot;, &quot;P2&quot;, &quot;P3&quot;, &quot;P4&quot;),
                               verbose.colwidths = rep(12, 4))</code></pre>
 <p>Load the data and plot it. One sees, for example, that population 2 borrows from factor 2 to pay factor 4. Most interesting to me is what happens with population 1: initially, loadings for <em>both</em> factors 2 and 5 decrease; it’s only after a few iterations that it is borrowing from 5 to pay 2.</p>
@@ -849,14 +960,126 @@ df &lt;- reshape2::melt(df, id.vars = 1:2, measure.vars = 3:6)
 
 ggplot(subset(df, k != &quot;1&quot;), aes(x = iteration, y = value)) +
   geom_line(aes(color = k)) + facet_wrap(~ variable) +
-  labs(y = &quot;change in loading&quot;, title = &quot;By population&quot;)</code></pre>
+  labs(y = &quot;mean loading&quot;, title = &quot;By population&quot;)</code></pre>
 <p><img src="figure/drift_backfit.Rmd/plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plots-1">
+Past versions of plots-1.png
+</button>
+</p>
+<div id="fig-plots-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/b2fca272b33149a94f70b6493825c1c888613400/docs/figure/drift_backfit.Rmd/plots-1.png" target="_blank">b2fca27</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I do expect factors 2 and 3 to initially decrease since they’re fit early on and some of the variability that they capture will be better captured by subsequent factors.</p>
 <pre class="r"><code>ggplot(subset(df, k != &quot;1&quot;), aes(x = iteration, y = value)) +
   geom_line(aes(color = variable)) + facet_wrap(~ k) + 
-  labs(y = &quot;change in loading&quot;, title = &quot;By factor&quot;)</code></pre>
+  labs(y = &quot;mean loading&quot;, title = &quot;By factor&quot;)</code></pre>
 <p><img src="figure/drift_backfit.Rmd/plots2-1.png" width="672" style="display: block; margin: auto;" /></p>
-It’s not totally clear that factor 6 has converged. It’s very possible that different settings would lead to four factors that are entirely population-specific. <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plots2-1">
+Past versions of plots2-1.png
+</button>
+</p>
+<div id="fig-plots2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/b2fca272b33149a94f70b6493825c1c888613400/docs/figure/drift_backfit.Rmd/plots2-1.png" target="_blank">b2fca27</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>It’s not totally clear that, in particular, factors 6 and 7 have converged.</p>
+<p>Two ideas comes to mind. I’m not sure we should be backfitting the “mean factor”. Indeed, if we remove it from the backfitting process, we very quickly end up with 4 population-specific factors.</p>
+<pre class="r"><code>flash_bf2 &lt;- flashier::flashier(Y, 
+                                flash.init = flash_fit,
+                                backfit = &quot;only&quot;,
+                                backfit.kset = 2:7,
+                                verbose.lvl = 0)
+p_res = plot_flash_loadings(flash_bf2, n_per_pop)
+print(p_res$p1)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/refit-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Alternatively, we can remove the mean factor altogether and see what happens.</p>
+<pre class="r"><code>flash_bf3 &lt;- flashier::flashier(Y, 
+                                greedy.Kmax = K, 
+                                prior.type = c(&quot;nonnegative&quot;, &quot;point.normal&quot;),
+                                ebnm.param = list(fixg=TRUE, 
+                                                  g=list(pi0 = 0, a=1, mu=0)),
+                                var.type = 0,
+                                backfit = &quot;final&quot;,
+                                verbose.lvl = 0) 
+p_res = plot_flash_loadings(flash_bf3, n_per_pop, rmv_k1 = FALSE)
+print(p_res$p1)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/refit2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The tree is back! It’s still not as nice as the original, but it’s a glimmer of hope. Let’s compare ELBOs.</p>
+<pre class="r"><code>list(greedy = flash_fit$objective,
+     backfit.all = flash_bf$objective,
+     backfit.all.but.mean = flash_bf2$objective,
+     no.mean.factor = flash_bf3$objective)</code></pre>
+<pre><code>$greedy
+[1] -863110
+
+$backfit.all
+[1] -850956.1
+
+$backfit.all.but.mean
+[1] -851550.3
+
+$no.mean.factor
+[1] -847619.1</code></pre>
+The last fit gives the best objective by far. <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
