@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Jason Willwerscheid" />
+
+
+<title>flash-drift backfits</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scFLASH</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/willwerscheid/scFLASH">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">flash-drift backfits</h1>
+<h4 class="author">Jason Willwerscheid</h4>
+<h4 class="date">4/29/2019</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-04-29
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>scFLASH/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20181103code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20181103)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20181103code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20181103)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9451bcb478ce40f2d9966c7d3f97c39f0cabacf4targetblank9451bcba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/9451bcb478ce40f2d9966c7d3f97c39f0cabacf4" target="_blank">9451bcb</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9451bcb478ce40f2d9966c7d3f97c39f0cabacf4targetblank9451bcba" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/GSE103354_Trachea_droplet_UMIcounts.txt
+
+Untracked files:
+    Untracked:  analysis/NBapprox.Rmd
+    Untracked:  code/missing_data.R
+    Untracked:  code/pseudocounts.R
+    Untracked:  data/flash_drift_res.txt
+    Untracked:  data/tuft.R
+    Untracked:  data/tuft.rds
+
+Unstaged changes:
+    Modified:   code/sc_comparisons.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9451bcb478ce40f2d9966c7d3f97c39f0cabacf4/analysis/drift_backfit.Rmd" target="_blank">9451bcb</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-04-29
+</td>
+<td>
+wflow_publish(“analysis/drift_backfit.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>Joe’s code. Hey, <a href="https://jhmarcus.github.io/drift-workflow/simple_tree_simulation.html">Joe</a>.</p>
+<pre class="r"><code>library(ggplot2)
+library(dplyr)
+library(tidyr)
+library(tmvtnorm)
+devtools::load_all(&quot;~/Github/flashier&quot;)
+
+simple_graph_simulation = function(n_per_pop=10, 
+                                   p=1000, 
+                                   w=0.0,
+                                   c1=.1, 
+                                   c2=.1, 
+                                   c3=.1,
+                                   c4=.1, 
+                                   c5=.05, 
+                                   c6=.1, 
+                                   c7=.05,
+                                   mu_a=.5, 
+                                   sigma_e=.05){
+  
+  # number of populations
+  n_pops = 4
+  
+  # simulate ancestral allele freqeuncy
+  p_a = mu_a + rnorm(p, 0, sigma_e)
+  
+  # ancestral variance
+  sigma_a = p_a * (1.0 - p_a)  
+  
+  # covariance matrix specified by the tree
+  V = matrix(NA, nrow=4, ncol=4)
+  V[1, 1] = c2 + c6
+  V[2, 1] = V[1, 2] = c2 
+  V[2, 2] = c2 + c5 + c7
+  V[3, 1] = V[1, 3] =  w * c2
+  V[3, 2] = V[2, 3] = w * (c2 + c5)
+  V[3, 3] = (w^2 * (c2 + c5)) + ((1 - w)^2 * (c1 + c3))
+  V[4, 1] = V[1, 4] = 0.0
+  V[4, 2] = V[2, 4] = 0.0
+  V[4, 3] = V[3, 4] = (1.0 - w) * c1
+  V[4, 4] = c1 + c4
+  
+  # simulate allele frequencies
+  P = matrix(NA, nrow=p, ncol=n_pops)
+  for(j in 1:p){
+    
+    # simulate from truncated multivariate normal
+    P[j, ] = tmvtnorm::rtmvnorm(1, rep(p_a[j], n_pops), sigma_a[j] * V,
+                                lower=rep(1e-4, n_pops), 
+                                upper=rep(1.0-1e-4, n_pops)
+    )    
+  }
+  
+  
+  # simulate genotypes
+  Y = matrix(rbinom(n_per_pop * p, 2, P[,1]), nrow=p, ncol=n_per_pop)
+  for(i in 2:n_pops){
+    Y_i = matrix(rbinom(n_per_pop * p, 2, P[,i]), nrow=p, ncol=n_per_pop)
+    Y = cbind(Y, Y_i)
+  }
+  
+  return(list(Y=t(Y), P=t(P), p_a=p_a))
+  
+}
+
+structure_plot = function(gath_df, colset, facet_levels, facet_grp=&quot;Simple.Population.ID&quot;, label_size=5, keep_leg=F, fact_type){
+
+  if(fact_type==&quot;structure&quot;){
+    p_init = ggplot(data=gath_df, aes(x=reorder(ID, value, function(x){max(x)}), y=value, 
+                                      fill=reorder(K, sort(as.integer(K)))))
+  } else if(fact_type==&quot;nonnegative&quot;){
+    p_init = ggplot(data=gath_df, aes(x=reorder(ID, value), y=value, 
+                                      fill=reorder(K, sort(as.integer(K)))))
+  }
+  
+  p = p_init + 
+    geom_bar(stat=&quot;identity&quot;, width=1) +  
+    scale_fill_brewer(palette = colset) + 
+    scale_y_continuous(expand=c(0, 0)) +
+    scale_x_discrete(expand=c(-1, 0)) +
+    facet_grid(. ~ factor(get(facet_grp), levels=facet_levels), scales = &quot;free&quot;, space=&quot;free&quot;, switch=&quot;both&quot;) + 
+    theme_classic() +
+    theme(panel.spacing = unit(0.2, &quot;lines&quot;), 
+          strip.background = element_rect(colour=&quot;white&quot;, fill=&quot;white&quot;),
+          strip.text.x = element_text(size = label_size, colour = &quot;black&quot;, angle = 90, hjust = 1.1), 
+          strip.placement = &quot;outside&quot;, 
+          panel.grid.major = element_blank(), 
+          panel.grid.minor = element_blank(),
+          axis.text.x=element_blank(), 
+          axis.ticks.x=element_blank()) + 
+    theme(legend.position=&quot;bottom&quot;) +
+    ylab(&quot;&quot;) + 
+    xlab(&quot;&quot;) + 
+    labs(fill=&quot;K&quot;) 
+  
+  if(keep_leg==FALSE){
+    p = p + guides(fill=F) 
+    
+  }
+  
+  return(p)
+  
+}
+
+plot_flash_loadings = function(flash_fit, n_per_pop){
+  
+  l_df = as.data.frame(flash_fit$loadings$normalized.loadings[[1]])
+  colnames(l_df) = 1:ncol(l_df)
+  l_df$ID = 1:nrow(l_df)
+  l_df$pop = c(rep(&quot;Pop1&quot;, n_per_pop), rep(&quot;Pop2&quot;, n_per_pop),
+               rep(&quot;Pop3&quot;, n_per_pop), rep(&quot;Pop4&quot;, n_per_pop))
+  gath_l_df = l_df %&gt;% gather(K, value, -ID, -pop) %&gt;% filter(K != 1)
+  
+  p1 = ggplot(gath_l_df, aes(x=ID, y=value, color=pop)) + 
+    geom_point() +
+    facet_wrap(K~., scale=&quot;free&quot;) +
+    theme_bw() 
+  
+  p2 = structure_plot(gath_l_df, 
+                      colset=&quot;Set3&quot;, 
+                      facet_grp=&quot;pop&quot;, 
+                      facet_levels=paste0(&quot;Pop&quot;, 1:4),
+                      keep_leg=TRUE,
+                      fact_type=&quot;nonnegative&quot;) 
+  
+  return(list(p1=p1, p2=p2))
+  
+}
+
+set.seed(1990)
+
+# number of individuals per pop
+n_per_pop = 20
+
+# set w = 0.0 to just simulate from a tree
+sim = simple_graph_simulation(w=0.0, p=10000, n_per_pop=n_per_pop)
+
+# data matrix
+Y = sim$Y
+
+# centered data matrix
+Y_c = scale(Y, center=TRUE, scale=FALSE)
+
+# centered scaled data matrix
+Y_cs = scale(Y, center=TRUE, scale=TRUE)
+
+# number of individuals
+n = nrow(Y)
+
+# number of SNPs
+p = ncol(Y)
+
+# number of factors
+K = 20
+
+flash_fit = flashier::flashier(Y, 
+                               greedy.Kmax=K, 
+                               prior.type=c(&quot;nonnegative&quot;, &quot;point.normal&quot;),
+                               ebnm.param=list(fixg=TRUE, 
+                                               g=list(pi0 = 0, a=1, mu=0)),
+                               var.type=0,
+                               fix.dim=list(1), 
+                               fix.idx=list(1:n), 
+                               fix.vals=list(rep(1, n)),
+                               verbose.lvl = 0) 
+
+# Lightly modified from the original.
+flash_bf = flashier::flashier(Y, 
+                              flash.init = flash_fit,
+                              prior.type=c(&quot;nonnegative&quot;, &quot;point.normal&quot;),
+                              ebnm.param=list(fixg=TRUE, g=list(pi0 = 0, 
+                                                                a=1, mu=0)),
+                              var.type=0,
+                              fix.dim=list(1), 
+                              fix.idx=list(1:n), 
+                              fix.vals=list(rep(1, n)),
+                              backfit=&quot;only&quot;,
+                              backfit.reltol=10,
+                              verbose.lvl=0)</code></pre>
+<p>Here’s what the greedy factors look like. It’s very easy to reproduce the population tree from them.</p>
+<pre class="r"><code>p_res = plot_flash_loadings(flash_fit, n_per_pop)
+print(p_res$p1)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/greedy-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>The backfitted factors are much less helpful.</p>
+<pre class="r"><code>p_res = plot_flash_loadings(flash_bf, n_per_pop)
+print(p_res$p1)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/bf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Now I track the changes in mean factor loadings per population as the backfit progresses. Ideally I’d sink the output, but I was lazy and copy-and-pasted from the console. The data file is in the repo.</p>
+<pre class="r"><code>p_change = function(new, old, k, idx) {
+  signif(mean(flashier:::get.EF.k(new, k, 1)[idx]) 
+         - mean(flashier:::get.EF.k(old, k, 1)[idx])) 
+}
+p1_change = function(new, old, k) p_change(new, old, k, 1:20)
+p2_change = function(new, old, k) p_change(new, old, k, 21:40)
+p3_change = function(new, old, k) p_change(new, old, k, 41:60)
+p4_change = function(new, old, k) p_change(new, old, k, 61:80)
+
+flash_bf = flashier::flashier(Y, 
+                              flash.init = flash_fit,
+                              prior.type=c(&quot;nonnegative&quot;, &quot;point.normal&quot;),
+                              ebnm.param=list(fixg=TRUE, g=list(pi0 = 0, a=1, mu=0)),
+                              var.type=0,
+                              fix.dim=list(1), 
+                              fix.idx=list(1:n), 
+                              fix.vals=list(rep(1, n)),
+                              backfit=&quot;only&quot;,
+                              backfit.reltol=10,
+                              verbose.lvl = -1,
+                              verbose.fns = c(p1_change, p2_change,
+                                              p3_change, p4_change),
+                              verbose.colnames = c(&quot;P1&quot;, &quot;P2&quot;, &quot;P3&quot;, &quot;P4&quot;),
+                              verbose.colwidths = rep(12, 4))</code></pre>
+<p>Load the data and plot it. One sees, for example, that population 2 borrows from factor 2 to pay factor 4. Most interesting to me is what happens with population 1: initially, loadings for <em>both</em> factors 2 and 5 decrease; it’s only after a few iterations that it is borrowing from 5 to pay 2.</p>
+<pre class="r"><code>flash_drift_res &lt;- read.table(&quot;./data/flash_drift_res.txt&quot;, header = TRUE)
+df &lt;- data.frame(flash_drift_res)
+names(df) &lt;- c(&quot;iteration&quot;, &quot;k&quot;, &quot;Pop1&quot;, &quot;Pop2&quot;, &quot;Pop3&quot;, &quot;Pop4&quot;)
+df$k &lt;- factor(df$k)
+df &lt;- reshape2::melt(df, id.vars = 1:2, measure.vars = 3:6)
+
+ggplot(subset(df, k != &quot;1&quot;), aes(x = iteration, y = value)) +
+  geom_line(aes(color = k)) + facet_wrap(~ variable) +
+  labs(y = &quot;change in loading&quot;, title = &quot;By population&quot;)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/plots-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I do expect factors 2 and 3 to initially decrease since they’re fit early on and some of the variability that they capture will be better captured by subsequent factors.</p>
+<pre class="r"><code>ggplot(subset(df, k != &quot;1&quot;), aes(x = iteration, y = value)) +
+  geom_line(aes(color = variable)) + facet_wrap(~ k) + 
+  labs(y = &quot;change in loading&quot;, title = &quot;By factor&quot;)</code></pre>
+<p><img src="figure/drift_backfit.Rmd/plots2-1.png" width="672" style="display: block; margin: auto;" /></p>
+It’s not totally clear that factor 6 has converged. It’s very possible that different settings would lead to four factors that are entirely population-specific. <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.3 (2019-03-11)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS Mojave 10.14.4
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats4    stats     graphics  grDevices utils     datasets  methods  
+[8] base     
+
+other attached packages:
+ [1] flashier_0.1.1  testthat_2.0.1  tmvtnorm_1.4-10 gmm_1.6-2      
+ [5] sandwich_2.5-1  Matrix_1.2-15   mvtnorm_1.0-10  tidyr_0.8.3    
+ [9] dplyr_0.8.0.1   ggplot2_3.1.0  
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.1        lattice_0.20-38   prettyunits_1.0.2
+ [4] ps_1.3.0          zoo_1.8-5         assertthat_0.2.1 
+ [7] rprojroot_1.3-2   digest_0.6.18     foreach_1.4.4    
+[10] truncnorm_1.0-8   R6_2.4.0          plyr_1.8.4       
+[13] backports_1.1.3   evaluate_0.13     pillar_1.3.1     
+[16] rlang_0.3.1       lazyeval_0.2.2    pscl_1.5.2       
+[19] rstudioapi_0.10   ebnm_0.1-17       whisker_0.3-2    
+[22] callr_3.2.0       rmarkdown_1.12    labeling_0.3     
+[25] desc_1.2.0        devtools_2.0.2    stringr_1.4.0    
+[28] mixsqp_0.1-115    munsell_0.5.0     compiler_3.5.3   
+[31] xfun_0.6          pkgconfig_2.0.2   pkgbuild_1.0.3   
+[34] SQUAREM_2017.10-1 htmltools_0.3.6   tidyselect_0.2.5 
+[37] tibble_2.1.1      workflowr_1.2.0   codetools_0.2-16 
+[40] crayon_1.3.4      withr_2.1.2       MASS_7.3-51.1    
+[43] grid_3.5.3        gtable_0.3.0      git2r_0.25.2     
+[46] magrittr_1.5      scales_1.0.0      cli_1.1.0        
+[49] stringi_1.4.3     reshape2_1.4.3    fs_1.2.7         
+[52] remotes_2.0.2     doParallel_1.0.14 iterators_1.0.10 
+[55] tools_3.5.3       glue_1.3.1        purrr_0.3.2      
+[58] processx_3.3.0    pkgload_1.0.2     parallel_3.5.3   
+[61] yaml_2.2.0        colorspace_1.4-1  ashr_2.2-33      
+[64] sessioninfo_1.1.1 memoise_1.1.0     knitr_1.22       
+[67] usethis_1.5.0    </code></pre>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
