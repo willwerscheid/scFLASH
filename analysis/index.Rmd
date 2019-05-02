@@ -8,4 +8,6 @@ output:
 
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
 
+[Exploring different pseudocounts.](pseudocount.html)
+
 [Investigating backfits for flash-drift fits.](drift_backfit.html)
