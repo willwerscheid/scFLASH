@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+
+<meta name="author" content="Jason Willwerscheid" />
+
+
+<title>Pseudocounts</title>
+
+<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+  pre:not([class]) {
+    background-color: white;
+  }
+</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+<style type="text/css">
+h1 {
+  font-size: 34px;
+}
+h1.title {
+  font-size: 38px;
+}
+h2 {
+  font-size: 30px;
+}
+h3 {
+  font-size: 24px;
+}
+h4 {
+  font-size: 18px;
+}
+h5 {
+  font-size: 16px;
+}
+h6 {
+  font-size: 12px;
+}
+.table th:not([align]) {
+  text-align: left;
+}
+</style>
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+code {
+  color: inherit;
+  background-color: rgba(0, 0, 0, 0.04);
+}
+img {
+  max-width:100%;
+  height: auto;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+</style>
+
+
+<style type="text/css">
+/* padding for bootstrap navbar */
+body {
+  padding-top: 51px;
+  padding-bottom: 40px;
+}
+/* offset scroll position for anchor links (for fixed navbar)  */
+.section h1 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h2 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h3 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h4 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h5 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.section h6 {
+  padding-top: 56px;
+  margin-top: -56px;
+}
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #ffffff;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.parent().addClass('active');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open')
+  });
+});
+</script>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+
+
+<script>
+$(document).ready(function ()  {
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_').toLowerCase();
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+  padding-left: 25px;
+  text-indent: 0;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row-fluid">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scFLASH</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/willwerscheid/scFLASH">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<div class="fluid-row" id="header">
+
+<div class="btn-group pull-right">
+<button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">Pseudocounts</h1>
+<h4 class="author">Jason Willwerscheid</h4>
+<h4 class="date">4/30/2019</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#report"> Report <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2019-05-02
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>scFLASH/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.2.0). The <em>Report</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="report" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20181103code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20181103)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20181103code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20181103)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5b0637a31ac2522888ce7e0f47e41b2e3fe2ecddtargetblank5b0637aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/5b0637a31ac2522888ce7e0f47e41b2e3fe2ecdd" target="_blank">5b0637a</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5b0637a31ac2522888ce7e0f47e41b2e3fe2ecddtargetblank5b0637aa" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    data/GSE103354_Trachea_droplet_UMIcounts.txt
+
+Untracked files:
+    Untracked:  analysis/NBapprox.Rmd
+    Untracked:  code/missing_data.R
+    Untracked:  code/pseudocounts.R
+    Untracked:  output/pseudocount/
+
+Unstaged changes:
+    Modified:   code/sc_comparisons.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the R Markdown and HTML files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view them.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/5b0637a31ac2522888ce7e0f47e41b2e3fe2ecdd/analysis/pseudocount.Rmd" target="_blank">5b0637a</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+<td>
+wflow_publish(“analysis/pseudocount.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>I explore the family of transformations <span class="math display">\[ Y = \log \left( \frac{X}{\alpha} + 1 \right), \]</span> where <span class="math inline">\(X\)</span> is a matrix of counts (here, scRNA-seq data). Note that, up to a constant, this is equivalent to adding a “pseudocount” to the data before taking logs: <span class="math display">\[ Y = \log(X + \alpha) \]</span> I prefer the former because it preserves sparsity.</p>
+<p>For a range of “reasonable” pseudocounts (from <span class="math inline">\(2^{-4}\)</span> to <span class="math inline">\(2^4\)</span>), I fit <code>flashier</code> objects to the 158 tuft cells in the drop-seq dataset described in <a href="https://www.nature.com/articles/s41586-018-0393-7">Montoro et al.</a>. I retain 500 highly variable genes and then I subsample 1500 random genes from what’s left. The code used to create the <code>tuft</code> dataset lives <a href="https://github.com/willwerscheid/scFLASH/blob/master/data/tuft.R">here</a>.</p>
+<pre class="r"><code># library(flashier) -- uncomment after pushing 0.1.1 updates to master
+devtools::load_all(&quot;~/Github/flashier&quot;)
+library(Matrix)
+library(reshape2)
+library(plyr)
+library(ggplot2)
+
+set.seed(666)
+
+tuft &lt;- readRDS(&quot;./data/tuft.rds&quot;)
+
+pseudocounts &lt;- 2^(-8:8 / 2)
+fl.list &lt;- list()
+for (i in 1:length(pseudocounts)) {
+  ct &lt;- pseudocounts[i]
+  fl.list[[i]] &lt;- flashier(log1p(tuft / ct),
+                           var.type = 1, prior.type = &quot;point.normal&quot;,
+                           greedy.Kmax = 10, backfit = &quot;none&quot;,
+                           verbose.lvl = 0)
+}</code></pre>
+<div id="elbo-comparison" class="section level2">
+<h2>ELBO comparison</h2>
+<p>After adjusting the ELBO using a change-of-variables formula, the ELBO is monotonically decreasing as a function of <span class="math inline">\(\alpha\)</span>:</p>
+<pre class="r"><code>elbo &lt;- sapply(fl.list, `[[`, &quot;objective&quot;)
+chg.var &lt;- sapply(pseudocounts, function(ct) sum(log1p(tuft / ct) + log(ct)))
+adj.elbo &lt;- elbo - chg.var
+elbo.df &lt;- data.frame(pseudocount = pseudocounts, elbo = adj.elbo)
+ggplot(elbo.df, aes(x = pseudocount, y = elbo)) + 
+  geom_point() + scale_x_log10() + labs(y = &quot;ELBO (adjusted)&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>To see why, it’s useful to split the ELBO into component parts. I consider the contribution from the most lowly expressed 50% of genes, the next 30% of genes (up to the 80th quantile), and the next 10%, 5%, 4%, and 1% of genes (up to the 90th, 95th, 99th, and 100th quantiles). It’s clear that the above behavior is driven by genes with low to moderate expression levels. Only the top 5% of genes show more interesting behavior. (The KL component increases sharply for large <span class="math inline">\(\alpha\)</span> because <code>flashier</code> is unable to fit the full number of factors.)</p>
+<pre class="r"><code>KL &lt;- sapply(fl.list, function(fl) sum(unlist(fl$fit$KL)))
+elbo.breakdown &lt;- data.frame(pseudocount = pseudocounts,
+                             component = &quot;KL&quot;,
+                             value = KL)
+
+n.cells &lt;- ncol(tuft)
+n.genes &lt;- nrow(tuft)
+gene.means &lt;- apply(tuft, 1, mean)
+sorted.genes &lt;- order(gene.means)
+for (i in 1:length(fl.list)) {
+  fl &lt;- fl.list[[i]]$fit
+  R2 &lt;- flashier:::calc.R2(fl) # per-gene sum of squared residuals
+  normal.llik &lt;- -0.5 * (n.cells * log(2 * pi / fl$tau) + fl$tau * R2)
+  adj.llik &lt;- (normal.llik - rowSums(log1p(tuft / pseudocounts[i]))
+               - n.cells * log(pseudocounts[i]))
+  # Group genes by mean expression and get contribution to log likelihood
+  #   for each group. Quantiles: 50%, 80%, 90%, 95%, 99%.
+  grps &lt;- list(rep(1:6, times = n.genes * c(.5, .3, .1, .05, .04, .01)))
+  grp.contribs &lt;- aggregate(adj.llik[sorted.genes], grps, sum)$x
+  elbo.breakdown &lt;- rbind(elbo.breakdown,
+                          data.frame(pseudocount = pseudocounts[i],
+                                     component = paste0(&quot;Group&quot;, 1:6),
+                                     value = grp.contribs))
+}
+
+thresh &lt;- signif(quantile(gene.means, c(.5, .8, .9, .95, .99)), 2)
+ggplot(subset(elbo.breakdown, 
+              component %in% c(&quot;Group1&quot;, &quot;Group2&quot;, &quot;Group3&quot;)), 
+       aes(x = pseudocount, y = value, color = component)) + 
+  geom_point() + scale_x_log10() + 
+  scale_color_discrete(labels = c(paste(&quot;mu &lt;&quot;, thresh[1]),
+                                  paste(thresh[1:2], &quot;&lt; mu &lt;&quot;, thresh[2:3]))) +
+  labs(y = &quot;Component contributions to ELBO&quot;, 
+       title = &quot;Genes with low to moderate mean expression&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/elbo_breakdown-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(subset(elbo.breakdown, 
+              !(component %in% c(&quot;Group1&quot;, &quot;Group2&quot;, &quot;Group3&quot;))), 
+       aes(x = pseudocount, y = value, color = component)) + 
+  geom_point() + scale_x_log10() + 
+  scale_color_discrete(labels = c(&quot;KL&quot;,
+                                  paste(thresh[3:4], &quot;&lt; mu &lt;&quot;, thresh[4:5]),
+                                  paste(&quot;mu &gt;&quot;, thresh[5]))) +
+  labs(y = &quot;Component contributions to ELBO&quot;, 
+       title = &quot;KL and genes with high mean expression&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/elbo_breakdown-2.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="missing-data-imputation-mse" class="section level2">
+<h2>Missing data imputation: MSE</h2>
+<p>Here I do a CV-style analysis. I randomly split the data into 20 folds. For each, I delete the data, impute the missing data using posterior means, and then calculate MSE.</p>
+<p>These calculations are fraught, since the MSE for all fits needs to be calculated on the same scale. Using the scale of the original counts is not a good idea because the MSE will be driven by a few very large counts. It’s better to use a <span class="math inline">\(\log(x + c)\)</span> scale, but the choice of <span class="math inline">\(c\)</span> will have a large effect on the results (generally favoring <span class="math inline">\(\alpha = c\)</span>):</p>
+<pre class="r"><code>pseudo2 &lt;- 2^{-4:4/2}
+imputation.res &lt;- data.frame(rep(list(numeric(0)), 3))
+
+set.seed(666)
+shuffle &lt;- sample(1:length(tuft))
+n.missing &lt;- length(tuft) / 20
+n.folds &lt;- 20
+for (j in 1:n.folds) {
+  cat(&quot;FOLD: &quot;, j, &quot;\n&quot;)
+  missing.data &lt;- tuft
+  missing.idx &lt;- shuffle[1:n.missing + n.missing * (j - 1)]
+  missing.data[missing.idx] &lt;- NA
+  for (i in 1:length(pseudo2)) {
+    cat(&quot;PSEUDOCOUNT: &quot;, i, &quot;\n&quot;)
+    ct &lt;- pseudo2[i]
+    fl &lt;- flashier(log1p(missing.data / ct),
+                   var.type = 1, prior.type = &quot;point.normal&quot;,
+                   greedy.Kmax = 10, backfit = &quot;none&quot;,
+                   verbose.lvl = 0)
+    true.vals &lt;- tuft[missing.idx]
+    preds &lt;- ct * exp(flashier:::lowrank.expand(fl$fit$EF)[missing.idx])
+    shift.preds &lt;- pmax(preds - ct, 0)
+    log1p.err &lt;- mean((log1p(shift.preds) - log1p(true.vals))^2)
+    log0.5p.err &lt;- mean((log1p(2 * shift.preds) - log1p(2 * true.vals))^2) / 2
+    log2p.err &lt;- mean((log1p(shift.preds / 2) - log1p(true.vals / 2))^2) * 2
+    spearman &lt;- cor(preds, true.vals, method = &quot;spearman&quot;)
+    imputation.res &lt;- rbind(imputation.res,
+                            data.frame(pseudocount = pseudo2[i],
+                                       fold = j,
+                                       metric = c(&quot;log1p.err&quot;, &quot;log0.5p.err&quot;,
+                                                  &quot;log2p.err&quot;, &quot;spearman&quot;),
+                                       value = c(log1p.err, log0.5p.err,
+                                                 log2p.err, spearman)))
+  }
+}
+saveRDS(imputation.res, &quot;./output/pseudocount/imputation_res.rds&quot;)</code></pre>
+<pre class="r"><code># Convert to use relative MSEs.
+impute &lt;- readRDS(&quot;./output/pseudocount/imputation_res.rds&quot;)
+n.folds &lt;- max(impute$fold)
+pseudo2 &lt;- unique(impute$pseudocount)
+impute$pseudocount &lt;- signif(impute$pseudocount, 2)
+impute &lt;- acast(impute, metric + fold ~ pseudocount)
+base.mses &lt;- c(impute[1:n.folds, which(pseudo2 == 0.5)],
+               impute[n.folds + 1:n.folds, which(pseudo2 == 1)],
+               impute[2 * n.folds + 1:n.folds, which(pseudo2 == 2)],
+               impute[3 * n.folds + 1:n.folds, which(pseudo2 == 1)])
+impute &lt;- impute - base.mses
+impute &lt;- melt(impute, varnames = c(&quot;metric_fold&quot;, &quot;pseudocount&quot;), 
+               as.is = TRUE)
+impute$metric &lt;- factor(sapply(strsplit(impute$metric_fold, &quot;_&quot;, 1), `[`, 1))
+
+ggplot(subset(impute, metric == &quot;log0.5p.err&quot;), 
+       aes(x = pseudocount, y = value)) + 
+  geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 0.5) fit)&quot;, 
+                        title = &quot;log(X + 0.5) scale&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/impute_res-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(subset(impute, metric == &quot;log1p.err&quot;), 
+       aes(x = pseudocount, y = value)) + 
+  geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 1) fit)&quot;, 
+                        title = &quot;log(X + 1) scale&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/impute_res-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>ggplot(subset(impute, metric == &quot;log2p.err&quot;), 
+       aes(x = pseudocount, y = value)) + 
+  geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 2) fit)&quot;, 
+                        title = &quot;log(X + 2) scale&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/impute_res-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="missing-data-imputation-spearman-rank-correlation" class="section level2">
+<h2>Missing data imputation: Spearman rank correlation</h2>
+<p>One can instead calculate the Spearman rank correlation for each choice of <span class="math inline">\(\alpha\)</span>. We want small predictions to correspond to small counts, and large predictions for large counts. The Spearman correlation will capture this. These results suggest that setting <span class="math inline">\(\alpha\)</span> to be something between 0.5 and 1 is best.</p>
+<pre class="r"><code>ggplot(subset(impute, metric == &quot;spearman&quot;), 
+       aes(x = pseudocount, y = value)) + 
+  geom_boxplot() + 
+  labs(y = &quot;Spearman rank corr (relative to log1p fit)&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/spearman-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="shrinkage-comparison" class="section level2">
+<h2>Shrinkage comparison</h2>
+<p>Here I compare all counts with their posterior means, binning counts to reduce noise.</p>
+<p>Small pseudocounts strongly shrink small counts, but interestingly produce much less shrinkage for larger counts. The opposite is true for large pseudocounts, with the transition from “small” to “large” counts somewhere around <span class="math inline">\(\log(X + 1) = 2.5\)</span> (which corresponds to <span class="math inline">\(X \approx 10\)</span>). I prefer the behavior of the smaller pseudocounts here.</p>
+<pre class="r"><code># Bin observations by log1p value, rounded down to the nearest 0.5.
+bins &lt;- as.vector(floor(2 * log1p(tuft)) / 2)
+true.vals &lt;- aggregate(as.vector(tuft), by = list(bins), mean)
+shrinkage.res &lt;- data.frame(pseudocount = 0,
+                            bin = true.vals[, 1],
+                            mean.fitted = log1p(true.vals[, 2]))
+for (i in 1:length(fl.list)) {
+  ct &lt;- pseudocounts[i]
+  preds &lt;- ct * exp(flashier:::lowrank.expand(fl.list[[i]]$fit$EF)) - ct
+  mean.table &lt;- aggregate(as.vector(preds), by = list(bins), mean)
+  shrinkage.res &lt;- rbind(shrinkage.res, 
+                         data.frame(pseudocount = ct,
+                                    bin = mean.table[, 1],
+                                    mean.fitted = log1p(mean.table[, 2])))
+}
+
+ggplot(shrinkage.res, aes(x = bin, y = mean.fitted, color = pseudocount)) +
+  geom_point(data = subset(shrinkage.res, pseudocount &gt; 0)) + 
+  geom_line(data = subset(shrinkage.res, pseudocount == 0)) + 
+  labs(x = &quot;Binned log1p data value&quot;, y = &quot;Mean fitted value (log1p scale)&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/shrinkage-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="comparison-of-factor-loadings" class="section level2">
+<h2>Comparison of factor loadings</h2>
+<p>To see how much of a difference is made with respect to individual factors, I first align the factors, using the log1p fit as reference. One sees, for example, that the same 10 factors are selected for <span class="math inline">\(\alpha \in \{0.5, 0.71, 1, 2\}\)</span>, but only 6 factors are shared between <span class="math inline">\(\alpha = 0.25\)</span> or <span class="math inline">\(\alpha = 0.35\)</span> and <span class="math inline">\(\alpha = 1\)</span>. (I judge factor <span class="math inline">\(k\)</span> for pseudocount <span class="math inline">\(\alpha\)</span> to be the “same” as factor <span class="math inline">\(k&#39;\)</span> for pseudocount <span class="math inline">\(\alpha&#39;\)</span> if <span class="math inline">\(l_{\alpha_k}^T l_{\alpha&#39;_{k&#39;}} &gt; 0.7\)</span>, where the <span class="math inline">\(l\)</span>s are <span class="math inline">\(l_2\)</span>-normalized loadings vectors.)</p>
+<pre class="r"><code># Match up factors.
+log1p.idx &lt;- which(pseudocounts == 1)
+log1p.LL &lt;- fl.list[[log1p.idx]]$loadings$normalized.loadings[[1]]
+factor.idx &lt;- lapply(fl.list, function(fl) {
+  corr &lt;- abs(crossprod(fl$loadings$normalized.loadings[[1]], log1p.LL))
+  apply(corr, 1, function(x) if (max(x) &gt; .7) which.max(x) else NA)
+})
+
+log1p.K &lt;- ncol(log1p.LL)
+factor.mat &lt;- sapply(1:log1p.K,
+                     function(i) sapply(factor.idx,
+                                        function(idx) i %in% idx))
+factor.df &lt;- data.frame(pseudocount = rep(factor(signif(pseudocounts, 2)), 
+                                          log1p.K),
+                        log1p.k = factor(rep(1:log1p.K, 
+                                             each = length(pseudocounts))),
+                        is.represented = as.vector(factor.mat))
+
+ggplot(factor.df, aes(x = log1p.k, y = pseudocount, fill = is.represented)) +
+  geom_tile(color = &quot;white&quot;) + scale_fill_grey()</code></pre>
+<p><img src="figure/pseudocount.Rmd/inspect_factors-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I choose a few factors that line up and inspect the loadings. The following plots show how loadings vary across pseudocounts for the top 50 genes in the log1p fit.</p>
+<pre class="r"><code># Look at how a few factors vary.
+top.genes &lt;- 50
+log.mean.exp &lt;- log(apply(tuft, 1, mean))
+for (k in c(2, 5, 8)) {
+  match.k &lt;- lapply(factor.idx, function(idx) which(idx == k))
+  LL &lt;- mapply(FUN = function(fl, match.k) {
+    if (length(match.k) &gt; 0) {
+      return(fl$loadings$normalized.loadings[[1]][, match.k])
+    } else {
+      return(NULL)
+    }
+  }, fl.list, match.k, SIMPLIFY = FALSE)
+  names(LL) &lt;- factor(signif(pseudocounts, 2))
+  log1p.order &lt;- order(LL[[log1p.idx]], decreasing = TRUE)
+  LL[sapply(LL, is.null)] &lt;- NULL
+  LL.mat &lt;- sapply(LL, `[`, log1p.order[1:top.genes])
+  LL.genes &lt;- factor(rownames(LL.mat), levels = as.character(rownames(LL.mat)))
+  LL.df &lt;- data.frame(gene = rep(LL.genes, ncol(LL.mat)),
+                      log.mean.exp = rep(log.mean.exp[log1p.order[1:top.genes]],
+                                         ncol(LL.mat)),
+                      pseudocount = rep(names(LL), each = nrow(LL.mat)),
+                      loading = abs(as.vector(LL.mat)))
+  
+  plt &lt;- ggplot(subset(LL.df, pseudocount %in% c(0.25, 0.5, 1, 2, 4, 8)), 
+         aes(x = gene, y = loading)) +
+    geom_bar(stat = &quot;identity&quot;, aes(fill = log.mean.exp)) +
+    theme(axis.text.x = element_blank()) + facet_wrap(~pseudocount) +
+    labs(x = &quot;&quot;, title = paste(&quot;Factor&quot;, k))
+  print(plt)
+}</code></pre>
+<p><img src="figure/pseudocount.Rmd/plt_factors-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pseudocount.Rmd/plt_factors-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pseudocount.Rmd/plt_factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="factor-mean-expression-and-sparsity" class="section level2">
+<h2>Factor mean expression and sparsity</h2>
+<p>Qualitatively, it’s clear that the choice of pseudocount makes an important difference in individual gene loadings. To attempt to generalize, I calculate the average log mean expression for each factor, where the log mean expression for each gene is weighted by its squared factor loading. With the exception of factor 4, larger pseudocounts tend to favor more highly expressed genes. I plot everything relative to the log1p fit.</p>
+<pre class="r"><code># Calculate weighted log.mean.exp for each factor.
+all.lme &lt;- lapply(fl.list, function(fl) {
+  apply(fl$loadings$normalized.loadings[[1]], 2, function(x) {
+    sum(x^2 * log.mean.exp)})
+})
+# Sparsity.
+all.sprs &lt;- lapply(fl.list, function(fl) {
+  sapply(fl$fit$g, function(g) g[[1]]$pi0)
+})
+
+lme.mat &lt;- mapply(function(idx, lme) {
+  lme[sapply(1:log1p.K, function(k) {
+    if (k %in% idx) which(k == idx) else NA
+  })]
+}, factor.idx, all.lme)
+# Make relative to alpha = 1.
+lme.mat &lt;- lme.mat - lme.mat[, log1p.idx]
+sprs.mat &lt;- mapply(function(idx, sprs) {
+  sprs[sapply(1:log1p.K, function(k) {
+    if (k %in% idx) which(k == idx) else NA
+  })]
+}, factor.idx, all.sprs)
+sprs.mat &lt;- sprs.mat / sprs.mat[, log1p.idx]
+sprs.mat &lt;- sprs.mat[-1, ]
+
+lme.df &lt;- data.frame(pseudocount = rep(factor(signif(pseudocounts, 2)), 
+                                       log1p.K),
+                     log1p.k = factor(rep(1:log1p.K, 
+                                          each = length(pseudocounts))),
+                     lme = as.vector(t(lme.mat)))
+sprs.df &lt;- data.frame(pseudocount = rep(factor(signif(pseudocounts, 2)), 
+                                       log1p.K - 1),
+                     log1p.k = factor(rep(2:log1p.K, 
+                                          each = length(pseudocounts))),
+                     sparsity = as.vector(t(sprs.mat)))
+
+ggplot(lme.df, aes(x = log1p.k, y = pseudocount, fill = lme)) +
+  geom_tile(color = &quot;white&quot;) +
+  labs(title = &quot;Weighted average of log mean expression (relative to log1p fit)&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/lme-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I also calculate the sparsity of each factor, which is simply calculated as the estimated <span class="math inline">\(\pi_0\)</span> for the prior on the gene loadings. Again, everything is plotted relative to the log1p fit.</p>
+<pre class="r"><code>ggplot(sprs.df, aes(x = log1p.k, y = pseudocount, fill = sparsity)) +
+  geom_tile(color = &quot;white&quot;) +
+  labs(title = &quot;Sparsity (relative to log1p fit)&quot;)</code></pre>
+<p><img src="figure/pseudocount.Rmd/sparsity-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="theory" class="section level2">
+<h2>Theory</h2>
+<p>The model that EBMF fits is <span class="math display">\[ \log(X_{ij} + \alpha) \sim N(\mu_{ij}, \sigma_i^2) \]</span> A more plausible model for the data-generating process is <span class="math display">\[ X_{ij} \sim \text{Poisson}(\lambda_{ij}),\ 
+\log(\lambda_{ij}) \sim N(\mu_{ij}&#39;, \sigma_i^{2&#39;}), \]</span> with low-rank structure in the matrix <span class="math inline">\(\mu&#39;\)</span>.</p>
+<p>In other words, one believes that there’s low-rank structure in the matrix <span class="math inline">\(\mathbb{E} (\log \lambda)\)</span>, not in the matrix <span class="math inline">\(\mathbb{E} ( \log(X_{ij} + \alpha))\)</span>. So it makes sense to choose <span class="math inline">\(\alpha\)</span> so that <span class="math display">\[\mu = \mathbb{E}(\log(X + \alpha)) \approx \mathbb{E} (\log \lambda)\]</span> Using a second-order Taylor expansion gives <span class="math display">\[ \mathbb{E}(\log(X + \alpha))
+= \mathbb{E}(\mathbb{E}(\log(X + \alpha)) \mid \lambda)
+\approx \mathbb{E}\left( \log(\lambda + \alpha) 
+- \frac{\lambda}{2(\lambda + \alpha)^2} \right)\]</span></p>
+<p>For <span class="math inline">\(\lambda\)</span> fixed, we could choose <span class="math inline">\(\alpha\)</span> by solving <span class="math display">\[ \log(\lambda + \alpha) - \log(\lambda) 
+- \frac{\lambda}{2(\lambda + \alpha)^2} = 0\]</span></p>
+<p>For large <span class="math inline">\(\lambda\)</span>, <span class="math display">\[ \log \left(1 + \frac{\alpha}{\lambda} \right) 
+- \frac{\lambda}{2(\lambda + \alpha)^2}
+\approx \frac{\alpha}{\lambda} - \frac{1}{2\lambda}, \]</span> so the solution is <span class="math inline">\(\alpha \approx 0.5\)</span>.</p>
+<p>Other solutions can be found numerically.</p>
+<pre class="r"><code>alpha_function &lt;- function(alpha, lambda) {
+  log(1 + alpha / lambda) - 0.5 * lambda / (lambda + alpha)^2
+}
+lambdas &lt;- 2^{-60:60/8}
+alphas &lt;- sapply(lambdas,
+                 function(lambda) uniroot(alpha_function, c(0, 1), lambda)$root)
+alpha.df &lt;- data.frame(lambda = lambdas, alpha = alphas)
+ggplot(alpha.df, aes(x = lambda, y = alpha)) + geom_line() +
+  scale_x_log10()</code></pre>
+<p><img src="figure/pseudocount.Rmd/theory-1.png" width="672" style="display: block; margin: auto;" /></p>
+One could simply choose <span class="math inline">\(\alpha = 0.5\)</span>, or one chould choose different <span class="math inline">\(\alpha_{ij}\)</span>s for each count. To preserve sparsity in the latter case, one would need to assign the same pseudocount <span class="math inline">\(\alpha_0\)</span> to all zero counts and then reparametrize as <span class="math display">\[ Y_{ij} = \log \left (\frac{X_{ij}}{\alpha_0} 
++ \frac{\alpha_{ij}}{\alpha_0} \right)\]</span> <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>R version 3.5.3 (2019-03-11)
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+Running under: macOS Mojave 10.14.4
+
+Matrix products: default
+BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+
+locale:
+[1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+
+other attached packages:
+[1] ggplot2_3.1.0  plyr_1.8.4     reshape2_1.4.3 Matrix_1.2-15 
+[5] flashier_0.1.1 testthat_2.0.1
+
+loaded via a namespace (and not attached):
+ [1] Rcpp_1.0.1        lattice_0.20-38   prettyunits_1.0.2
+ [4] ps_1.3.0          assertthat_0.2.1  rprojroot_1.3-2  
+ [7] digest_0.6.18     foreach_1.4.4     truncnorm_1.0-8  
+[10] R6_2.4.0          backports_1.1.3   evaluate_0.13    
+[13] pillar_1.3.1      rlang_0.3.1       lazyeval_0.2.2   
+[16] pscl_1.5.2        rstudioapi_0.10   ebnm_0.1-17      
+[19] whisker_0.3-2     callr_3.2.0       rmarkdown_1.12   
+[22] desc_1.2.0        labeling_0.3      devtools_2.0.2   
+[25] stringr_1.4.0     munsell_0.5.0     mixsqp_0.1-115   
+[28] compiler_3.5.3    xfun_0.6          pkgconfig_2.0.2  
+[31] pkgbuild_1.0.3    SQUAREM_2017.10-1 htmltools_0.3.6  
+[34] tidyselect_0.2.5  tibble_2.1.1      workflowr_1.2.0  
+[37] codetools_0.2-16  crayon_1.3.4      dplyr_0.8.0.1    
+[40] withr_2.1.2       MASS_7.3-51.1     grid_3.5.3       
+[43] gtable_0.3.0      git2r_0.25.2      magrittr_1.5     
+[46] scales_1.0.0      cli_1.1.0         stringi_1.4.3    
+[49] fs_1.2.7          remotes_2.0.2     doParallel_1.0.14
+[52] iterators_1.0.10  tools_3.5.3       glue_1.3.1       
+[55] purrr_0.3.2       processx_3.3.0    pkgload_1.0.2    
+[58] parallel_3.5.3    yaml_2.2.0        colorspace_1.4-1 
+[61] ashr_2.2-33       sessioninfo_1.1.1 memoise_1.1.0    
+[64] knitr_1.22        usethis_1.5.0    </code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
