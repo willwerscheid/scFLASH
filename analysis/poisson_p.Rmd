@@ -1,0 +1,43 @@
+---
+title: "Poisson p-values"
+author: "Jason Willwerscheid"
+date: "5/19/2019"
+output:
+  workflowr::wflow_html:
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+library(ggplot2)
+```
+
+Consider
+$$ X_i \sim \text{Poisson}(\lambda_i) $$
+No matter the distribution of $\lambda$, $p$-values won't be uniformly distributed. To see this, note that
+$$ P(p_i < \alpha) = P(X_i \le \text{qpois}(\alpha, \lambda_i) - 1) 
+= \text{ppois}(\text{qpois}(\alpha, \lambda_i) - 1, \lambda_i)$$
+
+Setting $\alpha = 0.05$:
+
+```{r alpha05}
+lambda <- seq(0.01, 10, by = .01)
+df <- data.frame(lambda = lambda, y = ppois((qpois(.05, lambda) - 1), lambda))
+ggplot(df, aes(x = lambda, y = y)) + geom_point() +
+  labs(y = expression(P(p < 0.05)))
+```
+
+So $P(p < .05)$ is guaranteed to be less than .05, especially for distributions of $\lambda$ that have a large mass on small values of $\lambda$.
+
+Similarly,
+$$ P(p_i > \alpha) = P(X_i \ge \text{qpois}(\alpha, \lambda_i))
+= 1 - P(X_i \le \text{qpois}(\alpha, \lambda_i) - 1)$$
+
+For $\alpha = .95$:
+```{r alpha95}
+df <- data.frame(lambda = lambda, y = 1 - ppois(qpois(.95, lambda) - 1, lambda))
+ggplot(df, aes(x = lambda, y = y)) + geom_point() +
+  labs(y = expression(P(p > 0.95))) + geom_abline(slope = 0, intercept = .05)
+```
+
+So $P(p > .95)$ is guaranteed to be greater than .05.
