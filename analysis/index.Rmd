@@ -6,6 +6,8 @@ output:
     toc: false
 ---
 
+[Introduction.](intro.html)
+
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
 
 [Exploring different pseudocounts.](pseudocount.html)
