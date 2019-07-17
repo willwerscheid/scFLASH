@@ -1,0 +1,36 @@
+---
+title: "Introduction"
+author: "Jason Willwerscheid"
+date: "7/17/2019"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+My primary goal in these analyses is to compare different `flashier` fits to scRNA datasets. I hope to develop methods and metrics that I can extend to other domains (in particular, population genetics and linguistics). Among the questions I'd like to answer are:
+
++ Which variance structure should be assumed? Should a residual variance parameter be estimated for each gene, or is it enough to estimate a single variance parameter that's shared across all genes?
++ How should the data be transformed? The usual practice is to add a pseudocount and then take logarithms. How does the choice of pseudocount affect the fit?
++ How should the data be normalized? Does it suffice to take, for example, some fraction of the library size as a scale factor or should more sophisticated methods be used? Should counts be normalized before or after adding a pseudocount?
++ Which prior families should be used? Does the flexibility of normal-mixture priors outweigh the speed of point-normal priors? Or should one prefer the interpretability of semi-nonnegative factorizations?
++ Does the usual stopping criterion work when choosing the number of factors to add? If not, when to stop?
++ How does backfitting affect the fit? Does it result in "nicer" factors or better predictive accuracy?
+
+Clearly, I will need some metrics for evaluating fits. First, though, I want to take a step back and think about what I want these factor analyses to accomplish. In general, I'd argue that the value of a factor analysis consists in:
+
++ The factors themselves. A given factor tells us something about which genes tend to co-express.
++ The factors in so far as they decompose individual samples. A cell's factor loadings give us a view of that cell's expression profile in a glance while providing a more nuanced understanding than, for example, cluster membership would.
++ The factors as a low-rank representation of the complete data. A factor analysis should be able to do anything that any other matrix factorization (e.g., an SVD) can do.
++ The model as a whole. Goodness-of-fit measures should allow us to say something about whether the model assumptions are reasonable.
+
+Since any particular metric will likely favor one of these perspectives over the others, it'd be desirable to have a stable of metrics that acknowledges each perspective. Together, the metrics should be able to assess whether a fit achieves the following goals:
+
++ Factors should be easily interpretable. Usually, this means that they should be both sparse and coherent. Sparsity can be measured either via the estimated priors on the factor loadings or via the local false sign rates of the loadings. "Coherence," a term that I've borrowed from the NLP community (by way of Zihao Wang), is supposed to measure whether it makes sense for a given set of genes to appear together. This kind of metric might be established by comparing gene loadings to known pathways. Usually, it's possible to align factors from different fits (by simply computing cross-correlations), so the sparsity and coherence of a factor from one fit could be compared to the sparsity and coherence of the "same" factor from another fit.
++ Factor loadings should make sense given what we already know about samples. If, for example, cell types are "known" in advance, then the factors should be able to discriminate among those types. (For example, it'd be good to find one or more factors for each cell type that are primarily loaded on that type.) Further, factors should be able to successfully "decompose" samples we haven't seen yet. A good factor model should be able to explain a large proportion of variance in a hold-out set of samples.
++ The "de-noising" implied by representing the data as a low-rank matrix should be sensible. In particular, the distribution of residuals should appear reasonable (this can be checked by plotting $p$-values). Since `flashier` can deal with missing data, one can also compare fits via data imputation tasks. The latter can be tricky for data transformations, however, since data must be imputed on a different scale for each fit.
++ The model fit should be good. The variational lower bound gives some measure of goodness of fit, but it's not perfect. For nested models (comparing, for example, constant and gene-wise variances), some sort of information criterion (AIC or BIC) might be useful. 
