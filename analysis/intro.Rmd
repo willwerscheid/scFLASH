@@ -12,7 +12,7 @@ output:
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
 
-My primary goal in these analyses is to compare different `flashier` fits to scRNA datasets. I hope to develop methods and metrics that I can extend to other domains (in particular, population genetics and linguistics). Among the questions I'd like to answer are:
+My primary goal in these analyses is to compare different `flashier` fits using scRNA datasets. I hope to develop methods and metrics that I can extend to other domains (in particular, population genetics and linguistics). Among the questions I'd like to answer are:
 
 + Which variance structure should be assumed? Should a residual variance parameter be estimated for each gene, or is it enough to estimate a single variance parameter that's shared across all genes?
 + How should the data be transformed? The usual practice is to add a pseudocount and then take logarithms. How does the choice of pseudocount affect the fit?
