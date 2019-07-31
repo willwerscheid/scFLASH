@@ -363,7 +363,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-07-17
+<strong>Last updated:</strong> 2019-07-31
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -442,10 +442,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree8d4f0652f95a650b755143fdc282c884e4d244adtargetblank8d4f065a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/8d4f0652f95a650b755143fdc282c884e4d244ad" target="_blank">8d4f065</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef9aae4eae2c27c2365b4aecccd08c36ee6a4a48ctargetblankf9aae4ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/f9aae4eae2c27c2365b4aecccd08c36ee6a4a48c" target="_blank">f9aae4e</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree8d4f0652f95a650b755143fdc282c884e4d244adtargetblank8d4f065a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef9aae4eae2c27c2365b4aecccd08c36ee6a4a48ctargetblankf9aae4ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -511,6 +511,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f9aae4eae2c27c2365b4aecccd08c36ee6a4a48c/analysis/intro.Rmd" target="_blank">f9aae4e</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-07-31
+</td>
+<td>
+wflow_publish(“analysis/intro.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/77ceb33c24125251a80d26332373ad2c6eca365a/docs/intro.html" target="_blank">77ceb33</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -590,7 +624,7 @@ wflow_publish(“analysis/intro.Rmd”)
 <li>Factors should be easily interpretable. Usually, this means that they should be both sparse and coherent. Sparsity can be measured either via the estimated priors on the factor loadings or via the local false sign rates of the loadings. “Coherence,” a term that I’ve borrowed from the NLP community (by way of Zihao Wang), is supposed to measure whether it makes sense for a given set of genes to appear together. This kind of metric might be established by comparing gene loadings to known pathways. Usually, it’s possible to align factors from different fits (by simply computing cross-correlations), so the sparsity and coherence of a factor from one fit could be compared to the sparsity and coherence of the “same” factor from another fit.</li>
 <li>Factor loadings should make sense given what we already know about samples. If, for example, cell types are “known” in advance, then the factors should be able to discriminate among those types. (For example, it’d be good to find one or more factors for each cell type that are primarily loaded on that type.) Further, factors should be able to successfully “decompose” samples we haven’t seen yet. A good factor model should be able to explain a large proportion of variance in a hold-out set of samples.</li>
 <li>The “de-noising” implied by representing the data as a low-rank matrix should be sensible. In particular, the distribution of residuals should appear reasonable (this can be checked by plotting <span class="math inline">\(p\)</span>-values). Since <code>flashier</code> can deal with missing data, one can also compare fits via data imputation tasks. The latter can be tricky for data transformations, however, since data must be imputed on a different scale for each fit.</li>
-<li>The model fit should be good. The variational lower bound gives some measure of goodness of fit, but it’s not perfect. For nested models (comparing, for example, constant and gene-wise variances), some sort of information criterion (AIC or BIC) might be useful. <br> <br>
+<li>The model fit should be good. The variational lower bound gives some measure of goodness of fit, but it’s not perfect. For nested models (comparing, for example, constant and gene-wise variances), some sort of information criterion (AIC or BIC) might be useful. It would also be interesting to extend Lei Sun’s <code>ashr</code> diagnostics to <code>flashier</code>. <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
