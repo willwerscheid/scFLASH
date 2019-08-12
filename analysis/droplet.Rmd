@@ -1,0 +1,54 @@
+---
+title: "Montoro et al. droplet dataset"
+author: "Jason Willwerscheid"
+date: "8/12/2019"
+output:
+  workflowr::wflow_html
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+```{r read.data}
+droplet <- readRDS("./data/droplet.rds")
+source("./code/utils.R")
+```
+
+The droplet-based 3' scRNA-seq dataset analyzed in Montoro et al. (2018) can be obtained [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103354). It includes counts for 18,388 genes and 7,193 cells. Only 9.3% of all counts are nonzero. The data takes up 143 MB when loaded into memory as a sparse `Matrix` object.
+
+The original analysis assigns each cell to one of seven cell types. The cells are also labelled according to the mice they come from.
+
+```{r cell.labels}
+cell.type <- as.factor(sapply(strsplit(colnames(droplet), "_"), `[`, 3))
+plot.category(cell.type, title = "Number of Cells per Cell Type")
+mouse <- as.factor(sapply(strsplit(colnames(droplet), "_"), `[`, 1))
+plot.category(mouse, title = "Number of Cells per Mouse")
+```
+
+Library size is distributed as follows.
+
+```{r cells}
+plot.libsize(droplet)
+```
+
+Note the presence of extreme outliers. There are two of them, and both turn out to be goblet cells. I think that they should be removed from the dataset before analysis.
+
+```{r cell.outliers}
+table(cell.type[which(colSums(droplet) > 30000)])
+```
+
+Mean expression is distributed as follows.
+
+```{r genes}
+plot.meanexp(droplet)
+```
+
+There are two genes that are on average much more highly expressed than any other gene: Bpifa1 and Scgb1a1. Both have bimodal distributions.
+
+```{r gene.outliers}
+high.exp <- names(which(rowMeans(droplet) > 200))
+for (gene in high.exp) {
+  plot(plot.gene(droplet, gene))
+}
+```
