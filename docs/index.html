@@ -343,7 +343,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-07-17
+<strong>Last updated:</strong> 2019-08-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -374,10 +374,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec9344c026483a10cf93e5052f21d892bc8a6d152targetblankc9344c0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/c9344c026483a10cf93e5052f21d892bc8a6d152" target="_blank">c9344c0</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeba9654c2a2fcedbb93fbec09ad9857d475dd15b6targetblankba9654ca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/ba9654c2a2fcedbb93fbec09ad9857d475dd15b6" target="_blank">ba9654c</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec9344c026483a10cf93e5052f21d892bc8a6d152targetblankc9344c0a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeba9654c2a2fcedbb93fbec09ad9857d475dd15b6targetblankba9654ca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -387,24 +387,32 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    data/GSE103354_Trachea_droplet_UMIcounts.txt
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
     Untracked:  analysis/pseudocount2.Rmd
     Untracked:  analysis/trachea4.Rmd
+    Untracked:  analysis/var_type.Rmd
     Untracked:  code/missing_data.R
     Untracked:  code/pseudocounts.R
     Untracked:  code/trachea4.R
+    Untracked:  code/var_type.R
+    Untracked:  code/var_type/
+    Untracked:  data/Ensembl2Reactome.txt
+    Untracked:  data/droplet.rds
     Untracked:  data/hard_bimodal1.txt
     Untracked:  data/hard_bimodal2.txt
     Untracked:  data/hard_bimodal3.txt
+    Untracked:  data/mus_pathways.rds
     Untracked:  docs/figure/pseudocount2.Rmd/
+    Untracked:  docs/figure/var_type.Rmd/
     Untracked:  output/pseudocount/
+    Untracked:  output/var_type/
 
 Unstaged changes:
     Modified:   analysis/pseudocount.Rmd
     Modified:   code/sc_comparisons.R
+    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -443,6 +451,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/ba9654c2a2fcedbb93fbec09ad9857d475dd15b6/analysis/index.Rmd" target="_blank">ba9654c</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-13
+</td>
+<td>
+wflow_publish(“analysis/index.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/7c209a14361654d9fa7caa7f2214907c6d3edd03/docs/index.html" target="_blank">7c209a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-07-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -637,11 +679,22 @@ Start workflowr project.
 </div>
 </div>
 </div>
+<div id="metrics" class="section level2">
+<h2>Metrics</h2>
 <p><a href="intro.html">Introduction.</a></p>
+<p><a href="pvals.html">Calculating <span class="math inline">\(p\)</span>-values.</a></p>
+</div>
+<div id="datasets" class="section level2">
+<h2>Datasets</h2>
+<p><a href="droplet.html">Droplet-based 3’ scRNA-seq dataset from Montoro et al.</a></p>
+</div>
+<div id="etc" class="section level2">
+<h2>Etc</h2>
 <p><a href="sc_comparisons.html">Comparing methods for fitting flash to single-cell data.</a></p>
 <p><a href="pseudocount.html">Exploring different pseudocounts.</a></p>
 <p><a href="drift_backfit.html">Investigating backfits for flash-drift fits.</a></p>
-<p><a href="poisson_p.html">On Poisson p-values.</a></p>
+<p><a href="poisson_p.html">On Poisson <span class="math inline">\(p\)</span>-values.</a></p>
+</div>
 
 
 <!-- Adjust MathJax settings so that all math formulae are shown using
