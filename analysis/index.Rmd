@@ -6,7 +6,17 @@ output:
     toc: false
 ---
 
+## Metrics
+
 [Introduction.](intro.html)
+
+[Calculating $p$-values.](pvals.html)
+
+## Datasets
+
+[Droplet-based 3' scRNA-seq dataset from Montoro et al.](droplet.html)
+
+## Etc
 
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
 
@@ -14,4 +24,4 @@ output:
 
 [Investigating backfits for flash-drift fits.](drift_backfit.html)
 
-[On Poisson p-values.](poisson_p.html)
+[On Poisson $p$-values.](poisson_p.html)
