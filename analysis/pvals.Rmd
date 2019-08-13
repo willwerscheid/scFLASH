@@ -1,0 +1,90 @@
+---
+title: "Calculating p-values"
+author: "Jason Willwerscheid"
+date: "8/13/2019"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+To assess goodness of fit, I'd like to be able to look at the distribution of $p$-values for the residuals from a `flashier` fit.
+
+The problem is that the model that's being fitted doesn't correspond to a plausible (or even feasible) model for generating the data. In effect, we're fitting
+$$ \log(Y_{ij} / \lambda_j + 1) = LF' + E,\ E_{ij} \sim N(0, \sigma_{ij}^2), $$
+so that $Y_{ij}$ is modelled as having a shifted lognormal distribution
+$$ Y_{ij} \sim \text{lognormal}(\mu_{ij}, \sigma_{ij}^2) - \lambda_j, $$
+where $\mu_{ij} = (LF')_{ij} + \log(\lambda_j)$.
+
+This implies that $Y_{ij}$ is supported on the interval $(-\lambda_j, \infty)$, whereas a feasible data-generating model would only be supported on the nonnegative integers.
+
+To calculate $p$-values, I'd like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily.
+
+Here's how I proceed: First, to guarantee that $\mathbb{E}Y_{ij}$ is positive, I put all of the mass from $(-\lambda_j, 0)$ onto a point mass at zero, which gives a mixture of a point mass at zero and a shifted and truncated lognormal distribution with support on the positive real line: 
+$$ Y_{ij} \sim \pi_0 \delta_0 + (1 - \pi_0) \left[ \text{TLN}(\mu_{ij}, \sigma_{ij}^2; \lambda_j, \infty) - \lambda_j \right]$$
+
+Next, I match moments to find a Poisson or negative binomial distribution that approximates this mixture. If the variance of the mixture is less than the expectation, I choose the Poisson distribution with the same mean. Otherwise, I match the first and second moments to get a negative binomial distribution.
+
+Finally, I use a randomization strategy to get a continuous range of $p$-values. For example, if $Y_{ij}$ is approximately $\text{Poisson}(\nu_{ij})$, then I draw
+$$ c_{ij} \sim \text{Unif}[0, 1] $$
+and set
+$$ p_{ij} = c_{ij} \cdot \text{ppois}(Y_{ij} - 1; \nu_{ij}) + (1 - c_{ij}) \cdot \text{ppois}(Y_{ij}; \nu_{ij}) $$
+
+## Mixture proportions
+
+Calculating $\pi_0$ is straightforward:
+$$ \begin{aligned}
+\mathbb{P}(\text{lognormal}(\mu, \sigma^2) < \lambda)
+&= \mathbb{P}(N(\mu, \sigma^2) < \log(\lambda)) \\
+&= \Phi \left( \frac{\log(\lambda) - \mu}{\sigma} \right)
+\end{aligned} $$
+Similarly,
+$$ 1 - \pi_0 = \Phi \left( \frac{\mu - \log(\lambda)}{\sigma} \right) $$
+
+## Moments of the truncated lognormal
+
+If
+$$ X \sim \text{truncated-normal}(\mu, \sigma^2; \log(\lambda), \infty), $$
+then
+$$ e^X \sim \text{TLN}(\mu, \sigma^2; \lambda, \infty). $$
+The [MGF for the truncated normal](https://en.wikipedia.org/wiki/Truncated_normal_distribution) gives
+$$ \mathbb{E}e^X = \text{exp}(\mu + \sigma^2 / 2) 
+\left[ \frac{\Phi(\frac{\mu - \log(\lambda)}{\sigma} + \sigma)}{\Phi(\frac{\mu - \log(\lambda)}{\sigma})} \right] $$
+and
+$$ \mathbb{E}e^{2X} = \text{exp}(2\mu + 2\sigma^2)
+\left[ \frac{\Phi(\frac{\mu - \log(\lambda)}{\sigma} + 2\sigma)}{\Phi(\frac{\mu - \log(\lambda)}{\sigma})} \right]. $$
+
+Thus
+$$ \begin{aligned}
+\mathbb{E}Y_{ij} 
+&= (1 - \pi_0) \left[ \mathbb{E} (\text{TLN}(\mu_{ij}, \sigma_{ij}^2; \log(\lambda_j), \infty)) - \lambda_j \right] \\
+&= (1 - \pi_0) \left[ \text{exp}((LF')_{ij} + \log(\lambda_j) + \sigma_{ij}^2 / 2)
+\left( \frac{\Phi(\frac{(LF')_{ij}}{\sigma_{ij}} +
+\sigma_{ij})}{\Phi(\frac{(LF')_{ij}}{\sigma_{ij}})} \right) - \lambda_j \right] \\
+&= \lambda_j \left[ \text{exp}((LF')_{ij} + \sigma_{ij}^2 / 2)
+\Phi \left( \frac{(LF')_{ij}}{\sigma_{ij}} + \sigma_{ij} \right)  - 
+\Phi \left(\frac{(LF')_{ij}}{\sigma_{ij}} \right) \right]
+\end{aligned} $$
+and
+$$ \begin{aligned}
+\mathbb{E}Y_{ij}^2 
+&= (1 - \pi_0) \left[ \mathbb{E} (\text{TLN}(\mu_{ij}, \sigma_{ij}^2; \log(\lambda_j), \infty)^2) + \lambda_j^2 - 2 \lambda_j \mathbb{E} (\text{TLN}(\mu_{ij}, \sigma_{ij}^2; \log(\lambda_j), \infty)) \right] \\
+&= (1 - \pi_0) \left[ \mathbb{E} (\text{TLN}(\mu_{ij}, \sigma_{ij}^2; \log(\lambda_j), \infty)^2) + \lambda_j^2 - 2 \lambda_j \left( \frac{\mathbb{E}Y_{ij}}{1 - \pi_0} + \lambda_j \right) \right] \\
+&= (1 - \pi_0) \left[ \text{exp}(2(LF')_{ij} + 2 \log(\lambda_j) + 2\sigma_{ij}^2)
+\left( \frac{\Phi(\frac{(LF')_{ij}}{\sigma_{ij}} +
+2 \sigma_{ij})}{\Phi(\frac{(LF')_{ij}}{\sigma_{ij}})} \right) - \lambda_j^2 \right] 
+- 2 \lambda_j \mathbb{E} Y_{ij} \\
+&= \lambda_j^2 \left[ \text{exp}(2(LF')_{ij} + 2\sigma_{ij}^2)
+\Phi \left( \frac{(LF')_{ij}}{\sigma_{ij}} +
+2 \sigma_{ij} \right) - \Phi \left( \frac{(LF')_{ij}}{\sigma_{ij}} \right) \right]
+- 2 \lambda_j \mathbb{E} Y_{ij}
+\end{aligned} $$
+
+## Estimating LF'
+
+Rather than trying to take expectations with respect to $L$ and $F$, I simply use the plug-in estimator $\mathbb{E}(LF')$. One could try sampling from the posterior on $LF'$ to see whether the $p$-value plots change, but I don't think that it's worth the trouble given that so many other approximations are already being made.
