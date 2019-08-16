@@ -10,3 +10,4 @@ analysis/*html
 analysis/*_cache
 analysis/site_libs
 data/GSE103354_Trachea_droplet_UMIcounts.txt
+output/var_type
