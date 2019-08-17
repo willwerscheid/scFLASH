@@ -3,7 +3,8 @@ title: "Montoro et al. droplet dataset"
 author: "Jason Willwerscheid"
 date: "8/12/2019"
 output:
-  workflowr::wflow_html
+  workflowr::wflow_html:
+    toc: false
 ---
 
 ```{r setup, include=FALSE}
