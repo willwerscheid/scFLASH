@@ -16,6 +16,12 @@ output:
 
 [Droplet-based 3' scRNA-seq dataset from Montoro et al.](droplet.html)
 
+## Investigations
+
+[Comparing variance structures.](var_type.html)
+
+[Backfits.](backfit.html)
+
 ## Etc
 
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
