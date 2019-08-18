@@ -2,40 +2,139 @@
 
 library(Matrix)
 library(ggplot2)
+library(flashier)
+
+# Plotting functions for datasets ---------------------------------------------
+
+plot.category <- function(category, title) {
+  df <- data.frame(category)
+  ggplot(df, aes(x = category)) +
+    geom_bar() +
+    labs(x = NULL, title = title)
+}
+
+plot.libsize <- function(data, bins = 50) {
+  df <- data.frame(libsize = colSums(data))
+  ggplot(df, aes(x = libsize)) +
+    geom_histogram(bins = bins) +
+    scale_x_log10() +
+    labs(x = "library size",
+         y = "cell count",
+         title = "Library Size of Cells")
+}
+
+plot.meanexp <- function(data, bins = 50) {
+  df <- data.frame(meanexp = rowMeans(data))
+  ggplot(df, aes(x = meanexp)) +
+    geom_histogram(bins = bins) +
+    scale_x_log10() +
+    labs(x = "mean expression",
+         y = "gene count",
+         title = "Mean Expression of Genes")
+}
+
+plot.gene <- function(data, gene, bins = 30) {
+  df <- data.frame(expression = data[gene, ])
+  ggplot(df, aes(x = expression)) +
+    geom_histogram(bins = bins) +
+    scale_x_continuous(trans = "log1p",
+                       breaks = c(0, 10^(0:floor(log10(max(data[gene, ])))))) +
+    labs(x = "number of transcripts detected",
+         y = "cell count",
+         title = gene)
+}
 
 # Initial preprocessing -------------------------------------------------------
 
-preprocess <- function(data, min.cts) {
+preprocess <- function(data, min.nzcts, max.libsize = NULL) {
+  # Drop cells with too many transcripts.
   lib.size <- colSums(data)
-  mean.exp <- rowMeans(data)
+  if (!is.null(max.libsize)) {
+    data     <- data[,  lib.size <= max.libsize]
+    lib.size <- lib.size[lib.size <= max.libsize]
+  }
+
+  scale.factors <- lib.size / median(lib.size)
+
+  n.genes <- nrow(data)
 
   # Drop genes with transcripts detected in too few cells.
   nz.cts <- rowSums(data > 0)
-  data   <- data[nz.cts >= min.cts, ]
+  data   <- data[nz.cts >= min.nzcts, ]
+  nz.cts <- nz.cts[nz.cts >= min.nzcts]
+
+  gene.sparsity <- nz.cts / n.genes
 
   # Default additional pre-processing: normalize and transform.
-  scale.factors <- lib.size / median(lib.size)
-  data          <- t(t(data) / scale.factors)
-  data          <- log1p(data)
+  data <- t(t(data) / scale.factors)
+  data <- log1p(data)
 
-  return(list(data = data, scale.factors = scale.factors, mean.exp = mean.exp))
+  return(list(data = data,
+              scale.factors = scale.factors,
+              gene.sparsity = gene.sparsity))
 }
 
-# Parallel analysis, sort of.
-est.min.allowable.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
+# Dataset-specific functions include some additional useful fields.
+
+preprocess.droplet <- function(droplet, min.nzcts = 10, max.libsize = 30000) {
+  processed <- preprocess(droplet, min.nzcts, max.libsize)
+
+  mouse <- sapply(strsplit(colnames(processed$data), "_"), `[`, 1)
+  cell.type <- sapply(strsplit(colnames(processed$data), "_"), `[`, 3)
+
+  processed$cell.type <- as.factor(cell.type)
+  processed$mouse <- as.factor(mouse)
+
+  return(processed)
+}
+
+# Parallel analysis. Sort of. -------------------------------------------------
+est.baseline.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
   pve <- rep(NA, n.trials)
   for (i in 1:n.trials) {
     set.seed(seeds[i])
-    rand.data <- apply(data, 2, FUN = sample)
-    fl <- flashier(rand.data, greedy.Kmax = 2, ...)
-    pve[i] <- fl$pve[2]
+    cat("Seed:", seeds[i], "\n")
+    rand.data <- t(Matrix(apply(data, 1, FUN = sample)))
+    fl <- flashier(rand.data, greedy.Kmax = 2, verbose.lvl = 0, ...)
+    if (length(fl$pve) > 1) {
+      pve[i] <- fl$pve[2]
+    } else {
+      pve[i] <- 0
+    }
   }
-  return(list(min.allowable.pve = quantile(pve, q), all.res = pve))
+  return(list(baseline.pve = quantile(pve, q), all.res = pve))
 }
 
 # 1. "Factors should be easily interpretable." -------------------------------------
 
-plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2) {
+plot.one.factor <- function(fl, k, notable.genes, title = NULL,
+                            label.size = 8, top.n = 100, invert = FALSE) {
+  df <- data.frame(gene = rownames(fl$loadings.pm[[1]]),
+                   loading = fl$loadings.pm[[1]][, k])
+  if (invert) {
+    df$loading <- -df$loading
+  }
+  df <- df[order(df$loading, decreasing = TRUE), ]
+  df <- df[1:top.n, ]
+  df$order <- 1:nrow(df)
+  plt <- ggplot(df, aes(x = order, y = loading)) +
+    geom_point() +
+    scale_x_continuous(breaks = df$order[which(df$gene %in% notable.genes)],
+                       labels = df$gene[which(df$gene %in% notable.genes)]) +
+    labs(x = NULL, title = title) +
+    lims(y = c(0, NA)) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = label.size))
+  for (gene in notable.genes) {
+    which.gene <- which(df$gene == gene)
+    if (length(which.gene) == 1)
+    plt <- plt +
+        geom_segment(x = which.gene, xend = which.gene,
+                     y = 0, yend = df$loading[which.gene], color = "red")
+  }
+  plot(plt)
+}
+
+plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2, title = NULL) {
   if (is.null(kset)) {
     kset <- 1:fl$n.factors
   }
@@ -52,13 +151,10 @@ plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2) {
   ggplot(df, aes(x = Var2, y = loading, color = cell.type)) +
     geom_jitter(position = position_jitter(0.45),
                 size = rep(sizes[cell.types], length(kset))) +
-    theme(axis.text.x = element_blank(),
-          axis.title.x = element_blank(),
-          axis.ticks.x = element_blank())
-
+    labs(title = title, x = NULL)
 }
 
-compare.factors <- function(fl1, fl2, match.n = 1, min.cor = 0.6,
+compare.factors <- function(fl1, fl2, match.n = 1, min.cor = 0,
                           incl.sparsity = TRUE, coherence.mat = NULL) {
   cormat <- crossprod(fl1$loadings.pm[[match.n]], fl2$loadings.pm[[match.n]])
 
@@ -119,7 +215,8 @@ calc.coherence <- function(fl, coherence.mat, n = 1, lfsr.thresh = 0.01) {
   return(res)
 }
 
-build.coherence.mat <- function(pw.mat, gene.set) {
+build.coherence.mat <- function(pw.mat, data) {
+  gene.set <- rownames(data)
   pw.mat <- pw.mat[rownames(pw.mat) %in% gene.set, ]
 
   # Remove pathways with no genes (or one gene).
@@ -248,12 +345,16 @@ calc.EY2.over.lambda2 <- function(mu, sigma, EY.over.lambda) {
          - pnorm(mu / sigma) - 2 * EY.over.lambda)
 }
 
-calc.p.vals <- function(data, fl, sf) {
+# Currently only works for constant and gene-wise variance structures.
+calc.p.vals <- function(data, sf, mu, sigma) {
+  # Get the original (untransformed) data.
+  data <- t(t(exp(data) - 1) / sf)
+
   # Calculate the moments of the fitted model, adjusting the model so that values
   #   less than zero are collapsed to a point mass at zero.
-  EY.over.l <- calc.EY.over.lambda(fitted(fl), fl$residuals.sd)
+  EY.over.l <- calc.EY.over.lambda(mu, sigma)
+  EY2  <- t(sf^2 * t(calc.EY2.over.lambda2(mu, sigma, EY.over.l)))
   EY   <- t(sf * t(EY.over.l))
-  EY2  <- t(sf^2 * t(calc.EY2.over.lambda2(fitted(fl), fl$residuals.sd, EY.over.l)))
   VarY <- EY2 - EY^2
 
   pois.data  <- data[EY > VarY]
@@ -281,6 +382,12 @@ calc.p.vals <- function(data, fl, sf) {
 
 plot.p.vals <- function(p.vals) {
   df <- data.frame(p.vals$table)
-  ggplot(df, aes(p.vals)) + geom_histogram(breaks = seq(0, 1, by = 0.01))
+  df$p.vals <- as.numeric(df$p.vals) / 100 - .005
+  df$Freq <- df$Freq / sum(df$Freq)
+  title <- paste("KL divergence relative to uniform:", round(p.vals$KL.divergence, 3))
+  ggplot(df, aes(x = p.vals, y = Freq)) +
+    geom_bar(stat = "identity") +
+    geom_hline(yintercept = 0.01, linetype = "dashed") +
+    labs(x = "p-value", y = NULL, title = title) +
+    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
 }
-
