@@ -343,7 +343,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-08-17
+<strong>Last updated:</strong> 2019-08-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -374,10 +374,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree030f038496117121698c88b77e87cf54626b3044targetblank030f038a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/030f038496117121698c88b77e87cf54626b3044" target="_blank">030f038</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreea490e3531c8542c841d5933cb395cd8b484743edtargetblanka490e35a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/a490e3531c8542c841d5933cb395cd8b484743ed" target="_blank">a490e35</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree030f038496117121698c88b77e87cf54626b3044targetblank030f038a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreea490e3531c8542c841d5933cb395cd8b484743edtargetblanka490e35a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -387,7 +387,9 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    data/droplet.rds
     Ignored:    output/backfit/
+    Ignored:    output/prior_type/
     Ignored:    output/var_type/
 
 Untracked files:
@@ -398,7 +400,6 @@ Untracked files:
     Untracked:  code/pseudocounts.R
     Untracked:  code/trachea4.R
     Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/droplet.rds
     Untracked:  data/hard_bimodal1.txt
     Untracked:  data/hard_bimodal2.txt
     Untracked:  data/hard_bimodal3.txt
@@ -409,7 +410,6 @@ Untracked files:
 Unstaged changes:
     Modified:   analysis/pseudocount.Rmd
     Modified:   code/sc_comparisons.R
-    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -448,6 +448,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a490e3531c8542c841d5933cb395cd8b484743ed/analysis/index.Rmd" target="_blank">a490e35</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+<td>
+wflow_publish(“analysis/index.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/39e42d952f50630d790f5a825e7ee30642c103c8/docs/index.html" target="_blank">39e42d9</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-17
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -722,7 +756,8 @@ Start workflowr project.
 <div id="investigations" class="section level2">
 <h2>Investigations</h2>
 <p><a href="var_type.html">Comparing variance structures.</a></p>
-<p><a href="backfit.html">Backfits.</a></p>
+<p><a href="backfit.html">Greedy vs. backfit.</a></p>
+<p><a href="prior_type.html">Comparing prior types.</a></p>
 </div>
 <div id="etc" class="section level2">
 <h2>Etc</h2>
