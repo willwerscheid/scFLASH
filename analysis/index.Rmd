@@ -20,7 +20,9 @@ output:
 
 [Comparing variance structures.](var_type.html)
 
-[Backfits.](backfit.html)
+[Greedy vs. backfit.](backfit.html)
+
+[Comparing prior types.](prior_type.html)
 
 ## Etc
 
