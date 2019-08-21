@@ -108,7 +108,8 @@ est.baseline.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
 # 1. "Factors should be easily interpretable." -------------------------------------
 
 plot.one.factor <- function(fl, k, notable.genes, title = NULL,
-                            label.size = 8, top.n = 100, invert = FALSE) {
+                            label.size = 8, top.n = 100, invert = FALSE,
+                            gene.colors = NULL) {
   df <- data.frame(gene = rownames(fl$loadings.pm[[1]]),
                    loading = fl$loadings.pm[[1]][, k])
   if (invert) {
@@ -124,12 +125,19 @@ plot.one.factor <- function(fl, k, notable.genes, title = NULL,
     labs(x = NULL, title = title) +
     lims(y = c(0, NA)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = label.size))
-  for (gene in notable.genes) {
+  for (i in 1:length(notable.genes)) {
+    gene <- notable.genes[i]
     which.gene <- which(df$gene == gene)
-    if (length(which.gene) == 1)
-    plt <- plt +
+    if (length(which.gene) == 1) {
+    if (!is.null(gene.colors)) {
+      the.color = gene.colors[i]
+    } else {
+      the.color = "red"
+    }
+      plt <- plt +
         geom_segment(x = which.gene, xend = which.gene,
-                     y = 0, yend = df$loading[which.gene], color = "red")
+                     y = 0, yend = df$loading[which.gene], color = the.color)
+    }
   }
   plot(plt)
 }
@@ -151,7 +159,8 @@ plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2, title = N
   ggplot(df, aes(x = Var2, y = loading, color = cell.type)) +
     geom_jitter(position = position_jitter(0.45),
                 size = rep(sizes[cell.types], length(kset))) +
-    labs(title = title, x = NULL)
+    labs(title = title, x = NULL) +
+    lims(y = c(-1.05, 1.05))
 }
 
 compare.factors <- function(fl1, fl2, match.n = 1, min.cor = 0,
