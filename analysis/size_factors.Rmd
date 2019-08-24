@@ -1,0 +1,113 @@
+---
+title: "Size factors"
+author: "Jason Willwerscheid"
+date: "8/23/2019"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+I'm interested in the family of data transformations
+$$ Y_{ij} = \log \left( \frac{X_{ij}}{\lambda_{j}} + \alpha \right), $$
+where the $X_{ij}$s are raw counts, the $\lambda_j$s are cell-specific "size factors," and $\alpha$ is a "pseudocount" that must be added to avoid taking logarithms of zeros.
+
+Note that, by subtracting $\log \alpha$ from each side (and letting this constant be absorbed into the "mean factor" fitted by `flashier`), I can instead consider the family of sparity-preserving transformations
+$$ Y_{ij} = \left( \frac{X_{ij}}{\alpha \lambda_j} + 1 \right). $$
+
+Without loss of generality, I constrain the size factors to have median one. In this analysis, I fix $\alpha = 1$; in a subsequent analysis, I'll consider the effect of varying the pseudocount.
+
+```{r load.res}
+source("./code/utils.R")
+droplet <- readRDS("./data/droplet.rds")
+processed <- preprocess.droplet(droplet)
+res <- readRDS("./output/size_factors/flashier_fits.rds")
+```
+
+## Calculating size factors
+
+I consider three methods. The method which I've been using in previous analyses normalizes cell counts so that all scaled cells have the same total count. That is, letting $n_j$ be the cell-wise sum $\sum_i X_{ij}$, it sets
+$$ \lambda_j = n_j / \text{median}_\ell(n_\ell) $$
+This method, commonly known as "library size normalization," has been criticized because library size is strongly correlated with the expression levels of the most highly expressed genes, so that normalizing by library size tends to suppress relevant variation in those genes' expression. 
+
+More sophisticated methods have been proposed. I particularly like an approach by Aaron Lun, Karsten Bach, and John Marioni which pools cells together and uses robust statistics to get more accurate estimates of size factors. The approach, detailed [here](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0947-7), is implemented in the `R` package `scran`.
+
+A second approach that has gained some traction is [Rhonda Bacher's method](https://www.nature.com/articles/nmeth.4263) implemented in the `R` package `SCnorm`. I attempted to run it on the Montoro et al. droplet-based data, but it simply set all scale factors to one. 
+
+The third method I consider is to not use scale factors at all. This is not as dumb as it might seem! Write the EBMF model as
+$$ Y = \ell f' + LF' + E, $$
+where $\ell f'$ is the first factor fitted by `flashier`. This factor, which I often refer to as the "mean factor," typically accounts for by far the largest proportion of variance explained. Then,
+$$ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (L_{-1}F_{-1}')_{ij} + E_{ij} \right), $$
+so that $f$ essentially acts as a vector of size factors. The difference is that this scaling is done after the log1p transformation rather then before.
+
+## Results: scran size factors
+
+The size factors obtained using `scran` are very different from the size factors obtained via library size normalization. In particular, `scran` yields a narrower range of size factors.
+
+```{r sf}
+sf.df <- data.frame(libsize = res$libsize$sf, scran = res$scran$sf)
+ggplot(sf.df, aes(x = libsize, y = scran)) +
+  geom_point(size = 0.2) +
+  geom_abline(slope = 1) + 
+  labs(x = "library size normalization", y = "scran")
+```
+
+## Results: ELBO
+
+I use a change-of-variables formula to compare ELBOs. Results suggest that it's best not to use size factors. 
+
+```{r elbo}
+elbo.df <- data.frame(method = c("No size factors", 
+                                 "Library size normalization",
+                                 "scran"),
+                      elbo = c(res$noscale$fl$elbo + res$noscale$elbo.adj,
+                               res$libsize$fl$elbo + res$libsize$elbo.adj,
+                               res$scran$fl$elbo + res$scran$elbo.adj))
+ggplot(elbo.df, aes(x = method, y = elbo)) + 
+  geom_point() +
+  scale_x_discrete(limits = c("Library size normalization", "scran", "No size factors")) +
+  labs(x = NULL, y = "ELBO")
+```
+
+## Results: Distribution of p-values
+
+Again the laziest approach wins out, and convincingly so.
+
+### Library size normalization
+
+```{r libsize.p}
+plot.p.vals(res$libsize$p.vals)
+```
+
+### scran
+
+```{r scran.p}
+plot.p.vals(res$scran$p.vals)
+```
+
+### No size factors
+
+```{r noscale.p}
+plot.p.vals(res$noscale$p.vals)
+```
+
+## Results: Factors and cell types
+
+Factors are very similar across methods. I certainly don't see anything that, contrary to the above evidence, would compel me to use size factors.
+
+```{r plot.factors}
+plot.factors(res$libsize$fl, processed$cell.type, 
+             order(res$libsize$fl$pve, decreasing = TRUE),
+             title = "Library size normalization")
+plot.factors(res$scran$fl, processed$cell.type, 
+             order(res$scran$fl$pve, decreasing = TRUE),
+             title = "scran")
+plot.factors(res$noscale$fl, processed$cell.type, 
+             order(res$noscale$fl$pve, decreasing = TRUE),
+             title = "No size factors")
+```
