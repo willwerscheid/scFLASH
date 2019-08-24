@@ -46,15 +46,20 @@ plot.gene <- function(data, gene, bins = 30) {
 
 # Initial preprocessing -------------------------------------------------------
 
-preprocess <- function(data, min.nzcts, max.libsize = NULL) {
+preprocess <- function(data, min.nzcts, max.libsize = NULL, scale.factors = NULL) {
   # Drop cells with too many transcripts.
   lib.size <- colSums(data)
   if (!is.null(max.libsize)) {
     data     <- data[,  lib.size <= max.libsize]
+    if (!is.null(scale.factors)) {
+      scale.factors <- scale.factors[lib.size <= max.libsize]
+    }
     lib.size <- lib.size[lib.size <= max.libsize]
   }
 
-  scale.factors <- lib.size / median(lib.size)
+  if (is.null(scale.factors)) {
+    scale.factors <- lib.size / median(lib.size)
+  }
 
   n.genes <- nrow(data)
 
@@ -69,15 +74,22 @@ preprocess <- function(data, min.nzcts, max.libsize = NULL) {
   data <- t(t(data) / scale.factors)
   data <- log1p(data)
 
+  # ELBO adjustment (using change-of-variables formula).
+  elbo.adj <- -n.genes * sum(log(scale.factors)) - sum(data)
+
   return(list(data = data,
               scale.factors = scale.factors,
+              elbo.adj = elbo.adj,
               gene.sparsity = gene.sparsity))
 }
 
 # Dataset-specific functions include some additional useful fields.
 
-preprocess.droplet <- function(droplet, min.nzcts = 10, max.libsize = 30000) {
-  processed <- preprocess(droplet, min.nzcts, max.libsize)
+preprocess.droplet <- function(droplet,
+                               min.nzcts = 10,
+                               max.libsize = 30000,
+                               scale.factors = NULL) {
+  processed <- preprocess(droplet, min.nzcts, max.libsize, scale.factors)
 
   mouse <- sapply(strsplit(colnames(processed$data), "_"), `[`, 1)
   cell.type <- sapply(strsplit(colnames(processed$data), "_"), `[`, 3)
