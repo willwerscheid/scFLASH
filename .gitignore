@@ -13,3 +13,4 @@ data/droplet.rds
 output/var_type
 output/backfit
 output/prior_type
+output/size_factors
