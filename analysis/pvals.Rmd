@@ -25,7 +25,7 @@ This implies that $Y_{ij}$ is supported on the interval $(-\lambda_j, \infty)$, 
 
 To calculate $p$-values, I'd like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily.
 
-Here's how I proceed: First, to guarantee that $\mathbb{E}Y_{ij}$ is positive, I put all of the mass from $(-\lambda_j, 0)$ onto a point mass at zero, which gives a mixture of a point mass at zero and a shifted and truncated lognormal distribution with support on the positive real line: 
+Here's how I proceed: First, to guarantee that $\mathbb{E}Y_{ij}$ is positive, I put all of the mass from $(-\lambda_j, 0)$ onto a point mass at zero, which gives a mixture of a point mass at zero and a shifted and truncated lognormal distribution with support on the positive reals: 
 $$ Y_{ij} \sim \pi_0 \delta_0 + (1 - \pi_0) \left[ \text{TLN}(\mu_{ij}, \sigma_{ij}^2; \lambda_j, \infty) - \lambda_j \right]$$
 
 Next, I match moments to find a Poisson or negative binomial distribution that approximates this mixture. If the variance of the mixture is less than the expectation, I choose the Poisson distribution with the same mean. Otherwise, I match the first and second moments to get a negative binomial distribution.
