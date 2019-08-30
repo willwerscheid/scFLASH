@@ -18,13 +18,13 @@ source("./code/utils.R")
 
 The droplet-based 3' scRNA-seq dataset analyzed in Montoro et al. (2018) can be obtained [here](https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE103354). It includes counts for 18,388 genes and 7,193 cells. Only 9.3% of all counts are nonzero. The data takes up 143 MB when loaded into memory as a sparse `Matrix` object.
 
-The original analysis assigns each cell to one of seven cell types. The cells are also labelled according to the mice they come from.
+The authors assign each cell to one of seven cell types. The cells are also labelled according to the mice they were taken from.
 
 ```{r cell.labels}
 cell.type <- as.factor(sapply(strsplit(colnames(droplet), "_"), `[`, 3))
-plot.category(cell.type, title = "Number of Cells per Cell Type")
+plot.category(cell.type, title = "Number of cells per cell type")
 mouse <- as.factor(sapply(strsplit(colnames(droplet), "_"), `[`, 1))
-plot.category(mouse, title = "Number of Cells per Mouse")
+plot.category(mouse, title = "Number of cells per mouse")
 ```
 
 Library size is distributed as follows.
@@ -33,7 +33,7 @@ Library size is distributed as follows.
 plot.libsize(droplet)
 ```
 
-Note the presence of extreme outliers. There are two of them, and both turn out to be goblet cells. I think that they should be removed from the dataset before analysis.
+Note the presence of extreme outliers. There are two of them, and both turn out to be goblet cells. I think that it would be a good idea to remove them from the dataset before analysis.
 
 ```{r cell.outliers}
 table(cell.type[which(colSums(droplet) > 30000)])
