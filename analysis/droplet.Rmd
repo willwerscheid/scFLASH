@@ -4,12 +4,14 @@ author: "Jason Willwerscheid"
 date: "8/12/2019"
 output:
   workflowr::wflow_html:
-    toc: false
+    code_folding: hide
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 ```
+
+## Overview
 
 ```{r read.data}
 droplet <- readRDS("./data/droplet.rds")
@@ -33,7 +35,7 @@ Library size is distributed as follows.
 plot.libsize(droplet)
 ```
 
-Note the presence of extreme outliers. There are two of them, and both turn out to be goblet cells. I think that it would be a good idea to remove them from the dataset before analysis.
+Note the presence of extreme outliers. There are two of them, and both turn out to be goblet cells. I prefer to remove them from the dataset before analysis.
 
 ```{r cell.outliers}
 table(cell.type[which(colSums(droplet) > 30000)])
@@ -53,3 +55,9 @@ for (gene in high.exp) {
   plot(plot.gene(droplet, gene))
 }
 ```
+
+## Preprocessing
+
+I remove the two cells with outlying library sizes, then I remove all genes with nonzero counts in less than ten of the remaining 7191 cells. This leaves a total of 14481 genes.
+
+Next, I normalize and transform the data. My default approach is to use library-size normalization followed by a `log1p` transformation. In future analyses, I will consider alternative normalization strategies and smaller or larger pseudocounts.
