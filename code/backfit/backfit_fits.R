@@ -1,20 +1,16 @@
 source("../utils.R")
 
 droplet <- readRDS("../../data/droplet.rds")
-processed <- preprocess.droplet(droplet)
+processed <- preprocess(droplet,
+                        min.nzcts = 10,
+                        max.libsize = 30000,
+                        prescale = "both")
 
 greedy.Kmax <- 20
 
-fl.kron1 <- flashier(processed$data, var.type = c(1, 2), greedy.Kmax = 1)
-gene.sds <- fl.kron1$residuals.sd[[1]]
-cell.sds <- fl.kron1$residuals.sd[[2]]
-
-scaled.data <- processed$data / gene.sds
-scaled.data <- t(t(scaled.data) / cell.sds)
-
 sink("../../output/backfit/greedy_output.txt")
 t.g <- system.time({
-  fl.g <- flashier(scaled.data, var.type = 1, greedy.Kmax = greedy.Kmax,
+  fl.g <- flashier(processed$data, var.type = 1, greedy.Kmax = greedy.Kmax,
                    verbose.lvl = -1)
 })
 sink()
@@ -37,6 +33,7 @@ fl.b$flash.fit <- NULL
 fl.g$sampler <- NULL
 fl.b$sampler <- NULL
 
-res <- list(fl = list(greedy = fl.g, backfit = fl.b),
-            t = list(greedy = t.g[3], backfit = t.b[3]))
-saveRDS(res, "../../output/backfit/flashier_fits.rds")
+res <- list(greedy = list(elapsed.time = t.g[3], fl = fl.g),
+            backfit = list(elapsed.time = t.b[3], fl = fl.b))
+
+saveRDS(res, "../../output/backfit/backfit_fits.rds")
