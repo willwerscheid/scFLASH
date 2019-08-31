@@ -15,13 +15,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Although I've done much to speed up backfits, they remain slow relative to greedy fits. The question, then, is whether they're worth the wait. Here, I'll argue that while the quantitative improvements are relatively small --- one can obtain a similar increase in ELBO in a fraction of the time by greedily adding a few additional factors --- the qualitative improvements can be dramatic.
 
-In this analysis, I take the best fit from my analysis of [variance structures](var_type.html) (the fit that "pre-scales" genes and cells) and compare it against a backfitted version of the same. The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/flashier_fits.R).
+In this analysis, I take the best greedy fit from my previous analysis of [variance structures](var_type.html) (the fit that "pre-scales" genes and cells) and compare it against a backfitted version of the same. The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits.R).
 
 ```{r load.res}
 source("./code/utils.R")
 droplet <- readRDS("./data/droplet.rds")
-processed <- preprocess.droplet(droplet)
-res <- readRDS("./output/backfit/flashier_fits.rds")
+droplet <- preprocess.droplet(droplet)
+res <- readRDS("./output/backfit/backfit_fits.rds")
 
 progress.g <- data.table::fread("./output/backfit/greedy_output.txt")
 progress.b <- data.table::fread("./output/backfit/backfit_output.txt")
@@ -29,15 +29,16 @@ progress.b <- data.table::fread("./output/backfit/backfit_output.txt")
 
 ## Improvement in ELBO
 
-As a quantitative measure of how much backfitting improves the fit, I plot the ELBO attained after each of the last five greedy factors have been added and after each of the first 50 backfitting iterations (backfitting continues for a total of 128 iterations, but the ELBO remains level after the first 30 or so iterations).
+As a quantitative measure of how much backfitting improves the fit, I plot the ELBO attained after each of the last five greedy factors have been added and after each of the first 50 backfitting iterations (backfitting continues for a total of 121 iterations, but the ELBO remains mostly level after the first 30 or so iterations).
 
-From this perspective, backfitting offers about as much improvement as the greedy addition of 3-4 factors. However, a single backfitting iteration takes almost 30 seconds, whereas the entire greedy fit can be performed in less than a minute.
+From this perspective, backfitting offers about as much improvement as the greedy addition of 3-4 factors. However, a single backfitting iteration takes almost 30 seconds, whereas the entire greedy fit can be performed in less than two minutes.
 
 ```{r progress}
 g.iter <- nrow(progress.g)
 b.iter <- nrow(progress.b)
-progress.g$elapsed.time <- (res$t$greedy * 1:g.iter / g.iter) / 60
-progress.b$elapsed.time <- (res$t$greedy + res$t$backfit * 1:b.iter / b.iter) / 60
+progress.g$elapsed.time <- (res$greedy$elapsed.time * 1:g.iter / g.iter) / 60
+progress.b$elapsed.time <- (res$greedy$elapsed.time 
+                            + res$backfit$elapsed.time * 1:b.iter / b.iter) / 60
 
 # Only the final iteration for each greedy factor is needed.
 progress.g <- subset(progress.g, c((progress.g$Factor[1:(nrow(progress.g) - 1)]
@@ -54,19 +55,19 @@ ggplot(subset(progress.df, !(Factor %in% as.character(1:15)) & Iter < 50),
 
 ## Factor comparison
 
-The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6-8, 11-12, and 17-19 are much sparser and are easily readable as cell-type specific factors. In particular, the unfortunate case of the goblet cells (discussed [here](var_type.html#goblet_cells_factors)) has been cleared up. Factor 2 is also more easily interpretable as indexing a basal-club trajectory without ciliated cells mucking up the situation.
+The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 2, 6-8, 11-12, and 18 are much sparser and are more easily readable as cell-type specific factors. In particular, the unfortunate case of the goblet cells (discussed [here](var_type.html#goblet_cells_factors)) has been cleared up.
 
 ```{r factors}
-plot.factors(res$fl$greedy, processed$cell.type, title = "Greedy")
-plot.factors(res$fl$backfit, processed$cell.type, title = "Backfit")
+plot.factors(res$greedy$fl, droplet$cell.type, kset = 1:20, title = "Greedy")
+plot.factors(res$backfit$fl, droplet$cell.type, kset = 1:20, title = "Backfit")
 ```
 
-Factors 12 and 13 have increased in importance, while factor 5 (the [hillock factor](var_type.html#hillock_factor)) has become less important. These changes are related: see below. Factors 16, 18, and 20 have also increased in importance (and have possibly borrowed from factor 9), but the significance of these factors is not clear to me.
+Factors 12 and 13 have increased in importance, while factor 5 (the [hillock factor](var_type.html#hillock_factor)) has become less important. These changes are related: see below. Factors 16, 17, and 19 have also increased in importance (and have possibly borrowed from factor 9), but the significance of these factors is not clear to me.
 
 ```{r pve}
-pve.df <- data.frame(k = 1:res$fl$greedy$n.factors, 
-                     greedy = res$fl$greedy$pve, 
-                     backfit = res$fl$backfit$pve)
+pve.df <- data.frame(k = 1:res$greedy$fl$n.factors, 
+                     greedy = res$greedy$fl$pve, 
+                     backfit = res$backfit$fl$pve)
 ggplot(pve.df, aes(x = greedy, y = backfit)) +
   geom_text(label = pve.df$k, size = 3) + 
   geom_abline(slope = 1, linetype = "dashed") + 
@@ -79,12 +80,12 @@ ggplot(pve.df, aes(x = greedy, y = backfit)) +
 One of the most interesting changes concerns the "hillock factor." As far as I can tell, the burden of representing hillock cells is transferred from a single factor (factor 5) to three separate factors (5, 12, and 13). Note, in particular, that Krt13 (a marker gene for hillock cells) has entirely disappeared from the top loadings for factor 5. Instead, the two backfitted factors that are most highly loaded on Krt13 are factors 12 and 13, which are no longer confounded with goblet-specific effects. Intriguingly, factor 12 is almost exclusively loaded on club cells, whereas factor 13 is non-sparse and includes basal and tuft cells.
 
 ```{r factor.comparison}
-hillock.genes <- c("Krt13", "Krt4", "Ecm1", "S100a11", "Cldn3", "Lgals3", "Anxa1",
-                   "S100a6", "Upk3bl", "Aqp5", "Anxa2", "Crip1", "Gsto1", "Tppp3")
-
-plot.one.factor(res$fl$greedy, 5, hillock.genes, "Factor 5 (greedy)", invert = TRUE)
-plot.one.factor(res$fl$backfit, 5, hillock.genes, "Factor 5 (backfit)", invert = TRUE)
-
-plot.one.factor(res$fl$backfit, 12, hillock.genes, "Factor 12 (backfit)", invert = TRUE)
-plot.one.factor(res$fl$backfit, 13, hillock.genes, "Factor 13 (backfit)", invert = FALSE)
+plot.one.factor(res$greedy$fl, 5, droplet$hillock.genes, 
+                title = "Factor 5 (greedy)", invert = TRUE)
+plot.one.factor(res$backfit$fl, 5, droplet$hillock.genes, 
+                title = "Factor 5 (backfit)", invert = TRUE)
+plot.one.factor(res$backfit$fl, 12, droplet$hillock.genes, 
+                title = "Factor 12 (backfit)", invert = TRUE)
+plot.one.factor(res$backfit$fl, 13, droplet$hillock.genes, 
+                title = "Factor 13 (backfit)", invert = FALSE)
 ```
