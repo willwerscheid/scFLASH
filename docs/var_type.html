@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-08-16
+<strong>Last updated:</strong> 2019-08-31
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebd61d1a88f7a97dea755963c052ae4105bc05e79targetblankbd61d1aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/bd61d1a88f7a97dea755963c052ae4105bc05e79" target="_blank">bd61d1a</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef608bb0637b4a4d6972f210ca9454dffc8a94f12targetblankf608bb0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/f608bb0637b4a4d6972f210ca9454dffc8a94f12" target="_blank">f608bb0</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebd61d1a88f7a97dea755963c052ae4105bc05e79targetblankbd61d1aa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef608bb0637b4a4d6972f210ca9454dffc8a94f12targetblankf608bb0a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,31 +554,38 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    data/droplet.rds
+    Ignored:    output/backfit/
+    Ignored:    output/prior_type/
+    Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
     Untracked:  analysis/pseudocount2.Rmd
+    Untracked:  analysis/pseudocount_redux.Rmd
     Untracked:  analysis/trachea4.Rmd
-    Untracked:  code/backfit/
     Untracked:  code/missing_data.R
+    Untracked:  code/pseudocount/
     Untracked:  code/pseudocounts.R
     Untracked:  code/trachea4.R
+    Untracked:  code/var_type/vartype_fits.R
     Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/droplet.rds
     Untracked:  data/hard_bimodal1.txt
     Untracked:  data/hard_bimodal2.txt
     Untracked:  data/hard_bimodal3.txt
     Untracked:  data/mus_pathways.rds
     Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  output/backfit/
+    Untracked:  docs/figure/pseudocount_redux.Rmd/
     Untracked:  output/pseudocount/
 
 Unstaged changes:
     Modified:   analysis/index.Rmd
     Modified:   analysis/pseudocount.Rmd
     Modified:   code/sc_comparisons.R
+    Modified:   code/size_factors/flashier_fits.R
     Modified:   code/utils.R
+    Deleted:    code/var_type/flashier_fits.R
 
 </code></pre>
 <p>
@@ -622,6 +629,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f608bb0637b4a4d6972f210ca9454dffc8a94f12/analysis/var_type.Rmd" target="_blank">f608bb0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-31
+</td>
+<td>
+wflow_publish(“analysis/var_type.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/26d29a37b931efee69f83e3c05aa72a401c96948/docs/var_type.html" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/bd61d1a88f7a97dea755963c052ae4105bc05e79/analysis/var_type.Rmd" target="_blank">bd61d1a</a>
 </td>
 <td>
@@ -650,40 +691,113 @@ wflow_publish(“analysis/var_type.Rmd”)
 <li>A cell-wise variance structure: <span class="math inline">\(\sigma_{ij}^2 = \sigma_j^2\)</span>.</li>
 <li>A “Kronecker” (rank-one) variance structure: <span class="math inline">\(\sigma_{ij}^2 = \sigma_{(1)i}^2 \sigma_{(2)j}^2\)</span>.</li>
 </ul>
-<p>The question, then, is how much the “errors” in the transformed data matrix vary from gene to gene and from cell to cell, and whether accounting for this heteroskedasticity makes any difference to the quality of the factors obtained via <code>flashier</code>.</p>
+<p>The question, then, is how much the “errors” in the transformed data matrix <span class="math inline">\(Y\)</span> vary from gene to gene and from cell to cell, and whether accounting for this heteroskedasticity makes any difference to the quality of the factors obtained via <code>flashier</code>.</p>
 <p>In this analysis, I’ll argue that accounting for differences in variability among both genes and cells is crucial, but I’ll advocate for a quick approximation to a Kronecker variance structure (which I’ll describe shortly) rather than a full Kronecker fit.</p>
-<p>All fits were produced by adding 20 “greedy” factors to the <a href="droplet.html">Montoro et al. droplet dataset</a>. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/var_type/flashier_fits.R">here</a>.</p>
+<p>All fits were produced by adding 20 “greedy” factors to the <a href="droplet.html">Montoro et al. droplet dataset</a>. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/var_type/vartype_fits.R">here</a>.</p>
 <pre class="r"><code>source(&quot;./code/utils.R&quot;)
 droplet &lt;- readRDS(&quot;./data/droplet.rds&quot;)
-processed &lt;- preprocess.droplet(droplet)
-res &lt;- readRDS(&quot;./output/var_type/flashier_fits.rds&quot;)</code></pre>
+droplet &lt;- preprocess.droplet(droplet)
+res &lt;- readRDS(&quot;./output/var_type/vartype_fits.rds&quot;)</code></pre>
 </div>
 <div id="gene-wise-variance-and-sparsity" class="section level2">
 <h2>Gene-wise variance and sparsity</h2>
 <p>I calculate the “sparsity” of a gene as the proportion of cells that have a nonzero number of transcripts for that gene. (I prefer this measure to, say, mean expression because it doesn’t depend on how size factors are calculated.)</p>
 <p>There is a very clear relationship between sparsity and gene-wise precision: in general, sparser genes yield more precise estimates. This is probably not surprising. If a gene is very sparse, then most estimates will be close to zero with high precision.</p>
-<p>The reversal of this trend for the least sparse genes is more surprising. I think that this is an effect of normalization: since library size is strongly correlated with the expression levels of the most highly expressed genes, the variability of the least sparse genes can be (artificially) reduced by scaling.</p>
-<pre class="r"><code>gene.df &lt;- data.frame(sparsity = processed$gene.sparsity,
-                      genewise.sd = res$fl$bygene$residuals.sd,
-                      kronecker.sd = res$fl$kron$residuals.sd[[1]],
-                      approx.sd = res$kron1$gene.sds)
+<p>The reversal of this trend for the least sparse genes is more surprising. I think that this is at least partially an effect of library-size normalization: since library size is strongly correlated with the expression levels of the most highly expressed genes, the variability of the least sparse genes can be (artificially) reduced by scaling. I will investigate the effects of using size factors to normalize counts in a <a href="size_factors.html">subsequent analysis</a>.</p>
+<pre class="r"><code>gene.df &lt;- data.frame(sparsity = droplet$gene.sparsity,
+                      genewise.sd = res$bygene$fl$residuals.sd,
+                      kronecker.sd = res$kron$fl$residuals.sd[[1]],
+                      approx.sd = res$scale.both$gene.prescaling.factors)
 ggplot(gene.df, aes(x = sparsity, y = genewise.sd)) +
   geom_point() +
   labs(y = &quot;estimated sd&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/gw-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gw-1">
+Past versions of gw-1.png
+</button>
+</p>
+<div id="fig-gw-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/gw-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cell-wise-variance-and-library-size" class="section level2">
 <h2>Cell-wise variance and library size</h2>
-<p>Rather than library size, I give size factors here, which are simply the library size of each cell divided by the median library size among all cells.</p>
-<p>Again the relationship is clear: larger size factors yield higher precision. This is to be expected, since a larger library size essentially means that we have more and better information about a cell.</p>
-<pre class="r"><code>cell.df &lt;- data.frame(size.factor = processed$scale.factors,
-                      cellwise.sd = res$fl$bycell$residuals.sd,
-                      kronecker.sd = res$fl$kron$residuals.sd[[2]],
-                      approx.sd = res$kron1$cell.sds)
-ggplot(cell.df, aes(x = size.factor, y = cellwise.sd)) +
+<p>Again the relationship is clear: a larger library size yields higher precision. This is to be expected, since a larger library size essentially means that we have more and better information about a cell.</p>
+<pre class="r"><code>cell.df &lt;- data.frame(library.size = droplet$lib.size,
+                      cellwise.sd = res$bycell$fl$residuals.sd,
+                      kronecker.sd = res$kron$fl$residuals.sd[[2]],
+                      approx.sd = res$scale.both$cell.prescaling.factors)
+ggplot(cell.df, aes(x = library.size, y = cellwise.sd)) +
   geom_point() +
-  labs(x = &quot;size factor&quot;, y = &quot;estimated sd&quot;)</code></pre>
+  labs(x = &quot;library size&quot;, y = &quot;estimated sd&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/cw-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-cw-1">
+Past versions of cw-1.png
+</button>
+</p>
+<div id="fig-cw-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/cw-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="kronecker-variance-and-pre-scaling" class="section level2">
 <h2>Kronecker variance and pre-scaling</h2>
@@ -691,9 +805,9 @@ ggplot(cell.df, aes(x = size.factor, y = cellwise.sd)) +
 <p>To get most of the benefits of the Kronecker variance structure without sacrificing too much in performance, notice that the Kronecker model <span class="math display">\[ Y_{ij} = \sum_k L_{ik}F_{jk} + E_{ij},\ 
 E_{ij} \sim N(0, \sigma_i^{2(1)} \sigma_j^{2(2)}) \]</span> is nearly equivalent to the model <span class="math display">\[ Y_{ij} / \sigma_j^{(2)} = \sum_k L_{ik}\frac{F_{jk}}{\sigma_j^{(2)}} + E_{ij},\
 E_{ij} \sim N(0, \sigma_i^{2(1)}), \]</span> so that, if one has cell-wise variance estimates, one can simply scale the columns in advance and then fit a gene-wise variance structure.</p>
-<p>The difference is that the meaning of the prior on <span class="math inline">\(F\)</span> (which I have ignored until now) changes. Instead of fitting empirical Bayes priors <span class="math display">\[ F_{jk} \sim g_k^{(f)}, \]</span> the pre-scaling approach fits the “p-value prior” <span class="math display">\[ \frac{F_{jk}}{\sigma_j^{(2)}} \sim g_k^{(f)}. \]</span> Similarly, by scaling the rows in advance, it is possible to fit <span class="math display">\[ \frac{L_{ik}}{\sigma_i^{(1)}} \sim g_k^{(\ell)}. \]</span> These observations suggest three possible ways of proceeding: scaling the columns in advance and fitting gene-wise variance estimates, scaling the rows and fitting cell-wise estimates, and scaling both and fitting gene-wise estimates. (One could also scale both and fit cell-wise estimates, but I’m convinced that getting variance estimates right for genes is more important than for cells: see below.) All approaches have the important advantage of being able to account for heteroskedasticity among both genes and cells, but they require nearly as little time to fit as the simpler cell- and gene-wise approaches (plus some additional time to obtain the initial variance estimates):</p>
-<pre class="r"><code>t.df &lt;- data.frame(elapsed.time = unlist(res$t))
-t.df$fit &lt;- names(res$t)
+<p>The difference is that the meaning of the prior on <span class="math inline">\(F\)</span> (which I have ignored until now) changes. Instead of fitting empirical Bayes priors <span class="math display">\[ F_{jk} \sim g_k^{(f)}, \]</span> the pre-scaling approach fits the “p-value prior” <span class="math display">\[ \frac{F_{jk}}{\sigma_j^{(2)}} \sim g_k^{(f)}. \]</span> Similarly, by scaling the rows in advance, it is possible to fit <span class="math display">\[ \frac{L_{ik}}{\sigma_i^{(1)}} \sim g_k^{(\ell)}. \]</span> These observations suggest three possible ways of proceeding: scaling the columns in advance and fitting gene-wise variance estimates, scaling the rows and fitting cell-wise estimates, and scaling both and fitting gene-wise estimates. (One could also scale both and fit cell-wise estimates, but I’m convinced that getting variance estimates right for genes is more important than for cells: see <a href="var_type.html#comparisons:_elbo">below</a>.) All approaches have the important advantage of being able to account for heteroskedasticity among both genes and cells, but they require nearly as little time to fit as the simpler cell- and gene-wise approaches (some additional time is needed to obtain the initial scaling factors):</p>
+<pre class="r"><code>t.df &lt;- data.frame(elapsed.time = sapply(res, `[[`, &quot;elapsed.time&quot;))
+t.df$fit &lt;- names(res)
 the.limits &lt;- c(&quot;const&quot;, &quot;bygene&quot;, &quot;bycell&quot;, 
                 &quot;scale.genes&quot;, &quot;scale.cells&quot;, &quot;scale.both&quot;, &quot;kron&quot;)
 ggplot(t.df, aes(x = fit, y = elapsed.time)) + 
@@ -702,31 +816,133 @@ ggplot(t.df, aes(x = fit, y = elapsed.time)) +
   scale_y_log10() +
   labs(x = NULL, y = &quot;elapsed time (s)&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/timing-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-timing-1">
+Past versions of timing-1.png
+</button>
+</p>
+<div id="fig-timing-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/timing-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>In this analysis, I fit a rank-one Kronecker model to get initial gene- and cell-wise variance estimates. Indeed, these estimates track those obtained using a full Kronecker fit fairly closely (note that the estimates can all be scaled by a constant without changing the model, so I’m looking for a linear relationship here rather than the relationship <span class="math inline">\(y = x\)</span>).</p>
 <pre class="r"><code>ggplot(gene.df, aes(x = kronecker.sd, y = approx.sd)) +
   geom_point() +
   labs(x = &quot;gene sd (full Kronecker)&quot;, y = &quot;gene sd (rank-one Kronecker)&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/kron.sds-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-kron.sds-1">
+Past versions of kron.sds-1.png
+</button>
+</p>
+<div id="fig-kron.sds-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/kron.sds-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(cell.df, aes(x = kronecker.sd, y = approx.sd)) +
   geom_point() +
   labs(x = &quot;cell sd (full Kronecker)&quot;, y = &quot;cell sd (rank-one Kronecker)&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/kron.sds-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-kron.sds-2">
+Past versions of kron.sds-2.png
+</button>
+</p>
+<div id="fig-kron.sds-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/kron.sds-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="comparisons-elbo" class="section level2">
 <h2>Comparisons: ELBO</h2>
 <p>A comparison of ELBOs suggests that accounting for heteroskedasticity among genes is more important than accounting for differences in variability among cells.</p>
-<pre class="r"><code>n.genes &lt;- nrow(processed$data)
-n.cells &lt;- ncol(processed$data)
-scale.cells.elbo.adj &lt;- -n.genes * sum(log(res$kron1$cell.sds))
-scale.genes.elbo.adj &lt;- -n.cells * sum(log(res$kron1$gene.sds))
-scale.both.elbo.adj &lt;- scale.cells.elbo.adj + scale.genes.elbo.adj
-elbo &lt;- list(const = res$fl$const$elbo,
-             bygene = res$fl$bygene$elbo,
-             bycell = res$fl$bycell$elbo,
-             scale.cells = res$fl$scale.cells$elbo + scale.cells.elbo.adj,
-             scale.genes = res$fl$scale.genes$elbo + scale.genes.elbo.adj,
-             scale.both = res$fl$scale.both$elbo + scale.both.elbo.adj,
-             kron = res$fl$kron$elbo)
+<pre class="r"><code>n.genes &lt;- nrow(droplet$data)
+n.cells &lt;- ncol(droplet$data)
+elbo &lt;- sapply(res, function(x) x$fl$elbo + x$elbo.adj)
 addl.par &lt;- c(n.cells - 1, n.genes - 1, n.genes, n.genes, n.cells, n.cells)
 nested.df &lt;- data.frame(comparison = c(&quot;constant -&gt; cell-wise&quot;,
                                        &quot;constant -&gt; gene-wise&quot;,
@@ -735,12 +951,12 @@ nested.df &lt;- data.frame(comparison = c(&quot;constant -&gt; cell-wise&quot;,
                                        &quot;gene-wise -&gt; kronecker&quot;,
                                        &quot;gene-wise -&gt; pre-scale cells&quot;),
                         addl.par = addl.par,
-                        elbo.per.par = (round(c(elbo$bycell - elbo$const,
-                                                elbo$bygene - elbo$const,
-                                                elbo$kron - elbo$bycell,
-                                                elbo$scale.genes - elbo$bycell,
-                                                elbo$kron - elbo$bygene,
-                                                elbo$scale.cells - elbo$bygene)
+                        elbo.per.par = (round(c(elbo[&quot;bycell&quot;] - elbo[&quot;const&quot;],
+                                                elbo[&quot;bygene&quot;] - elbo[&quot;const&quot;],
+                                                elbo[&quot;kron&quot;] - elbo[&quot;bycell&quot;],
+                                                elbo[&quot;scale.genes&quot;] - elbo[&quot;bycell&quot;],
+                                                elbo[&quot;kron&quot;] - elbo[&quot;bygene&quot;],
+                                                elbo[&quot;scale.cells&quot;] - elbo[&quot;bygene&quot;])
                                               / addl.par)))
 col.names =  c(&quot;Nested models&quot;, 
                &quot;Number of additional parameters&quot;, 
@@ -801,83 +1017,407 @@ knitr::kable(nested.df[1:2, ], col.names = col.names)</code></pre>
 </tbody>
 </table>
 <p>In fact, pre-scaling both genes and cells yields the best ELBO among all fits.</p>
-<pre class="r"><code>elbo.df &lt;- data.frame(fit = names(elbo), elbo = unlist(elbo))
-ggplot(subset(elbo.df, elbo &gt; 60000000), aes(x = fit, y = elbo)) + 
+<pre class="r"><code>elbo.df &lt;- data.frame(fit = names(elbo), elbo = elbo)
+ggplot(subset(elbo.df, elbo &gt; 40000000), aes(x = fit, y = elbo)) + 
   geom_point() +
   scale_x_discrete(limits = c(&quot;scale.genes&quot;, &quot;scale.cells&quot;, &quot;scale.both&quot;, &quot;kron&quot;)) +
   labs(x = NULL)</code></pre>
 <p><img src="figure/var_type.Rmd/kron.compare-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-kron.compare-1">
+Past versions of kron.compare-1.png
+</button>
+</p>
+<div id="fig-kron.compare-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/kron.compare-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="comparisons-distribution-of-p-values" class="section level2">
 <h2>Comparisons: Distribution of p-values</h2>
-<p>A comparison of implied <span class="math inline">\(p\)</span>-value distributions (as described <a href="pvals.html">here</a>) offers further evidence for the superiority of the gene-wise fit relative to the constant one. The fits that account for heteroskedasticity among both genes and cells (which I will refer to as “Kronecker-like” fits) show further improvement, at least in terms of the KL-divergence of the distribution of <span class="math inline">\(p\)</span>-values relative to a uniform distribution. Note, in particular, that the Kronecker fit yields fewer counts that are much higher than expected, at the cost of more counts that are lower than expected. I prefer this behavior: I’d like to be able to account for as many large counts as possible, even if it means that there are a few more zeros where I expected to see nonzero counts.</p>
-<pre class="r"><code>KL &lt;- sapply(res$pvals, `[[`, &quot;KL.divergence&quot;)
+<p>A comparison of implied <span class="math inline">\(p\)</span>-value distributions (as described <a href="pvals.html">here</a>) offers further evidence for the superiority of the gene-wise fit relative to the constant one. The fits that account for heteroskedasticity among both genes and cells (which I will refer to as “Kronecker-like” fits) show further improvement, at least in terms of the KL-divergence of the distribution of <span class="math inline">\(p\)</span>-values relative to a uniform distribution.</p>
+<pre class="r"><code>KL &lt;- sapply(lapply(res, `[[`, &quot;p.vals&quot;), `[[`, &quot;KL.divergence&quot;)
 KL.df &lt;- data.frame(fit = names(KL), KL = KL)
 ggplot(KL.df, aes(x = fit, y = KL)) +
   geom_bar(stat = &quot;identity&quot;) +
   scale_x_discrete(limits = the.limits) +
   labs(x = NULL, y = &quot;KL divergence relative to uniform&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/pval.kl-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pval.kl-1">
+Past versions of pval.kl-1.png
+</button>
+</p>
+<div id="fig-pval.kl-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/pval.kl-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="constant-variance-structure" class="section level3">
 <h3>Constant variance structure</h3>
-<pre class="r"><code>plot.p.vals(res$pvals$const)</code></pre>
+<pre class="r"><code>plot.p.vals(res$const$p.vals)</code></pre>
 <p><img src="figure/var_type.Rmd/const.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-const.p-1">
+Past versions of const.p-1.png
+</button>
+</p>
+<div id="fig-const.p-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/const.p-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="gene-wise-variance-structure" class="section level3">
 <h3>Gene-wise variance structure</h3>
-<pre class="r"><code>plot.p.vals(res$pvals$bygene)</code></pre>
+<pre class="r"><code>plot.p.vals(res$bygene$p.vals)</code></pre>
 <p><img src="figure/var_type.Rmd/bygene.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bygene.p-1">
+Past versions of bygene.p-1.png
+</button>
+</p>
+<div id="fig-bygene.p-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/bygene.p-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="kronecker-variance-structure" class="section level3">
 <h3>Kronecker variance structure</h3>
 <p>I omit the other Kronecker-like fits here; to the eye, they are indistinguishable.</p>
-<pre class="r"><code>plot.p.vals(res$pvals$kron)</code></pre>
+<pre class="r"><code>plot.p.vals(res$kron$p.vals)</code></pre>
 <p><img src="figure/var_type.Rmd/kron.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-kron.p-1">
+Past versions of kron.p-1.png
+</button>
+</p>
+<div id="fig-kron.p-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/kron.p-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="comparisons-factors-and-cell-types" class="section level2">
 <h2>Comparisons: Factors and cell types</h2>
 <p>Here I plot factors in decreasing order of proportion of variance explained.</p>
 <p>The constant variance structure is by far the least successful in producing sparse factors that can easily discriminate among cell types. The differences among the other fits are intriguing, but it’s not clear why one rather than another might be preferred. I examine a few individual factors in detail below.</p>
-<pre class="r"><code>plot.factors(res$fl$const, 
-             processed$cell.type, 
-             kset = order(res$fl$const$pve, decreasing = TRUE),
+<pre class="r"><code>plot.factors(res$const$fl, 
+             droplet$cell.type, 
              title = &quot;Constant variance structure&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plotting.factors-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$fl$bygene, 
-             processed$cell.type, 
-             kset = order(res$fl$bygene$pve, decreasing = TRUE),
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotting.factors-1">
+Past versions of plotting.factors-1.png
+</button>
+</p>
+<div id="fig-plotting.factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plotting.factors-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$bygene$fl, 
+             droplet$cell.type, 
              title = &quot;Gene-wise variance structure&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plotting.factors-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$fl$kron,
-             processed$cell.type,
-             kset = order(res$fl$kron$pve, decreasing = TRUE),
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotting.factors-2">
+Past versions of plotting.factors-2.png
+</button>
+</p>
+<div id="fig-plotting.factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plotting.factors-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$kron$fl,
+             droplet$cell.type,
              title = &quot;Kronecker variance structure&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plotting.factors-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$fl$scale.both,
-             processed$cell.type,
-             kset = order(res$fl$scale.both$pve, decreasing = TRUE),
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotting.factors-3">
+Past versions of plotting.factors-3.png
+</button>
+</p>
+<div id="fig-plotting.factors-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plotting.factors-3.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$scale.both$fl,
+             droplet$cell.type,
              title = &quot;Pre-scaling both genes and cells&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plotting.factors-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plotting.factors-4">
+Past versions of plotting.factors-4.png
+</button>
+</p>
+<div id="fig-plotting.factors-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plotting.factors-4.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <div id="ionocytes-factor" class="section level3">
 <h3>Ionocytes factor</h3>
-<p>In all fits except for the one that assumes a constant variance structure, there is a factor that clearly picks out ionocytes. (In the above plots of the gene-wise, Kronecker, and pre-scaled fits, it is factor 18, 19, and 17: look for the big blue dots).</p>
-<p>The pre-scaling approach yields the sparsest factor with respect to gene loadings. It’s not as sparse with respect to cell loadings, but the above plot makes clear that the ionocyte-specific effects are entangled with goblet-specific effects. A semi-nonnegative factorization might be able to disentangle the two sets of effects.</p>
-<pre class="r"><code>bygene.k &lt;- order(res$fl$bygene$pve, decreasing = TRUE)[18]
-bygene.sgenes &lt;- sum(res$fl$bygene$loadings.lfsr[[1]][, bygene.k] &lt; .01)
-bygene.scells &lt;- sum(res$fl$bygene$loadings.lfsr[[2]][, bygene.k] &lt; .01)
-
-kron.k &lt;- order(res$fl$kron$pve, decreasing = TRUE)[19]
-kron.sgenes &lt;- sum(res$fl$kron$loadings.lfsr[[1]][, kron.k] &lt; .01)
-kron.scells &lt;- sum(res$fl$kron$loadings.lfsr[[2]][, kron.k] &lt; .01)
-
-scaled.k &lt;- order(res$fl$scale.both$pve, decreasing = TRUE)[17]
-scaled.sgenes &lt;- sum(res$fl$scale.both$loadings.lfsr[[1]][, scaled.k] &lt; .01)
-scaled.scells &lt;- sum(res$fl$scale.both$loadings.lfsr[[2]][, scaled.k] &lt; .01)
+<p>In all fits except for the one that assumes a constant variance structure, there is a factor that clearly picks out ionocytes. (In the above plots of the gene-wise, Kronecker, and pre-scaled fits, it’s factor 18, 19, and 17: look for the big blue dots).</p>
+<p>The pre-scaling approach yields the sparsest factor with respect to gene loadings. It’s not as sparse with respect to cell loadings, but the above plot makes clear that the ionocyte-specific effects are entangled with goblet-specific effects. Backfitting or a semi-nonnegative factorization might be able to disentangle the two sets of effects.</p>
+<pre class="r"><code>fls &lt;- list(res$bygene$fl, res$kron$fl, res$scale.both$fl)
+ion.k &lt;- mapply(get.orig.k, fls, c(18, 19, 17))
+ion.signif.genes &lt;- mapply(function(fl, k) sum(fl$loadings.lfsr[[1]][, k] &lt; .01), 
+                           fls, ion.k)
+ion.signif.cells &lt;- mapply(function(fl, k) sum(fl$loadings.lfsr[[2]][, k] &lt; .01), 
+                           fls, ion.k)
 
 ion.df &lt;- data.frame(fit = c(&quot;Gene-wise&quot;, &quot;Kronecker&quot;, &quot;Pre-scaled&quot;),
-                     signif.genes = c(bygene.sgenes, kron.sgenes, scaled.sgenes),
-                     signif.cells = c(bygene.scells, kron.scells, scaled.scells))
+                     signif.genes = ion.signif.genes,
+                     signif.cells = ion.signif.cells)
 knitr::kable(ion.df, 
              col.names = c(&quot;Fit&quot;, &quot;Number of significant genes (LFSR &lt; 0.01)&quot;,
                            &quot;Number of significant cells (LFSR &lt; 0.01)&quot;))</code></pre>
@@ -892,69 +1432,309 @@ knitr::kable(ion.df,
 <tbody>
 <tr class="odd">
 <td align="left">Gene-wise</td>
-<td align="right">502</td>
-<td align="right">82</td>
+<td align="right">501</td>
+<td align="right">80</td>
 </tr>
 <tr class="even">
 <td align="left">Kronecker</td>
-<td align="right">204</td>
+<td align="right">203</td>
 <td align="right">28</td>
 </tr>
 <tr class="odd">
 <td align="left">Pre-scaled</td>
-<td align="right">167</td>
+<td align="right">168</td>
 <td align="right">73</td>
 </tr>
 </tbody>
 </table>
 <p>Below, I plot the top 100 loadings for each fit, labelling genes that Montoro et al. identify as important for ionocyte function. The pre-scaling approach yields especially nice results here, with Cftr and Atp6v0d2 given especially prominent place with respect to both rank and absolute value. Atp6v1c2 is de-emphasized, but Figure 5 in Montoro et al. suggests that the gene is not particularly specifically expressed in ionocytes anyway.</p>
-<pre class="r"><code>ionocyte.genes &lt;- c(&quot;Ascl3&quot;, &quot;Atp6v1c2&quot;, &quot;Atp6v0d2&quot;, &quot;Cftr&quot;, &quot;Foxi1&quot;)
-
-plot.one.factor(res$fl$bygene, bygene.k, ionocyte.genes, &quot;Gene-wise variance structure&quot;)</code></pre>
+<pre class="r"><code>plot.one.factor(res$bygene$fl, ion.k[1], droplet$ionocyte.genes, 
+                title = &quot;Gene-wise variance structure&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plot.ion.factors-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$kron, kron.k, ionocyte.genes, &quot;Kronecker variance structure&quot;,
-                invert = TRUE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.ion.factors-1">
+Past versions of plot.ion.factors-1.png
+</button>
+</p>
+<div id="fig-plot.ion.factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plot.ion.factors-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$kron$fl, ion.k[2], droplet$ionocyte.genes, 
+                title = &quot;Kronecker variance structure&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/plot.ion.factors-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$scale.both, scaled.k, ionocyte.genes, &quot;Pre-scaling approach&quot;,
-                invert = TRUE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.ion.factors-2">
+Past versions of plot.ion.factors-2.png
+</button>
+</p>
+<div id="fig-plot.ion.factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plot.ion.factors-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, ion.k[3], droplet$ionocyte.genes, 
+                title = &quot;Pre-scaling approach&quot;, invert = TRUE)</code></pre>
 <p><img src="figure/var_type.Rmd/plot.ion.factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.ion.factors-3">
+Past versions of plot.ion.factors-3.png
+</button>
+</p>
+<div id="fig-plot.ion.factors-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/plot.ion.factors-3.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="tuft-cells-factors" class="section level3">
 <h3>Tuft cells factors</h3>
 <p>In each of the above factor plots, factor 6 is primarily loaded on tuft cells, and to a lesser extent on neuroendocrine cells. Again, the factor given by the pre-scaling approach does the best job of picking out genes that Montoro et al. claim are important to that cell type’s function.</p>
-<pre class="r"><code>tuft.genes &lt;- c(&quot;Il25&quot;, &quot;Tslp&quot;, 
-                   &quot;Pou2f3&quot;, &quot;Gnb3&quot;, &quot;Gng13&quot;,
-                   &quot;Alox5ap&quot;, &quot;Ptprc&quot;, &quot;Spib&quot;, &quot;Sox9&quot;)
-
-bygene6 &lt;- order(res$fl$bygene$pve, decreasing = TRUE)[6]
-kron6 &lt;- order(res$fl$kron$pve, decreasing = TRUE)[6]
-scaled6 &lt;- order(res$fl$kron$pve, decreasing = TRUE)[6]
-
-top.n &lt;- 200
-plot.one.factor(res$fl$bygene, bygene6, tuft.genes, &quot;Gene-wise variance structure&quot;,
-                top.n = top.n)</code></pre>
+<pre class="r"><code>top.n &lt;- 200
+plot.one.factor(res$bygene$fl, get.orig.k(res$bygene$fl, 6), droplet$tuft.genes, 
+                title = &quot;Gene-wise variance structure&quot;, top.n = top.n)</code></pre>
 <p><img src="figure/var_type.Rmd/tuft6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$kron, kron6, tuft.genes, &quot;Kronecker variance structure&quot;,
-                top.n = top.n)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft6-1">
+Past versions of tuft6-1.png
+</button>
+</p>
+<div id="fig-tuft6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/tuft6-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$kron$fl, get.orig.k(res$kron$fl, 6), droplet$tuft.genes, 
+                title = &quot;Kronecker variance structure&quot;, top.n = top.n)</code></pre>
 <p><img src="figure/var_type.Rmd/tuft6-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$scale.both, scaled6, tuft.genes, &quot;Pre-scaling approach&quot;,
-                top.n = top.n)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft6-2">
+Past versions of tuft6-2.png
+</button>
+</p>
+<div id="fig-tuft6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/tuft6-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 6), droplet$tuft.genes, 
+                title = &quot;Pre-scaling approach&quot;, top.n = top.n)</code></pre>
 <p><img src="figure/var_type.Rmd/tuft6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft6-3">
+Past versions of tuft6-3.png
+</button>
+</p>
+<div id="fig-tuft6-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/tuft6-3.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>The gene-wise fit produces a second factor that might serve to differentiate among tuft cells (factor 19), which is particularly intriguing given Montoro et al.’s claim that there exist two distinct subpopulations of tuft cells. Indeed, nearly all genes that are identified as more specific to tuft-1 cells are negatively loaded, while all genes identified as specific to tuft-2 cells are positively loaded:</p>
-<pre class="r"><code>tuft1.genes &lt;- c(&quot;Gnb3&quot;, &quot;Gng13&quot;, &quot;Itpr3&quot;, &quot;Plcb2&quot;, &quot;Gnat3&quot;, &quot;Ovol3&quot;, &quot;Commd1&quot;, &quot;Cited2&quot;, &quot;Atp1b1&quot;, &quot;Fxyd6&quot;, &quot;Pou2f3&quot;)
-tuft2.genes &lt;- c(&quot;Alox5ap&quot;, &quot;Ptprc&quot;, &quot;Spib&quot;, &quot;Sox9&quot;, &quot;Mgst3&quot;, &quot;Gpx2&quot;, &quot;Ly6e&quot;, &quot;S100a11&quot;, &quot;Cst3&quot;, &quot;Cd24a&quot;, &quot;B2m&quot;, &quot;Dclk1&quot;, &quot;Sdc4&quot;, &quot;Il13ra1&quot;)
-all.tuft.genes &lt;- c(tuft1.genes, tuft2.genes)
-
-bygene19 &lt;- order(res$fl$bygene$pve, decreasing = TRUE)[19]
-tuft.df &lt;- data.frame(gene = all.tuft.genes,
-                      type = c(rep(&quot;tuft-1&quot;, length(tuft1.genes)), 
-                               rep(&quot;tuft-2&quot;, length(tuft2.genes))),
-                      loading = res$fl$bygene$loadings.pm[[1]][all.tuft.genes, bygene19])
-ggplot(tuft.df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(x = NULL, title = &quot;Gene-wise variance structure, Factor 19&quot;) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))</code></pre>
+<pre class="r"><code>plot.factor.subpops(res$bygene$fl, get.orig.k(res$bygene$fl, 19),
+                    droplet$tuft1.genes, droplet$tuft2.genes, &quot;tuft-1&quot;, &quot;tuft-2&quot;,
+                    title = &quot;Gene-wise variance structure, Factor 19&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/tuft19-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft19-1">
+Past versions of tuft19-1.png
+</button>
+</p>
+<div id="fig-tuft19-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/tuft19-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>This is an appealing factor to have, especially since Montoro et al. only discover the tuft-1 vs. tuft-2 distinction when investigating the larger “pulse-seq” dataset. In effect, it would allow us to label tuft-1 and tuft-2 cells with some confidence even though those labels aren’t provided for the droplet-based dataset. While it’s disappointing that the factor doesn’t appear in the Kronecker-like fits shown here, it does eventually get added if <code>greedy.Kmax</code> is increased (when scaling both genes and cells, 29 factors are required).</p>
 <p>One final thing to note is that with both constant and Kronecker variance structures, factor 4 identifies an axis with tuft cells at one extreme and club cells at the other. I haven’t been able to figure out what this factor is indexing.</p>
 </div>
@@ -962,74 +1742,381 @@ ggplot(tuft.df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
 <h3>Goblet cells factors</h3>
 <p>Here there are large differences among fits. The gene-wise fit yields a single factor that cleanly picks out goblet cells (Factor 17); the Kronecker fit gives an additional factor that indexes goblet-1 and goblet-2 subpopulations (Factor 20); and the pre-scaling approach yields multiple factors that do a relatively poor job of separating out goblet cells (Factors 11-13).</p>
 <p>The pre-scaling approach clearly does worst here, although one hopes that backfitting would be able to clean up the results. Factor 20 from the Kronecker fit plays a similar role with respect to goblet cells as does Factor 19 from the gene-wise fit with respect to tuft cells, and is a very desirable factor to have. (A similar factor gets added to the pre-scaling fit if <code>greedy.Kmax</code> is increased to 21.)</p>
-<pre class="r"><code>goblet.genes &lt;- c(&quot;Gp2&quot;, &quot;Tff1&quot;, &quot;Tff2&quot;, &quot;Muc5b&quot;, &quot;Lman1l&quot;, &quot;P2rx4&quot;, &quot;Muc5ac&quot;,
-                  &quot;Dcpp1&quot;, &quot;Dcpp2&quot;, &quot;Dcpp3&quot;, &quot;Lipf&quot;)
-
-plot.one.factor(res$fl$bygene, 
-                order(res$fl$bygene$pve, decreasing = TRUE)[17], 
-                goblet.genes, &quot;Gene-wise variance structure&quot;,
-                invert = TRUE)</code></pre>
+<pre class="r"><code>plot.one.factor(res$bygene$fl, get.orig.k(res$bygene$fl, 17), droplet$goblet.genes,
+                title = &quot;Gene-wise variance structure&quot;, invert = TRUE)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>
-plot.one.factor(res$fl$kron, 
-                order(res$fl$kron$pve, decreasing = TRUE)[14],
-                goblet.genes, &quot;Kronecker variance structure&quot;,
-                invert = TRUE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-1">
+Past versions of goblet-1.png
+</button>
+</p>
+<div id="fig-goblet-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$kron$fl, get.orig.k(res$kron$fl, 14), droplet$goblet.genes,
+                title = &quot;Kronecker variance structure&quot;, invert = TRUE)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>
-kron20 &lt;- order(res$fl$kron$pve, decreasing = TRUE)[20]
-goblet.df &lt;- data.frame(gene = goblet.genes[-1],
-                        type = c(rep(&quot;goblet-1&quot;, 6), 
-                                 rep(&quot;goblet-2&quot;, 4)),
-                        loading = res$fl$kron$loadings.pm[[1]][goblet.genes[-1], kron20])
-ggplot(goblet.df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
-  geom_bar(stat = &quot;identity&quot;) +
-  labs(x = NULL, title = &quot;Kronecker variance structure, Factor 20&quot;) +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-2">
+Past versions of goblet-2.png
+</button>
+</p>
+<div id="fig-goblet-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factor.subpops(res$kron$fl, get.orig.k(res$kron$fl, 20),
+                    droplet$goblet1.genes, droplet$goblet2.genes, &quot;goblet-1&quot;, &quot;goblet-2&quot;,
+                    title = &quot;Kronecker variance structure, Factor 20&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>
-plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[11], 
-                goblet.genes, &quot;Pre-scaling approach, Factor 11&quot;,
-                invert = TRUE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-3">
+Past versions of goblet-3.png
+</button>
+</p>
+<div id="fig-goblet-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-3.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 11), droplet$goblet.genes,
+                title = &quot;Pre-scaling approach, Factor 11&quot;, invert = TRUE)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[12], 
-                goblet.genes, &quot;Pre-scaling approach, Factor 12&quot;,
-                invert = FALSE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-4">
+Past versions of goblet-4.png
+</button>
+</p>
+<div id="fig-goblet-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-4.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 12), droplet$goblet.genes,
+                title = &quot;Pre-scaling approach, Factor 12&quot;, invert = FALSE)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-5.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[13], 
-                goblet.genes, &quot;Pre-scaling approach, Factor 13&quot;,
-                invert = TRUE)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-5">
+Past versions of goblet-5.png
+</button>
+</p>
+<div id="fig-goblet-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-5.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 13), droplet$goblet.genes,
+                title = &quot;Pre-scaling approach, Factor 13&quot;, invert = TRUE)</code></pre>
 <p><img src="figure/var_type.Rmd/goblet-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-6">
+Past versions of goblet-6.png
+</button>
+</p>
+<div id="fig-goblet-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/goblet-6.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="hillock-factor" class="section level3">
 <h3>Hillock factor</h3>
 <p>Another feature that is identified in the pulse-seq dataset but not the droplet-based dataset is a subpopulation of transitional cells along the basal-to-club trajectory organized in “hillocks.”</p>
-<p>To identify the most likely candidate for a hillock factor, I choose the factor with the largest mean loading among genes that Montoro et al. identified as particularly highly expressed in hillock cells. In each case, this turns out be Factor 5, with hillock cells negatively loaded in all cases but the gene-wise one. In the factor plots, one notes a large mass of basal and club cells centered around zero, which gently tails off into a smaller population of club cells.</p>
+<p>To identify the most likely candidate for a hillock factor, I choose the factor with the largest mean loading among genes that Montoro et al. identify as particularly highly expressed in hillock cells. In each case, this turns out be Factor 5, with hillock cells negatively loaded in all cases but the gene-wise one. In the factor plots, one notes a large mass of basal and club cells centered around zero, which gently tails off into a smaller population of club cells.</p>
 <p>There’s not a lot of daylight between fits here. All of them match up pretty well with the description given in Montoro et al.</p>
-<pre class="r"><code>hillock.genes &lt;- c(&quot;Krt13&quot;, &quot;Krt4&quot;, &quot;Ecm1&quot;, &quot;S100a11&quot;, &quot;Cldn3&quot;, &quot;Lgals3&quot;, &quot;Anxa1&quot;,
-                   &quot;S100a6&quot;, &quot;Upk3bl&quot;, &quot;Aqp5&quot;, &quot;Anxa2&quot;, &quot;Crip1&quot;, &quot;Gsto1&quot;, &quot;Tppp3&quot;)
-
-bygene.k &lt;- which.max(abs(colMeans(res$fl$bygene$loadings.pm[[1]][hillock.genes, ])))
-kron.k &lt;- which.max(abs(colMeans(res$fl$kron$loadings.pm[[1]][hillock.genes, ])))
-scaled.k &lt;- which.max(abs(colMeans(res$fl$scale.both$loadings.pm[[1]][hillock.genes, ])))
-
-invert.bygene &lt;- mean(res$fl$bygene$loadings.pm[[1]][hillock.genes, bygene.k]) &lt; 0
-invert.kron &lt;- mean(res$fl$kron$loadings.pm[[1]][hillock.genes, kron.k]) &lt; 0
-invert.scaled &lt;- mean(res$fl$scale.both$loadings.pm[[1]][hillock.genes, scaled.k]) &lt; 0    
+<pre class="r"><code>hillock.k &lt;- sapply(fls, function(fl) { 
+  which.max(abs(colMeans(fl$loadings.pm[[1]][droplet$hillock.genes, ])))
+})
+invert &lt;- mapply(function(fl, k) mean(fl$loadings.pm[[1]][droplet$hillock.genes, k]) &lt; 0,
+                 fls, hillock.k)
 
 top.n &lt;- 50
-plot.one.factor(res$fl$bygene, bygene.k, hillock.genes, &quot;Gene-wise variance structure&quot;,
-                top.n = top.n, invert = invert.bygene)</code></pre>
+plot.one.factor(res$bygene$fl, hillock.k[1], droplet$hillock.genes, 
+                title = &quot;Gene-wise variance structure&quot;, top.n = top.n, invert = invert[1])</code></pre>
 <p><img src="figure/var_type.Rmd/hillock-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$kron, kron.k, hillock.genes, &quot;Kronecker variance structure&quot;,
-                top.n = top.n, invert = invert.kron)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-1">
+Past versions of hillock-1.png
+</button>
+</p>
+<div id="fig-hillock-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/hillock-1.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$kron$fl, hillock.k[2], droplet$hillock.genes, 
+                title = &quot;Kronecker variance structure&quot;, top.n = top.n, invert = invert[2])</code></pre>
 <p><img src="figure/var_type.Rmd/hillock-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$fl$scale.both, scaled.k, hillock.genes, &quot;Pre-scaling approach&quot;,
-                top.n = top.n, invert = invert.scaled)</code></pre>
-<img src="figure/var_type.Rmd/hillock-3.png" width="672" style="display: block; margin: auto;" /> <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-2">
+Past versions of hillock-2.png
+</button>
+</p>
+<div id="fig-hillock-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/hillock-2.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$scale.both$fl, hillock.k[3], droplet$hillock.genes, 
+                title = &quot;Pre-scaling approach&quot;, top.n = top.n, invert = invert[3])</code></pre>
+<p><img src="figure/var_type.Rmd/hillock-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-3">
+Past versions of hillock-3.png
+</button>
+</p>
+<div id="fig-hillock-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/26d29a37b931efee69f83e3c05aa72a401c96948/docs/figure/var_type.Rmd/hillock-3.png" target="_blank">26d29a3</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-16
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -1052,7 +2139,7 @@ plot.one.factor(res$fl$bygene, bygene.k, hillock.genes, &quot;Gene-wise variance
 #&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
 #&gt; 
 #&gt; other attached packages:
-#&gt; [1] flashier_0.1.11 ggplot2_3.2.0   Matrix_1.2-15  
+#&gt; [1] flashier_0.1.15 ggplot2_3.2.0   Matrix_1.2-15  
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
 #&gt;  [1] Rcpp_1.0.1        plyr_1.8.4        highr_0.8        
