@@ -24,17 +24,17 @@ By assuming that the matrix $\Sigma$ has a given structure, one can estimate the
 * A cell-wise variance structure: $\sigma_{ij}^2 = \sigma_j^2$.
 * A "Kronecker" (rank-one) variance structure: $\sigma_{ij}^2 = \sigma_{(1)i}^2 \sigma_{(2)j}^2$.
 
-The question, then, is how much the "errors" in the transformed data matrix vary from gene to gene and from cell to cell, and whether accounting for this heteroskedasticity makes any difference to the quality of the factors obtained via `flashier`.
+The question, then, is how much the "errors" in the transformed data matrix $Y$ vary from gene to gene and from cell to cell, and whether accounting for this heteroskedasticity makes any difference to the quality of the factors obtained via `flashier`.
 
 In this analysis, I'll argue that accounting for differences in variability among both genes and cells is crucial, but I'll advocate for a quick approximation to a Kronecker variance structure (which I'll describe shortly) rather than a full Kronecker fit.
 
-All fits were produced by adding 20 "greedy" factors to the [Montoro et al. droplet dataset](droplet.html). The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/var_type/flashier_fits.R).
+All fits were produced by adding 20 "greedy" factors to the [Montoro et al. droplet dataset](droplet.html). The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/var_type/vartype_fits.R).
 
 ```{r load.res}
 source("./code/utils.R")
 droplet <- readRDS("./data/droplet.rds")
-processed <- preprocess.droplet(droplet)
-res <- readRDS("./output/var_type/flashier_fits.rds")
+droplet <- preprocess.droplet(droplet)
+res <- readRDS("./output/var_type/vartype_fits.rds")
 ```
 
 ## Gene-wise variance and sparsity
@@ -43,13 +43,13 @@ I calculate the "sparsity" of a gene as the proportion of cells that have a nonz
 
 There is a very clear relationship between sparsity and gene-wise precision: in general, sparser genes yield more precise estimates. This is probably not surprising. If a gene is very sparse, then most estimates will be close to zero with high precision.
 
-The reversal of this trend for the least sparse genes is more surprising. I think that this is an effect of normalization: since library size is strongly correlated with the expression levels of the most highly expressed genes, the variability of the least sparse genes can be (artificially) reduced by scaling.
+The reversal of this trend for the least sparse genes is more surprising. I think that this is at least partially an effect of library-size normalization: since library size is strongly correlated with the expression levels of the most highly expressed genes, the variability of the least sparse genes can be (artificially) reduced by scaling. I will investigate the effects of using size factors to normalize counts in a [subsequent analysis](size_factors.html).
 
 ```{r gw}
-gene.df <- data.frame(sparsity = processed$gene.sparsity,
-                      genewise.sd = res$fl$bygene$residuals.sd,
-                      kronecker.sd = res$fl$kron$residuals.sd[[1]],
-                      approx.sd = res$kron1$gene.sds)
+gene.df <- data.frame(sparsity = droplet$gene.sparsity,
+                      genewise.sd = res$bygene$fl$residuals.sd,
+                      kronecker.sd = res$kron$fl$residuals.sd[[1]],
+                      approx.sd = res$scale.both$gene.prescaling.factors)
 ggplot(gene.df, aes(x = sparsity, y = genewise.sd)) +
   geom_point() +
   labs(y = "estimated sd")
@@ -57,18 +57,16 @@ ggplot(gene.df, aes(x = sparsity, y = genewise.sd)) +
 
 ## Cell-wise variance and library size
 
-Rather than library size, I give size factors here, which are simply the library size of each cell divided by the median library size among all cells.
-
-Again the relationship is clear: larger size factors yield higher precision. This is to be expected, since a larger library size essentially means that we have more and better information about a cell.
+Again the relationship is clear: a larger library size yields higher precision. This is to be expected, since a larger library size essentially means that we have more and better information about a cell.
 
 ```{r cw}
-cell.df <- data.frame(size.factor = processed$scale.factors,
-                      cellwise.sd = res$fl$bycell$residuals.sd,
-                      kronecker.sd = res$fl$kron$residuals.sd[[2]],
-                      approx.sd = res$kron1$cell.sds)
-ggplot(cell.df, aes(x = size.factor, y = cellwise.sd)) +
+cell.df <- data.frame(library.size = droplet$lib.size,
+                      cellwise.sd = res$bycell$fl$residuals.sd,
+                      kronecker.sd = res$kron$fl$residuals.sd[[2]],
+                      approx.sd = res$scale.both$cell.prescaling.factors)
+ggplot(cell.df, aes(x = library.size, y = cellwise.sd)) +
   geom_point() +
-  labs(x = "size factor", y = "estimated sd")
+  labs(x = "library size", y = "estimated sd")
 ```
 
 ## Kronecker variance and pre-scaling
@@ -89,11 +87,11 @@ the pre-scaling approach fits the "p-value prior"
 $$ \frac{F_{jk}}{\sigma_j^{(2)}} \sim g_k^{(f)}. $$
 Similarly, by scaling the rows in advance, it is possible to fit
 $$ \frac{L_{ik}}{\sigma_i^{(1)}} \sim g_k^{(\ell)}. $$
-These observations suggest three possible ways of proceeding: scaling the columns in advance and fitting gene-wise variance estimates, scaling the rows and fitting cell-wise estimates, and scaling both and fitting gene-wise estimates. (One could also scale both and fit cell-wise estimates, but I'm convinced that getting variance estimates right for genes is more important than for cells: see below.) All approaches have the important advantage of being able to account for heteroskedasticity among both genes and cells, but they require nearly as little time to fit as the simpler cell- and gene-wise approaches (plus some additional time to obtain the initial variance estimates):
+These observations suggest three possible ways of proceeding: scaling the columns in advance and fitting gene-wise variance estimates, scaling the rows and fitting cell-wise estimates, and scaling both and fitting gene-wise estimates. (One could also scale both and fit cell-wise estimates, but I'm convinced that getting variance estimates right for genes is more important than for cells: see [below](var_type.html#comparisons:_elbo).) All approaches have the important advantage of being able to account for heteroskedasticity among both genes and cells, but they require nearly as little time to fit as the simpler cell- and gene-wise approaches (some additional time is needed to obtain the initial scaling factors):
 
 ```{r timing}
-t.df <- data.frame(elapsed.time = unlist(res$t))
-t.df$fit <- names(res$t)
+t.df <- data.frame(elapsed.time = sapply(res, `[[`, "elapsed.time"))
+t.df$fit <- names(res)
 the.limits <- c("const", "bygene", "bycell", 
                 "scale.genes", "scale.cells", "scale.both", "kron")
 ggplot(t.df, aes(x = fit, y = elapsed.time)) + 
@@ -119,18 +117,9 @@ ggplot(cell.df, aes(x = kronecker.sd, y = approx.sd)) +
 A comparison of ELBOs suggests that accounting for heteroskedasticity among genes is more important than accounting for differences in variability among cells.
 
 ```{r gw.vs.cw}
-n.genes <- nrow(processed$data)
-n.cells <- ncol(processed$data)
-scale.cells.elbo.adj <- -n.genes * sum(log(res$kron1$cell.sds))
-scale.genes.elbo.adj <- -n.cells * sum(log(res$kron1$gene.sds))
-scale.both.elbo.adj <- scale.cells.elbo.adj + scale.genes.elbo.adj
-elbo <- list(const = res$fl$const$elbo,
-             bygene = res$fl$bygene$elbo,
-             bycell = res$fl$bycell$elbo,
-             scale.cells = res$fl$scale.cells$elbo + scale.cells.elbo.adj,
-             scale.genes = res$fl$scale.genes$elbo + scale.genes.elbo.adj,
-             scale.both = res$fl$scale.both$elbo + scale.both.elbo.adj,
-             kron = res$fl$kron$elbo)
+n.genes <- nrow(droplet$data)
+n.cells <- ncol(droplet$data)
+elbo <- sapply(res, function(x) x$fl$elbo + x$elbo.adj)
 addl.par <- c(n.cells - 1, n.genes - 1, n.genes, n.genes, n.cells, n.cells)
 nested.df <- data.frame(comparison = c("constant -> cell-wise",
                                        "constant -> gene-wise",
@@ -139,12 +128,12 @@ nested.df <- data.frame(comparison = c("constant -> cell-wise",
                                        "gene-wise -> kronecker",
                                        "gene-wise -> pre-scale cells"),
                         addl.par = addl.par,
-                        elbo.per.par = (round(c(elbo$bycell - elbo$const,
-                                                elbo$bygene - elbo$const,
-                                                elbo$kron - elbo$bycell,
-                                                elbo$scale.genes - elbo$bycell,
-                                                elbo$kron - elbo$bygene,
-                                                elbo$scale.cells - elbo$bygene)
+                        elbo.per.par = (round(c(elbo["bycell"] - elbo["const"],
+                                                elbo["bygene"] - elbo["const"],
+                                                elbo["kron"] - elbo["bycell"],
+                                                elbo["scale.genes"] - elbo["bycell"],
+                                                elbo["kron"] - elbo["bygene"],
+                                                elbo["scale.cells"] - elbo["bygene"])
                                               / addl.par)))
 col.names =  c("Nested models", 
                "Number of additional parameters", 
@@ -160,8 +149,8 @@ knitr::kable(nested.df[3:6, ], col.names = col.names, row.names = FALSE)
 
 In fact, pre-scaling both genes and cells yields the best ELBO among all fits.
 ```{r kron.compare}
-elbo.df <- data.frame(fit = names(elbo), elbo = unlist(elbo))
-ggplot(subset(elbo.df, elbo > 60000000), aes(x = fit, y = elbo)) + 
+elbo.df <- data.frame(fit = names(elbo), elbo = elbo)
+ggplot(subset(elbo.df, elbo > 40000000), aes(x = fit, y = elbo)) + 
   geom_point() +
   scale_x_discrete(limits = c("scale.genes", "scale.cells", "scale.both", "kron")) +
   labs(x = NULL)
@@ -169,10 +158,10 @@ ggplot(subset(elbo.df, elbo > 60000000), aes(x = fit, y = elbo)) +
 
 ## Comparisons: Distribution of p-values
 
-A comparison of implied $p$-value distributions (as described [here](pvals.html)) offers further evidence for the superiority of the gene-wise fit relative to the constant one. The  fits that account for heteroskedasticity among both genes and cells (which I will refer to as "Kronecker-like" fits) show further improvement, at least in terms of the KL-divergence of the distribution of $p$-values relative to a uniform distribution. Note, in particular, that the Kronecker fit yields fewer counts that are much higher than expected, at the cost of more counts that are lower than expected. I prefer this behavior: I'd like to be able to account for as many large counts as possible, even if it means that there are a few more zeros where I expected to see nonzero counts.
+A comparison of implied $p$-value distributions (as described [here](pvals.html)) offers further evidence for the superiority of the gene-wise fit relative to the constant one. The  fits that account for heteroskedasticity among both genes and cells (which I will refer to as "Kronecker-like" fits) show further improvement, at least in terms of the KL-divergence of the distribution of $p$-values relative to a uniform distribution.
 
 ```{r pval.kl}
-KL <- sapply(res$pvals, `[[`, "KL.divergence")
+KL <- sapply(lapply(res, `[[`, "p.vals"), `[[`, "KL.divergence")
 KL.df <- data.frame(fit = names(KL), KL = KL)
 ggplot(KL.df, aes(x = fit, y = KL)) +
   geom_bar(stat = "identity") +
@@ -182,12 +171,12 @@ ggplot(KL.df, aes(x = fit, y = KL)) +
 
 ### Constant variance structure
 ```{r const.p}
-plot.p.vals(res$pvals$const)
+plot.p.vals(res$const$p.vals)
 ```
 
 ### Gene-wise variance structure
 ```{r bygene.p}
-plot.p.vals(res$pvals$bygene)
+plot.p.vals(res$bygene$p.vals)
 ```
 
 ### Kronecker variance structure
@@ -195,7 +184,7 @@ plot.p.vals(res$pvals$bygene)
 I omit the other Kronecker-like fits here; to the eye, they are indistinguishable.
 
 ```{r kron.p}
-plot.p.vals(res$pvals$kron)
+plot.p.vals(res$kron$p.vals)
 ```
 
 ## Comparisons: Factors and cell types
@@ -205,46 +194,37 @@ Here I plot factors in decreasing order of proportion of variance explained.
 The constant variance structure is by far the least successful in producing sparse factors that can easily discriminate among cell types. The differences among the other fits are intriguing, but it's not clear why one rather than another might be preferred. I examine a few individual factors in detail below.
 
 ```{r plotting.factors}
-plot.factors(res$fl$const, 
-             processed$cell.type, 
-             kset = order(res$fl$const$pve, decreasing = TRUE),
+plot.factors(res$const$fl, 
+             droplet$cell.type, 
              title = "Constant variance structure")
-plot.factors(res$fl$bygene, 
-             processed$cell.type, 
-             kset = order(res$fl$bygene$pve, decreasing = TRUE),
+plot.factors(res$bygene$fl, 
+             droplet$cell.type, 
              title = "Gene-wise variance structure")
-plot.factors(res$fl$kron,
-             processed$cell.type,
-             kset = order(res$fl$kron$pve, decreasing = TRUE),
+plot.factors(res$kron$fl,
+             droplet$cell.type,
              title = "Kronecker variance structure")
-plot.factors(res$fl$scale.both,
-             processed$cell.type,
-             kset = order(res$fl$scale.both$pve, decreasing = TRUE),
+plot.factors(res$scale.both$fl,
+             droplet$cell.type,
              title = "Pre-scaling both genes and cells")
 ```
 
 ### Ionocytes factor
 
-In all fits except for the one that assumes a constant variance structure, there is a factor that clearly picks out ionocytes. (In the above plots of the gene-wise, Kronecker, and pre-scaled fits, it is factor 18, 19, and 17: look for the big blue dots).
+In all fits except for the one that assumes a constant variance structure, there is a factor that clearly picks out ionocytes. (In the above plots of the gene-wise, Kronecker, and pre-scaled fits, it's factor 18, 19, and 17: look for the big blue dots).
 
-The pre-scaling approach yields the sparsest factor with respect to gene loadings. It's not as sparse with respect to cell loadings, but the above plot makes clear that the ionocyte-specific effects are entangled with goblet-specific effects. A semi-nonnegative factorization might be able to disentangle the two sets of effects.
+The pre-scaling approach yields the sparsest factor with respect to gene loadings. It's not as sparse with respect to cell loadings, but the above plot makes clear that the ionocyte-specific effects are entangled with goblet-specific effects. Backfitting or a semi-nonnegative factorization might be able to disentangle the two sets of effects.
 
 ```{r ionocytes}
-bygene.k <- order(res$fl$bygene$pve, decreasing = TRUE)[18]
-bygene.sgenes <- sum(res$fl$bygene$loadings.lfsr[[1]][, bygene.k] < .01)
-bygene.scells <- sum(res$fl$bygene$loadings.lfsr[[2]][, bygene.k] < .01)
-
-kron.k <- order(res$fl$kron$pve, decreasing = TRUE)[19]
-kron.sgenes <- sum(res$fl$kron$loadings.lfsr[[1]][, kron.k] < .01)
-kron.scells <- sum(res$fl$kron$loadings.lfsr[[2]][, kron.k] < .01)
-
-scaled.k <- order(res$fl$scale.both$pve, decreasing = TRUE)[17]
-scaled.sgenes <- sum(res$fl$scale.both$loadings.lfsr[[1]][, scaled.k] < .01)
-scaled.scells <- sum(res$fl$scale.both$loadings.lfsr[[2]][, scaled.k] < .01)
+fls <- list(res$bygene$fl, res$kron$fl, res$scale.both$fl)
+ion.k <- mapply(get.orig.k, fls, c(18, 19, 17))
+ion.signif.genes <- mapply(function(fl, k) sum(fl$loadings.lfsr[[1]][, k] < .01), 
+                           fls, ion.k)
+ion.signif.cells <- mapply(function(fl, k) sum(fl$loadings.lfsr[[2]][, k] < .01), 
+                           fls, ion.k)
 
 ion.df <- data.frame(fit = c("Gene-wise", "Kronecker", "Pre-scaled"),
-                     signif.genes = c(bygene.sgenes, kron.sgenes, scaled.sgenes),
-                     signif.cells = c(bygene.scells, kron.scells, scaled.scells))
+                     signif.genes = ion.signif.genes,
+                     signif.cells = ion.signif.cells)
 knitr::kable(ion.df, 
              col.names = c("Fit", "Number of significant genes (LFSR < 0.01)",
                            "Number of significant cells (LFSR < 0.01)"))
@@ -253,13 +233,12 @@ knitr::kable(ion.df,
 Below, I plot the top 100 loadings for each fit, labelling genes that Montoro et al. identify as important for ionocyte function. The pre-scaling approach yields especially nice results here, with Cftr and Atp6v0d2 given especially prominent place with respect to both rank and absolute value. Atp6v1c2 is de-emphasized, but Figure 5 in Montoro et al. suggests that the gene is not particularly specifically expressed in ionocytes anyway.
 
 ```{r plot.ion.factors}
-ionocyte.genes <- c("Ascl3", "Atp6v1c2", "Atp6v0d2", "Cftr", "Foxi1")
-
-plot.one.factor(res$fl$bygene, bygene.k, ionocyte.genes, "Gene-wise variance structure")
-plot.one.factor(res$fl$kron, kron.k, ionocyte.genes, "Kronecker variance structure",
-                invert = TRUE)
-plot.one.factor(res$fl$scale.both, scaled.k, ionocyte.genes, "Pre-scaling approach",
-                invert = TRUE)
+plot.one.factor(res$bygene$fl, ion.k[1], droplet$ionocyte.genes, 
+                title = "Gene-wise variance structure")
+plot.one.factor(res$kron$fl, ion.k[2], droplet$ionocyte.genes, 
+                title = "Kronecker variance structure")
+plot.one.factor(res$scale.both$fl, ion.k[3], droplet$ionocyte.genes, 
+                title = "Pre-scaling approach", invert = TRUE)
 ```
 
 ### Tuft cells factors
@@ -267,39 +246,21 @@ plot.one.factor(res$fl$scale.both, scaled.k, ionocyte.genes, "Pre-scaling approa
 In each of the above factor plots, factor 6 is primarily loaded on tuft cells, and to a lesser extent on neuroendocrine cells. Again, the factor given by the pre-scaling approach does the best job of picking out genes that Montoro et al. claim are important to that cell type's function.
 
 ```{r tuft6}
-tuft.genes <- c("Il25", "Tslp", 
-                   "Pou2f3", "Gnb3", "Gng13",
-                   "Alox5ap", "Ptprc", "Spib", "Sox9")
-
-bygene6 <- order(res$fl$bygene$pve, decreasing = TRUE)[6]
-kron6 <- order(res$fl$kron$pve, decreasing = TRUE)[6]
-scaled6 <- order(res$fl$kron$pve, decreasing = TRUE)[6]
-
 top.n <- 200
-plot.one.factor(res$fl$bygene, bygene6, tuft.genes, "Gene-wise variance structure",
-                top.n = top.n)
-plot.one.factor(res$fl$kron, kron6, tuft.genes, "Kronecker variance structure",
-                top.n = top.n)
-plot.one.factor(res$fl$scale.both, scaled6, tuft.genes, "Pre-scaling approach",
-                top.n = top.n)
+plot.one.factor(res$bygene$fl, get.orig.k(res$bygene$fl, 6), droplet$tuft.genes, 
+                title = "Gene-wise variance structure", top.n = top.n)
+plot.one.factor(res$kron$fl, get.orig.k(res$kron$fl, 6), droplet$tuft.genes, 
+                title = "Kronecker variance structure", top.n = top.n)
+plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 6), droplet$tuft.genes, 
+                title = "Pre-scaling approach", top.n = top.n)
 ```
 
 The gene-wise fit produces a second factor that might serve to differentiate among tuft cells (factor 19), which is particularly intriguing given Montoro et al.'s claim that there exist two distinct subpopulations of tuft cells. Indeed, nearly all genes that are identified as more specific to tuft-1 cells are negatively loaded, while all genes identified as specific to tuft-2 cells are positively loaded: 
 
 ```{r tuft19}
-tuft1.genes <- c("Gnb3", "Gng13", "Itpr3", "Plcb2", "Gnat3", "Ovol3", "Commd1", "Cited2", "Atp1b1", "Fxyd6", "Pou2f3")
-tuft2.genes <- c("Alox5ap", "Ptprc", "Spib", "Sox9", "Mgst3", "Gpx2", "Ly6e", "S100a11", "Cst3", "Cd24a", "B2m", "Dclk1", "Sdc4", "Il13ra1")
-all.tuft.genes <- c(tuft1.genes, tuft2.genes)
-
-bygene19 <- order(res$fl$bygene$pve, decreasing = TRUE)[19]
-tuft.df <- data.frame(gene = all.tuft.genes,
-                      type = c(rep("tuft-1", length(tuft1.genes)), 
-                               rep("tuft-2", length(tuft2.genes))),
-                      loading = res$fl$bygene$loadings.pm[[1]][all.tuft.genes, bygene19])
-ggplot(tuft.df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
-  geom_bar(stat = "identity") +
-  labs(x = NULL, title = "Gene-wise variance structure, Factor 19") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+plot.factor.subpops(res$bygene$fl, get.orig.k(res$bygene$fl, 19),
+                    droplet$tuft1.genes, droplet$tuft2.genes, "tuft-1", "tuft-2",
+                    title = "Gene-wise variance structure, Factor 19")
 ```
 
 This is an appealing factor to have, especially since Montoro et al. only discover the tuft-1 vs. tuft-2 distinction when investigating the larger "pulse-seq" dataset. In effect, it would allow us to label tuft-1 and tuft-2 cells with some confidence even though those labels aren't provided for the droplet-based dataset. While it's disappointing that the factor doesn't appear in the Kronecker-like fits shown here, it does eventually get added if `greedy.Kmax` is increased (when scaling both genes and cells, 29 factors are required).
@@ -313,68 +274,41 @@ Here there are large differences among fits. The gene-wise fit yields a single f
 The pre-scaling approach clearly does worst here, although one hopes that backfitting would be able to clean up the results. Factor 20 from the Kronecker fit plays a similar role with respect to goblet cells as does Factor 19 from the gene-wise fit with respect to tuft cells, and is a very desirable factor to have. (A similar factor gets added to the pre-scaling fit if `greedy.Kmax` is increased to 21.)
 
 ```{r goblet}
-goblet.genes <- c("Gp2", "Tff1", "Tff2", "Muc5b", "Lman1l", "P2rx4", "Muc5ac",
-                  "Dcpp1", "Dcpp2", "Dcpp3", "Lipf")
-
-plot.one.factor(res$fl$bygene, 
-                order(res$fl$bygene$pve, decreasing = TRUE)[17], 
-                goblet.genes, "Gene-wise variance structure",
-                invert = TRUE)
-
-plot.one.factor(res$fl$kron, 
-                order(res$fl$kron$pve, decreasing = TRUE)[14],
-                goblet.genes, "Kronecker variance structure",
-                invert = TRUE)
-
-kron20 <- order(res$fl$kron$pve, decreasing = TRUE)[20]
-goblet.df <- data.frame(gene = goblet.genes[-1],
-                        type = c(rep("goblet-1", 6), 
-                                 rep("goblet-2", 4)),
-                        loading = res$fl$kron$loadings.pm[[1]][goblet.genes[-1], kron20])
-ggplot(goblet.df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
-  geom_bar(stat = "identity") +
-  labs(x = NULL, title = "Kronecker variance structure, Factor 20") +
-  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
-
-plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[11], 
-                goblet.genes, "Pre-scaling approach, Factor 11",
-                invert = TRUE)
-plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[12], 
-                goblet.genes, "Pre-scaling approach, Factor 12",
-                invert = FALSE)
-plot.one.factor(res$fl$scale.both,
-                order(res$fl$scale.both$pve, decreasing = TRUE)[13], 
-                goblet.genes, "Pre-scaling approach, Factor 13",
-                invert = TRUE)
+plot.one.factor(res$bygene$fl, get.orig.k(res$bygene$fl, 17), droplet$goblet.genes,
+                title = "Gene-wise variance structure", invert = TRUE)
+plot.one.factor(res$kron$fl, get.orig.k(res$kron$fl, 14), droplet$goblet.genes,
+                title = "Kronecker variance structure", invert = TRUE)
+plot.factor.subpops(res$kron$fl, get.orig.k(res$kron$fl, 20),
+                    droplet$goblet1.genes, droplet$goblet2.genes, "goblet-1", "goblet-2",
+                    title = "Kronecker variance structure, Factor 20")
+plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 11), droplet$goblet.genes,
+                title = "Pre-scaling approach, Factor 11", invert = TRUE)
+plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 12), droplet$goblet.genes,
+                title = "Pre-scaling approach, Factor 12", invert = FALSE)
+plot.one.factor(res$scale.both$fl, get.orig.k(res$scale.both$fl, 13), droplet$goblet.genes,
+                title = "Pre-scaling approach, Factor 13", invert = TRUE)
 ```
 
 ### Hillock factor
 
 Another feature that is identified in the pulse-seq dataset but not the droplet-based dataset is a subpopulation of transitional cells along the basal-to-club trajectory organized in "hillocks." 
 
-To identify the most likely candidate for a hillock factor, I choose the factor with the largest mean loading among genes that Montoro et al. identified as particularly highly expressed in hillock cells. In each case, this turns out be Factor 5, with hillock cells negatively loaded in all cases but the gene-wise one. In the factor plots, one notes a large mass of basal and club cells centered around zero, which gently tails off into a smaller population of club cells.
+To identify the most likely candidate for a hillock factor, I choose the factor with the largest mean loading among genes that Montoro et al. identify as particularly highly expressed in hillock cells. In each case, this turns out be Factor 5, with hillock cells negatively loaded in all cases but the gene-wise one. In the factor plots, one notes a large mass of basal and club cells centered around zero, which gently tails off into a smaller population of club cells.
 
 There's not a lot of daylight between fits here. All of them match up pretty well with the description given in Montoro et al.
 
 ```{r hillock}
-hillock.genes <- c("Krt13", "Krt4", "Ecm1", "S100a11", "Cldn3", "Lgals3", "Anxa1",
-                   "S100a6", "Upk3bl", "Aqp5", "Anxa2", "Crip1", "Gsto1", "Tppp3")
-
-bygene.k <- which.max(abs(colMeans(res$fl$bygene$loadings.pm[[1]][hillock.genes, ])))
-kron.k <- which.max(abs(colMeans(res$fl$kron$loadings.pm[[1]][hillock.genes, ])))
-scaled.k <- which.max(abs(colMeans(res$fl$scale.both$loadings.pm[[1]][hillock.genes, ])))
-
-invert.bygene <- mean(res$fl$bygene$loadings.pm[[1]][hillock.genes, bygene.k]) < 0
-invert.kron <- mean(res$fl$kron$loadings.pm[[1]][hillock.genes, kron.k]) < 0
-invert.scaled <- mean(res$fl$scale.both$loadings.pm[[1]][hillock.genes, scaled.k]) < 0    
+hillock.k <- sapply(fls, function(fl) { 
+  which.max(abs(colMeans(fl$loadings.pm[[1]][droplet$hillock.genes, ])))
+})
+invert <- mapply(function(fl, k) mean(fl$loadings.pm[[1]][droplet$hillock.genes, k]) < 0,
+                 fls, hillock.k)
 
 top.n <- 50
-plot.one.factor(res$fl$bygene, bygene.k, hillock.genes, "Gene-wise variance structure",
-                top.n = top.n, invert = invert.bygene)
-plot.one.factor(res$fl$kron, kron.k, hillock.genes, "Kronecker variance structure",
-                top.n = top.n, invert = invert.kron)
-plot.one.factor(res$fl$scale.both, scaled.k, hillock.genes, "Pre-scaling approach",
-                top.n = top.n, invert = invert.scaled)
+plot.one.factor(res$bygene$fl, hillock.k[1], droplet$hillock.genes, 
+                title = "Gene-wise variance structure", top.n = top.n, invert = invert[1])
+plot.one.factor(res$kron$fl, hillock.k[2], droplet$hillock.genes, 
+                title = "Kronecker variance structure", top.n = top.n, invert = invert[2])
+plot.one.factor(res$scale.both$fl, hillock.k[3], droplet$hillock.genes, 
+                title = "Pre-scaling approach", top.n = top.n, invert = invert[3])
 ```
