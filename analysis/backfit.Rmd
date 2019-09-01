@@ -27,7 +27,7 @@ progress.g <- data.table::fread("./output/backfit/greedy_output.txt")
 progress.b <- data.table::fread("./output/backfit/backfit_output.txt")
 ```
 
-## Improvement in ELBO
+## Results: ELBO
 
 As a quantitative measure of how much backfitting improves the fit, I plot the ELBO attained after each of the last five greedy factors have been added and after each of the first 50 backfitting iterations (backfitting continues for a total of 121 iterations, but the ELBO remains mostly level after the first 30 or so iterations).
 
@@ -53,7 +53,7 @@ ggplot(subset(progress.df, !(Factor %in% as.character(1:15)) & Iter < 50),
        title = "Greedy factors 16-20 and first 50 backfitting iterations")
 ```
 
-## Factor comparison
+## Results: Factor comparisons
 
 The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 2, 6-8, 11-12, and 18 are much sparser and are more easily readable as cell-type specific factors. In particular, the unfortunate case of the goblet cells (discussed [here](var_type.html#goblet_cells_factors)) has been cleared up.
 
@@ -75,7 +75,7 @@ ggplot(pve.df, aes(x = greedy, y = backfit)) +
   labs(title = "Proportion of variance explained")
 ```
 
-## Hillock factor
+## Results: Hillock factor
 
 One of the most interesting changes concerns the "hillock factor." As far as I can tell, the burden of representing hillock cells is transferred from a single factor (factor 5) to three separate factors (5, 12, and 13). Note, in particular, that Krt13 (a marker gene for hillock cells) has entirely disappeared from the top loadings for factor 5. Instead, the two backfitted factors that are most highly loaded on Krt13 are factors 12 and 13, which are no longer confounded with goblet-specific effects. Intriguingly, factor 12 is almost exclusively loaded on club cells, whereas factor 13 is non-sparse and includes basal and tuft cells.
 

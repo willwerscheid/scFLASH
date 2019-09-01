@@ -112,7 +112,7 @@ ggplot(cell.df, aes(x = kronecker.sd, y = approx.sd)) +
   labs(x = "cell sd (full Kronecker)", y = "cell sd (rank-one Kronecker)")
 ```
 
-## Comparisons: ELBO
+## Results: ELBO
 
 A comparison of ELBOs suggests that accounting for heteroskedasticity among genes is more important than accounting for differences in variability among cells.
 
@@ -156,7 +156,7 @@ ggplot(subset(elbo.df, elbo > 40000000), aes(x = fit, y = elbo)) +
   labs(x = NULL)
 ```
 
-## Comparisons: Distribution of p-values
+## Results: Distribution of p-values
 
 A comparison of implied $p$-value distributions (as described [here](pvals.html)) offers further evidence for the superiority of the gene-wise fit relative to the constant one. The  fits that account for heteroskedasticity among both genes and cells (which I will refer to as "Kronecker-like" fits) show further improvement, at least in terms of the KL-divergence of the distribution of $p$-values relative to a uniform distribution.
 
@@ -187,7 +187,7 @@ I omit the other Kronecker-like fits here; to the eye, they are indistinguishabl
 plot.p.vals(res$kron$p.vals)
 ```
 
-## Comparisons: Factors and cell types
+## Results: Factors and cell types
 
 Here I plot factors in decreasing order of proportion of variance explained.
 
