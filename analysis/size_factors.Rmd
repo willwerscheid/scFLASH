@@ -25,8 +25,8 @@ Without loss of generality, I constrain the size factors to have median one. In 
 ```{r load.res}
 source("./code/utils.R")
 droplet <- readRDS("./data/droplet.rds")
-processed <- preprocess.droplet(droplet)
-res <- readRDS("./output/size_factors/flashier_fits.rds")
+droplet <- preprocess.droplet(droplet)
+res <- readRDS("./output/size_factors/sizefactor_fits.rds")
 ```
 
 ## Calculating size factors
@@ -35,22 +35,26 @@ I consider three methods. The method which I've been using in previous analyses 
 $$ \lambda_j = n_j / \text{median}_\ell(n_\ell) $$
 This method, commonly known as "library size normalization," has been criticized because library size is strongly correlated with the expression levels of the most highly expressed genes, so that normalizing by library size tends to suppress relevant variation in those genes' expression. 
 
-More sophisticated methods have been proposed. I particularly like an approach by Aaron Lun, Karsten Bach, and John Marioni which pools cells together and uses robust statistics to get more accurate estimates of size factors. The approach, detailed [here](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0947-7), is implemented in the `R` package `scran`.
+More sophisticated methods have been proposed. I particularly like an approach by Aaron Lun, Karsten Bach, and John Marioni which pools cells together and uses robust statistics to get more accurate estimates of size factors. The approach, detailed [here](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0947-7), is implemented in the `R` package `scran`. It took about minute to calculate size factors for the [Montoro et al. droplet dataset](droplet.html).
 
-A second approach that has gained some traction is [Rhonda Bacher's method](https://www.nature.com/articles/nmeth.4263) implemented in the `R` package `SCnorm`. I attempted to run it on the Montoro et al. droplet-based data, but it simply set all scale factors to one. 
+A second approach that has gained some traction is [Rhonda Bacher's method](https://www.nature.com/articles/nmeth.4263) implemented in the `R` package `SCnorm`. I attempted to run it on the Montoro et al. dataset, but it simply set all scale factors to one (and it took a very long time to do so).
 
 The third method I consider is to not use scale factors at all. This is not as dumb as it might seem! Write the EBMF model as
 $$ Y = \ell f' + LF' + E, $$
-where $\ell f'$ is the first factor fitted by `flashier`. This factor, which I often refer to as the "mean factor," typically accounts for by far the largest proportion of variance explained. Then,
-$$ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (L_{-1}F_{-1}')_{ij} + E_{ij} \right), $$
-so that $f$ essentially acts as a vector of size factors. The difference is that this scaling is done after the log1p transformation rather then before.
+where $\ell f'$ is the first factor fitted by `flashier`. This factor, which I usually refer to as the "mean factor," typically accounts for by far the largest proportion of variance explained. Then,
+$$ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (LF')_{ij} + E_{ij} \right), $$
+so that $f$ essentially acts as a vector of size factors. The difference is that this scaling is done after the `log1p` transformation rather then before.
+
+In this analysis, I'll argue that it's worth it to calculate `scran` size factors. Qualitatively, factors are very similar, but there are measurable differences in fits, it doesn't take very long to calculate the size factors, and in many ways it's the correct thing to do.
+
+All fits were produced by adding 20 "greedy" factors to the Montoro et al. droplet dataset. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R).
 
 ## Results: scran size factors
 
-The size factors obtained using `scran` are very different from the size factors obtained via library size normalization. In particular, `scran` yields a narrower range of size factors.
+The size factors obtained using `scran` are very different from the size factors obtained via library size normalization. In particular, `scran` yields a somewhat narrower range of size factors.
 
 ```{r sf}
-sf.df <- data.frame(libsize = res$libsize$sf, scran = res$scran$sf)
+sf.df <- data.frame(libsize = res$libsize$size.factors, scran = res$scran$size.factors)
 ggplot(sf.df, aes(x = libsize, y = scran)) +
   geom_point(size = 0.2) +
   geom_abline(slope = 1) + 
@@ -59,24 +63,35 @@ ggplot(sf.df, aes(x = libsize, y = scran)) +
 
 ## Results: ELBO
 
-I use a change-of-variables formula to compare ELBOs. Results suggest that it's best not to use size factors. 
+I use a change-of-variables formula to compare ELBOs. It's probably not surprising that the most sophisticated method (`scran`) does best. The improvement in the ELBO is substantial: it's approximately 600,000, which is the equivalent of 8-10 greedy factors. More surprisingly, library-size normalization does very poorly: worse, in fact, than not normalizing at all.
 
 ```{r elbo}
 elbo.df <- data.frame(method = c("No size factors", 
                                  "Library size normalization",
-                                 "scran"),
+                                 "scran size factors"),
                       elbo = c(res$noscale$fl$elbo + res$noscale$elbo.adj,
                                res$libsize$fl$elbo + res$libsize$elbo.adj,
                                res$scran$fl$elbo + res$scran$elbo.adj))
 ggplot(elbo.df, aes(x = method, y = elbo)) + 
   geom_point() +
-  scale_x_discrete(limits = c("Library size normalization", "scran", "No size factors")) +
+  scale_x_discrete(limits = c("No size factors",
+                              "Library size normalization", 
+                              "scran size factors")) +
   labs(x = NULL, y = "ELBO")
 ```
 
 ## Results: Distribution of p-values
 
-Again the laziest approach wins out, and convincingly so.
+The distribution of $p$-values is very similar across methods, but the small differences confirm the above ranking: `scran` does best, while library-size normalization does worst.
+
+```{r KL}
+KL <- sapply(lapply(res, `[[`, "p.vals"), `[[`, "KL.divergence")
+KL.df <- data.frame(fit = names(KL), KL = KL)
+ggplot(KL.df, aes(x = fit, y = KL)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete(limits = c("noscale", "libsize", "scran")) +
+  labs(x = NULL, y = "KL divergence relative to uniform")
+```
 
 ### Library size normalization
 
@@ -90,24 +105,12 @@ plot.p.vals(res$libsize$p.vals)
 plot.p.vals(res$scran$p.vals)
 ```
 
-### No size factors
-
-```{r noscale.p}
-plot.p.vals(res$noscale$p.vals)
-```
-
 ## Results: Factors and cell types
 
-Factors are very similar across methods. I certainly don't see anything that, contrary to the above evidence, would compel me to use size factors.
+Factors are very similar across methods. I don't see anything worth commenting on here.
 
 ```{r plot.factors}
-plot.factors(res$libsize$fl, processed$cell.type, 
-             order(res$libsize$fl$pve, decreasing = TRUE),
-             title = "Library size normalization")
-plot.factors(res$scran$fl, processed$cell.type, 
-             order(res$scran$fl$pve, decreasing = TRUE),
-             title = "scran")
-plot.factors(res$noscale$fl, processed$cell.type, 
-             order(res$noscale$fl$pve, decreasing = TRUE),
-             title = "No size factors")
+plot.factors(res$noscale$fl, droplet$cell.type, title = "No size factors")
+plot.factors(res$libsize$fl, droplet$cell.type, title = "Library size normalization")
+plot.factors(res$scran$fl, droplet$cell.type, title = "scran")
 ```
