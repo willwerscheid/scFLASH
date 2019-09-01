@@ -1,21 +1,17 @@
 source("../utils.R")
 
 droplet <- readRDS("../../data/droplet.rds")
-processed <- preprocess.droplet(droplet)
+processed <- preprocess(droplet,
+                        min.nzcts = 10,
+                        max.libsize = 30000,
+                        prescale = "both")
 
 greedy.Kmax <- 30
-
-fl.kron1 <- flashier(processed$data, var.type = c(1, 2), greedy.Kmax = 1)
-gene.sds <- fl.kron1$residuals.sd[[1]]
-cell.sds <- fl.kron1$residuals.sd[[2]]
-
-scaled.data <- processed$data / gene.sds
-scaled.data <- t(t(scaled.data) / cell.sds)
 
 do.fit <- function(prior.family) {
   sink("tmp_g.txt")
   t.g <- system.time({
-    fl.g <- flashier(scaled.data, var.type = 1, greedy.Kmax = greedy.Kmax,
+    fl.g <- flashier(processed$data, var.type = 1, greedy.Kmax = greedy.Kmax,
                      prior.family = prior.family, verbose.lvl = -1)
   })
   sink()
@@ -43,8 +39,8 @@ do.fit <- function(prior.family) {
   fl.b$flash.fit <- NULL
   fl.b$sampler <- NULL
 
-  return(list(fl = fl.b,
-              t = list(greedy = t.g[3], backfit = t.b[3]),
+  return(list(t = list(greedy = t.g[3], backfit = t.b[3]),
+              fl = fl.b,
               output = rbind(output.g, output.b)))
 }
 
@@ -59,4 +55,4 @@ res$snn.cell <- do.fit(c(prior.point.normal(), prior.nonnegative()))
 cat("Fitting nonnegative priors on genes...\n")
 res$snn.gene <- do.fit(c(prior.nonnegative(), prior.point.normal()))
 
-saveRDS(res, "../../output/prior_type/flashier_fits.rds")
+saveRDS(res, "../../output/prior_type/priortype_fits.rds")
