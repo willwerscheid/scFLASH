@@ -4,7 +4,8 @@ library(Matrix)
 library(ggplot2)
 library(flashier)
 
-# Plotting functions for datasets ---------------------------------------------
+
+# Plotting functions for datasets -----------------------------------------------------
 
 plot.category <- function(category, title) {
   df <- data.frame(category)
@@ -20,7 +21,7 @@ plot.libsize <- function(data, bins = 50) {
     scale_x_log10() +
     labs(x = "library size",
          y = "cell count",
-         title = "Library Size of Cells")
+         title = "Library size of cells")
 }
 
 plot.meanexp <- function(data, bins = 50) {
@@ -30,7 +31,7 @@ plot.meanexp <- function(data, bins = 50) {
     scale_x_log10() +
     labs(x = "mean expression",
          y = "gene count",
-         title = "Mean Expression of Genes")
+         title = "Mean expression of genes")
 }
 
 plot.gene <- function(data, gene, bins = 30) {
@@ -44,52 +45,92 @@ plot.gene <- function(data, gene, bins = 30) {
          title = gene)
 }
 
-# Initial preprocessing -------------------------------------------------------
 
-preprocess <- function(data, min.nzcts, max.libsize = NULL, scale.factors = NULL) {
+# Initial preprocessing ---------------------------------------------------------------
+
+preprocess <- function(data,
+                       min.nzcts,
+                       max.libsize = NULL,
+                       size.factors = NULL,
+                       prescale = c("none", "genes", "cells", "both")) {
+  prescale <- match.arg(prescale)
+
+  retlist <- list()
+
   # Drop cells with too many transcripts.
   lib.size <- colSums(data)
   if (!is.null(max.libsize)) {
-    data     <- data[,  lib.size <= max.libsize]
-    if (!is.null(scale.factors)) {
-      scale.factors <- scale.factors[lib.size <= max.libsize]
+    dropped.cells <- which(lib.size > max.libsize)
+    if (length(dropped.cells) > 0) {
+      retlist$dropped.cells <- dropped.cells
+      data <- data[, -dropped.cells]
+      lib.size <- lib.size[-dropped.cells]
+      if (!is.null(size.factors)) {
+        size.factors <- size.factors[-dropped.cells]
+      }
     }
-    lib.size <- lib.size[lib.size <= max.libsize]
   }
+  n.cells <- ncol(data)
 
-  if (is.null(scale.factors)) {
-    scale.factors <- lib.size / median(lib.size)
+  if (is.null(size.factors)) {
+    # Default size factors.
+    size.factors <- lib.size / median(lib.size)
+  } else if (length(size.factors) == 1) {
+    size.factors <- rep(size.factors, n.cells)
   }
-
-  n.genes <- nrow(data)
 
   # Drop genes with transcripts detected in too few cells.
   nz.cts <- rowSums(data > 0)
-  data   <- data[nz.cts >= min.nzcts, ]
-  nz.cts <- nz.cts[nz.cts >= min.nzcts]
+  dropped.genes <- which(nz.cts < min.nzcts)
+  if (length(dropped.genes) > 0) {
+    retlist$dropped.genes <- dropped.genes
+    data <- data[-dropped.genes, ]
+    nz.cts <- nz.cts[-dropped.genes]
+  }
+  n.genes <- nrow(data)
 
-  gene.sparsity <- nz.cts / n.genes
+  retlist <- c(retlist, list(lib.size = lib.size,
+                             size.factors = size.factors,
+                             gene.sparsity = nz.cts / n.cells))
 
-  # Default additional pre-processing: normalize and transform.
-  data <- t(t(data) / scale.factors)
+  # Scale and log-transform.
+  data <- t(t(data) / size.factors)
   data <- log1p(data)
 
   # ELBO adjustment (using change-of-variables formula).
-  elbo.adj <- -n.genes * sum(log(scale.factors)) - sum(data)
+  elbo.adj <- -n.genes * sum(log(size.factors)) - sum(data)
 
-  return(list(data = data,
-              scale.factors = scale.factors,
-              elbo.adj = elbo.adj,
-              gene.sparsity = gene.sparsity))
+  # Additional scaling to approximate a Kronecker variance structure.
+  if (prescale != "none") {
+    fl.kron <- flashier(data, var.type = c(1, 2), greedy.Kmax = 1,
+                        final.nullchk = FALSE, verbose.lvl = 0)
+    gene.sds <- fl.kron$residuals.sd[[1]]
+    cell.sds <- fl.kron$residuals.sd[[2]]
+    if (prescale %in% c("genes", "both")) {
+      retlist$gene.prescaling.factors <- gene.sds
+      data <- data / gene.sds
+      elbo.adj <- elbo.adj - n.cells * sum(log(gene.sds))
+    }
+    if (prescale %in% c("cells", "both")) {
+      retlist$cell.prescaling.factors <- cell.sds
+      data <- t(t(data) / cell.sds)
+      elbo.adj <- elbo.adj - n.genes * sum(log(cell.sds))
+    }
+  }
+
+  retlist$elbo.adj <- elbo.adj
+  retlist$data <- data
+
+  return(retlist)
 }
 
-# Dataset-specific functions include some additional useful fields.
+# Dataset-specific functions include defaults and return additional useful fields.
 
 preprocess.droplet <- function(droplet,
                                min.nzcts = 10,
                                max.libsize = 30000,
-                               scale.factors = NULL) {
-  processed <- preprocess(droplet, min.nzcts, max.libsize, scale.factors)
+                               size.factors = NULL) {
+  processed <- preprocess(droplet, min.nzcts, max.libsize, size.factors)
 
   mouse <- sapply(strsplit(colnames(processed$data), "_"), `[`, 1)
   cell.type <- sapply(strsplit(colnames(processed$data), "_"), `[`, 3)
@@ -97,27 +138,64 @@ preprocess.droplet <- function(droplet,
   processed$cell.type <- as.factor(cell.type)
   processed$mouse <- as.factor(mouse)
 
+  processed$ionocyte.genes <- c("Ascl3", "Atp6v1c2", "Atp6v0d2", "Cftr", "Foxi1")
+
+  processed$goblet.genes <- c("Gp2", "Tff1", "Tff2", "Muc5b", "Lman1l", "P2rx4", "Muc5ac",
+                              "Dcpp1", "Dcpp2", "Dcpp3", "Lipf")
+  processed$goblet1.genes <- c("Tff1", "Tff2", "Muc5b", "Lman1l", "P2rx4", "Muc5ac")
+  processed$goblet2.genes <- c("Dcpp1", "Dcpp2", "Dcpp3", "Lipf")
+
+  processed$tuft.genes <- c("Il25", "Tslp", "Pou2f3", "Gnb3", "Gng13",
+                            "Alox5ap", "Ptprc", "Spib", "Sox9")
+  processed$tuft1.genes <- c("Gnb3", "Gng13", "Itpr3", "Plcb2", "Gnat3", "Ovol3",
+                             "Commd1", "Cited2", "Atp1b1", "Fxyd6", "Pou2f3")
+  processed$tuft2.genes <- c("Alox5ap", "Ptprc", "Spib", "Sox9", "Mgst3", "Gpx2",
+                             "Ly6e", "S100a11", "Cst3", "Cd24a", "B2m", "Dclk1",
+                             "Sdc4", "Il13ra1")
+
+  processed$all.tuft.genes <- with(processed, union(c(tuft1.genes, tuft2.genes),
+                                                    tuft.genes))
+  processed$all.tuft.colors <- with(processed, {
+    c(rep("blue", length(tuft1.genes)),
+      rep("red", length(tuft2.genes)),
+      rep("black", length(setdiff(tuft.genes, c(tuft1.genes, tuft2.genes)))))
+  })
+
+  processed$hillock.genes <- c("Krt13", "Krt4", "Ecm1", "S100a11", "Cldn3", "Lgals3",
+                               "Anxa1", "S100a6", "Upk3bl", "Aqp5", "Anxa2", "Crip1",
+                               "Gsto1", "Tppp3")
+
   return(processed)
 }
 
-# Parallel analysis. Sort of. -------------------------------------------------
-est.baseline.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
-  pve <- rep(NA, n.trials)
-  for (i in 1:n.trials) {
-    set.seed(seeds[i])
-    cat("Seed:", seeds[i], "\n")
-    rand.data <- t(Matrix(apply(data, 1, FUN = sample)))
-    fl <- flashier(rand.data, greedy.Kmax = 2, verbose.lvl = 0, ...)
-    if (length(fl$pve) > 1) {
-      pve[i] <- fl$pve[2]
-    } else {
-      pve[i] <- 0
-    }
+
+# Plotting functions for flashier fits ------------------------------------------------
+
+plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2, title = NULL) {
+  # Sort loadings according to proportion of variance explained.
+  if (is.null(kset)) {
+    kset <- setdiff(order(fl$pve, decreasing = TRUE), which(fl$pve == 0))
   }
-  return(list(baseline.pve = quantile(pve, q), all.res = pve))
+
+  # Re-normalize loadings so that factors are equally spread out.
+  LL <- fl$loadings.pm[[2]][, kset, drop = FALSE]
+  LL <- t(t(LL) / apply(abs(LL), 2, max))
+
+  # Make the size of the point depend on how many of that type there are.
+  sizes <- max.pt.size / sqrt(table(cell.types) / min(table(cell.types)))
+
+  df <- reshape2::melt(LL, value.name = "loading")
+  df$cell.type <- rep(as.factor(cell.types), length(kset))
+  ggplot(df, aes(x = Var2, y = loading, color = cell.type)) +
+    geom_jitter(position = position_jitter(0.45),
+                size = rep(sizes[cell.types], length(kset))) +
+    labs(title = title, x = NULL) +
+    lims(y = c(-1.05, 1.05))
 }
 
-# 1. "Factors should be easily interpretable." -------------------------------------
+get.orig.k <- function(fl, k) {
+  return(order(fl$pve, decreasing = TRUE)[k])
+}
 
 plot.one.factor <- function(fl, k, notable.genes, title = NULL,
                             label.size = 8, top.n = 100, invert = FALSE,
@@ -141,11 +219,11 @@ plot.one.factor <- function(fl, k, notable.genes, title = NULL,
     gene <- notable.genes[i]
     which.gene <- which(df$gene == gene)
     if (length(which.gene) == 1) {
-    if (!is.null(gene.colors)) {
-      the.color = gene.colors[i]
-    } else {
-      the.color = "red"
-    }
+      if (!is.null(gene.colors)) {
+        the.color = gene.colors[i]
+      } else {
+        the.color = "red"
+      }
       plt <- plt +
         geom_segment(x = which.gene, xend = which.gene,
                      y = 0, yend = df$loading[which.gene], color = the.color)
@@ -154,26 +232,135 @@ plot.one.factor <- function(fl, k, notable.genes, title = NULL,
   plot(plt)
 }
 
-plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2, title = NULL) {
-  if (is.null(kset)) {
-    kset <- 1:fl$n.factors
+plot.factor.subpops <- function(fl, k, subpop1.genes, subpop2.genes,
+                                subpop1.label, subpop2.label, title = NULL) {
+  all.genes <- c(subpop1.genes, subpop2.genes)
+  df <- data.frame(gene = all.genes,
+                   type = c(rep(subpop1.label, length(subpop1.genes)),
+                            rep(subpop2.label, length(subpop2.genes))),
+                   loading = fl$loadings.pm[[1]][all.genes, k])
+  ggplot(df, aes(x = reorder(gene, -loading), y = loading, fill = type)) +
+    geom_bar(stat = "identity") +
+    labs(x = NULL, title = title) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
+}
+
+
+# Calculating and plotting p-values ---------------------------------------------------
+
+# First and second moments of a truncated lognormal distribution with support
+#   on [1, \infty].
+etrunclnorm <- function(mu, sigma) {
+  return(exp(mu + sigma^2 / 2) * pnorm((mu + sigma^2) / sigma)
+         / pnorm(mu / sigma))
+}
+
+e2trunclnorm <- function(mu, sigma) {
+  return(exp(2 * mu + 2 * sigma^2) * pnorm((mu + 2 * sigma^2) / sigma)
+         / pnorm(mu / sigma))
+}
+
+# First and second moments of Y / lambda, where Y is a lognormal distribution
+#   that has been shifted left by 1 and then constrained to have nonnegative
+#   support (by moving all mass on negative values to a point mass at zero).
+calc.EY.over.lambda <- function(mu, sigma) {
+  return(exp(mu + sigma^2 / 2) * pnorm((mu + sigma^2) / sigma) - pnorm(mu / sigma))
+}
+
+calc.EY2.over.lambda2 <- function(mu, sigma, EY.over.lambda) {
+  return(exp(2 * mu + 2 * sigma^2) * pnorm((mu + 2 * sigma^2) / sigma)
+         - pnorm(mu / sigma) - 2 * EY.over.lambda)
+}
+
+calc.p.vals <- function(orig.data, processed, fl, var.type) {
+  set.seed(666)
+
+  # Get the original (untransformed) data.
+  if (!is.null(processed$dropped.genes)) {
+    orig.data <- orig.data[-processed$dropped.genes, ]
+  }
+  if (!is.null(processed$dropped.cells)) {
+    orig.data <- orig.data[, -processed$dropped.cells]
   }
 
-  # Re-normalize loadings so that factors are equally spread out.
-  LL <- fl$loadings.pm[[2]][, kset, drop = FALSE]
-  LL <- t(t(LL) / apply(abs(LL), 2, max))
+  # Calculate mu and sigma.
+  mu <- fitted(fl)
+  if (!is.null(processed$gene.prescaling.factors)) {
+    mu <- mu * processed$gene.prescaling.factors
+  }
+  if (!is.null(processed$cell.prescaling.factors)) {
+    mu <- t(t(mu) * processed$cell.prescaling.factors)
+  }
 
-  # Make the size of the point depend on how many of that type there are.
-  sizes <- max.pt.size / sqrt(table(cell.types) / min(table(cell.types)))
+  n.genes <- nrow(processed$data)
+  n.cells <- ncol(processed$data)
+  if (length(var.type) > 1) {
+    gene.sds <- fl$residuals.sd[[1]]
+    cell.sds <- fl$residuals.sd[[2]]
+  } else if (var.type == 0) {
+    gene.sds <- rep(fl$residuals.sd, n.genes)
+    cell.sds <- rep(1, n.cells)
+  } else if (var.type == 1) {
+    gene.sds <- fl$residuals.sd
+    cell.sds <- rep(1, n.cells)
+  } else if (var.type == 2) {
+    gene.sds <- rep(1, n.genes)
+    cell.sds <- fl$residuals.sd
+  }
 
-  df <- reshape2::melt(LL, value.name = "loading")
-  df$cell.type <- rep(as.factor(cell.types), length(kset))
-  ggplot(df, aes(x = Var2, y = loading, color = cell.type)) +
-    geom_jitter(position = position_jitter(0.45),
-                size = rep(sizes[cell.types], length(kset))) +
-    labs(title = title, x = NULL) +
-    lims(y = c(-1.05, 1.05))
+  if (!is.null(processed$gene.prescaling.factors))
+    gene.sds <- gene.sds * processed$gene.prescaling.factors
+  if (!is.null(processed$cell.prescaling.factors))
+    cell.sds <- cell.sds * processed$cell.prescaling.factors
+
+  sigma <- outer(gene.sds, cell.sds)
+
+  # Calculate the moments of the fitted model, adjusting the model so that values
+  #   less than zero are collapsed to a point mass at zero.
+  lambda <- processed$size.factors
+  EY.over.l <- calc.EY.over.lambda(mu, sigma)
+  EY2 <- t(t(calc.EY2.over.lambda2(mu, sigma, EY.over.l)) * lambda^2)
+  EY <- t(t(EY.over.l) * lambda)
+  VarY <- EY2 - EY^2
+
+  pois.data <- orig.data[EY >= VarY]
+  pois.EY <- EY[EY >= VarY]
+  pois.c <- runif(length(pois.data))
+  pois.pvals <- (pois.c * ppois(pois.data, pois.EY)
+                 + (1 - pois.c) * ppois(pois.data - 1, pois.EY))
+
+  NB.data <- orig.data[EY < VarY]
+  NB.p <- EY[EY < VarY] / VarY[EY < VarY]
+  NB.r <- EY[EY < VarY] * NB.p / (1 - NB.p)
+  NB.c <- runif(length(NB.data))
+  NB.pvals <- (NB.c * pnbinom(NB.data, NB.r, NB.p)
+               + (1 - NB.c) * pnbinom(NB.data - 1, NB.r, NB.p))
+
+  p.vals  <- c(pois.pvals, NB.pvals)
+  p.vals  <- ceiling(100 * p.vals)
+  p.table <- table(p.vals)
+
+  probs <- p.table / sum(p.table)
+  KL.div  <- sum(probs * log(100 * probs))
+
+  return(list(table = p.table, KL.divergence = KL.div))
 }
+
+plot.p.vals <- function(p.vals) {
+  df <- data.frame(p.vals$table)
+  df$p.vals <- as.numeric(df$p.vals) / 100 - .005
+  df$Freq <- df$Freq / sum(df$Freq)
+  title <- paste("KL divergence relative to uniform:", round(p.vals$KL.divergence, 3))
+  ggplot(df, aes(x = p.vals, y = Freq)) +
+    geom_bar(stat = "identity") +
+    geom_hline(yintercept = 0.01, linetype = "dashed") +
+    labs(x = "p-value", y = NULL, title = title) +
+    scale_y_continuous(breaks = seq(0, max(df$Freq), by = 0.002)) +
+    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+}
+
+
+# Aligning and comparing factors from different fits ----------------------------------
 
 compare.factors <- function(fl1, fl2, match.n = 1, min.cor = 0,
                           incl.sparsity = TRUE, coherence.mat = NULL) {
@@ -295,7 +482,8 @@ plot.factor.comparison <- function(df,
   plot(plt)
 }
 
-# 2. "Factors should be able to successfully decompose samples we haven’t seen." ---
+
+# Not used ----------------------------------------------------------------------------
 
 pve.test <- function(data, flashier.call, holdout.set, Kmax) {
   n.trials <- nrow(holdout.set)
@@ -329,86 +517,19 @@ plot.pve.test.res <- function(res, baseline) {
     geom_hline(yintercept = baseline, linetype = "dashed")
 }
 
-# 3. "The distribution of residuals should appear reasonable." ---------------------
-zscore.resids <- function(data, fl) {
-  if (!is.null(fl$residuals.sd) && fl$flash.fit$est.tau.dim < 2) {
-    z <- as.vector(data - fitted(fl)) / fl$residuals.sd
-  } else if (!is.null(fl$residuals.sd)) {
-    z <- as.vector(t(data - fitted(fl))) / fl$residuals.sd
-  } else {
-    z <- (data - fitted(fl)) * sqrt(fl$flash.fit$tau[[1]])
-    z <- as.vector(t(z) * sqrt(fl$flash.fit$tau[[2]]))
+# Parallel analysis. Sort of. -------------------------------------------------
+est.baseline.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
+  pve <- rep(NA, n.trials)
+  for (i in 1:n.trials) {
+    set.seed(seeds[i])
+    cat("Seed:", seeds[i], "\n")
+    rand.data <- t(Matrix(apply(data, 1, FUN = sample)))
+    fl <- flashier(rand.data, greedy.Kmax = 2, verbose.lvl = 0, ...)
+    if (length(fl$pve) > 1) {
+      pve[i] <- fl$pve[2]
+    } else {
+      pve[i] <- 0
+    }
   }
-  return(z)
-}
-
-# First and second moments of a truncated lognormal distribution with support
-#   on [1, \infty].
-etrunclnorm <- function(mu, sigma) {
-  return(exp(mu + sigma^2 / 2) * pnorm((mu + sigma^2) / sigma)
-         / pnorm(mu / sigma))
-}
-
-e2trunclnorm <- function(mu, sigma) {
-  return(exp(2 * mu + 2 * sigma^2) * pnorm((mu + 2 * sigma^2) / sigma)
-         / pnorm(mu / sigma))
-}
-
-# First and second moments of Y / lambda, where Y is a lognormal distribution
-#   that has been shifted left by 1 and then constrained to have nonnegative
-#   support (by moving all mass on negative values to a point mass at zero).
-calc.EY.over.lambda <- function(mu, sigma) {
-  return(exp(mu + sigma^2 / 2) * pnorm((mu + sigma^2) / sigma) - pnorm(mu / sigma))
-}
-
-calc.EY2.over.lambda2 <- function(mu, sigma, EY.over.lambda) {
-  return(exp(2 * mu + 2 * sigma^2) * pnorm((mu + 2 * sigma^2) / sigma)
-         - pnorm(mu / sigma) - 2 * EY.over.lambda)
-}
-
-# Currently only works for constant and gene-wise variance structures.
-calc.p.vals <- function(data, sf, mu, sigma) {
-  # Get the original (untransformed) data.
-  data <- t(t(exp(data) - 1) / sf)
-
-  # Calculate the moments of the fitted model, adjusting the model so that values
-  #   less than zero are collapsed to a point mass at zero.
-  EY.over.l <- calc.EY.over.lambda(mu, sigma)
-  EY2  <- t(sf^2 * t(calc.EY2.over.lambda2(mu, sigma, EY.over.l)))
-  EY   <- t(sf * t(EY.over.l))
-  VarY <- EY2 - EY^2
-
-  pois.data  <- data[EY > VarY]
-  pois.EY    <- EY[EY > VarY]
-  pois.c     <- runif(length(pois.data))
-  pois.pvals <- (pois.c * ppois(pois.data, pois.EY)
-                 + (1 - pois.c) * ppois(pois.data - 1, pois.EY))
-
-  NB.data  <- data[EY < VarY]
-  NB.p     <- EY[EY < VarY] / VarY[EY < VarY]
-  NB.r     <- EY[EY < VarY] * NB.p / (1 - NB.p)
-  NB.c     <- runif(length(NB.data))
-  NB.pvals <- (NB.c * pnbinom(NB.data, NB.r, NB.p)
-               + (1 - NB.c) * pnbinom(NB.data - 1, NB.r, NB.p))
-
-  p.vals  <- c(pois.pvals, NB.pvals)
-  p.vals  <- ceiling(100 * p.vals)
-  p.table <- table(p.vals)
-
-  probs <- p.table / sum(p.table)
-  KL.div  <- sum(probs * log(100 * probs))
-
-  return(list(table = p.table, KL.divergence = KL.div))
-}
-
-plot.p.vals <- function(p.vals) {
-  df <- data.frame(p.vals$table)
-  df$p.vals <- as.numeric(df$p.vals) / 100 - .005
-  df$Freq <- df$Freq / sum(df$Freq)
-  title <- paste("KL divergence relative to uniform:", round(p.vals$KL.divergence, 3))
-  ggplot(df, aes(x = p.vals, y = Freq)) +
-    geom_bar(stat = "identity") +
-    geom_hline(yintercept = 0.01, linetype = "dashed") +
-    labs(x = "p-value", y = NULL, title = title) +
-    theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
+  return(list(baseline.pve = quantile(pve, q), all.res = pve))
 }
