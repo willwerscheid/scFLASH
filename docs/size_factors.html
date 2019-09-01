@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-08-24
+<strong>Last updated:</strong> 2019-09-01
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree67f17301027d6a53277dbc77bd18c423d77f73c3targetblank67f1730a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/67f17301027d6a53277dbc77bd18c423d77f73c3" target="_blank">67f1730</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree27a452a41c8029d837257a0e5e951489ed584b80targetblank27a452aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/27a452a41c8029d837257a0e5e951489ed584b80" target="_blank">27a452a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree67f17301027d6a53277dbc77bd18c423d77f73c3targetblank67f1730a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree27a452a41c8029d837257a0e5e951489ed584b80targetblank27a452aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -557,15 +557,19 @@ Ignored files:
     Ignored:    data/droplet.rds
     Ignored:    output/backfit/
     Ignored:    output/prior_type/
+    Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
     Untracked:  analysis/pseudocount2.Rmd
+    Untracked:  analysis/pseudocount_redux.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
+    Untracked:  code/prior_type/priortype_fits.R
+    Untracked:  code/pseudocount/
     Untracked:  code/pseudocounts.R
-    Untracked:  code/size_factors/
+    Untracked:  code/size_factors/sizefactor_fits.R
     Untracked:  code/trachea4.R
     Untracked:  data/Ensembl2Reactome.txt
     Untracked:  data/hard_bimodal1.txt
@@ -573,14 +577,15 @@ Untracked files:
     Untracked:  data/hard_bimodal3.txt
     Untracked:  data/mus_pathways.rds
     Untracked:  docs/figure/pseudocount2.Rmd/
+    Untracked:  docs/figure/pseudocount_redux.Rmd/
     Untracked:  output/pseudocount/
-    Untracked:  output/size_factors/
-    Untracked:  tmp_g.txt
-    Untracked:  tmp_g2.txt
 
 Unstaged changes:
+    Modified:   analysis/index.Rmd
     Modified:   analysis/pseudocount.Rmd
+    Deleted:    code/prior_type/flashier_fits.R
     Modified:   code/sc_comparisons.R
+    Deleted:    code/size_factors/flashier_fits.R
     Modified:   code/utils.R
 
 </code></pre>
@@ -625,6 +630,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/27a452a41c8029d837257a0e5e951489ed584b80/analysis/size_factors.Rmd" target="_blank">27a452a</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-01
+</td>
+<td>
+wflow_publish(“analysis/size_factors.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/size_factors.html" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/67f17301027d6a53277dbc77bd18c423d77f73c3/analysis/size_factors.Rmd" target="_blank">67f1730</a>
 </td>
 <td>
@@ -651,75 +690,335 @@ wflow_publish(“analysis/size_factors.Rmd”)
 <p>Without loss of generality, I constrain the size factors to have median one. In this analysis, I fix <span class="math inline">\(\alpha = 1\)</span>; in a subsequent analysis, I’ll consider the effect of varying the pseudocount.</p>
 <pre class="r"><code>source(&quot;./code/utils.R&quot;)
 droplet &lt;- readRDS(&quot;./data/droplet.rds&quot;)
-processed &lt;- preprocess.droplet(droplet)
-res &lt;- readRDS(&quot;./output/size_factors/flashier_fits.rds&quot;)</code></pre>
+droplet &lt;- preprocess.droplet(droplet)
+res &lt;- readRDS(&quot;./output/size_factors/sizefactor_fits.rds&quot;)</code></pre>
 </div>
 <div id="calculating-size-factors" class="section level2">
 <h2>Calculating size factors</h2>
 <p>I consider three methods. The method which I’ve been using in previous analyses normalizes cell counts so that all scaled cells have the same total count. That is, letting <span class="math inline">\(n_j\)</span> be the cell-wise sum <span class="math inline">\(\sum_i X_{ij}\)</span>, it sets <span class="math display">\[ \lambda_j = n_j / \text{median}_\ell(n_\ell) \]</span> This method, commonly known as “library size normalization,” has been criticized because library size is strongly correlated with the expression levels of the most highly expressed genes, so that normalizing by library size tends to suppress relevant variation in those genes’ expression.</p>
-<p>More sophisticated methods have been proposed. I particularly like an approach by Aaron Lun, Karsten Bach, and John Marioni which pools cells together and uses robust statistics to get more accurate estimates of size factors. The approach, detailed <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0947-7">here</a>, is implemented in the <code>R</code> package <code>scran</code>.</p>
-<p>A second approach that has gained some traction is <a href="https://www.nature.com/articles/nmeth.4263">Rhonda Bacher’s method</a> implemented in the <code>R</code> package <code>SCnorm</code>. I attempted to run it on the Montoro et al. droplet-based data, but it simply set all scale factors to one.</p>
-<p>The third method I consider is to not use scale factors at all. This is not as dumb as it might seem! Write the EBMF model as <span class="math display">\[ Y = \ell f&#39; + LF&#39; + E, \]</span> where <span class="math inline">\(\ell f&#39;\)</span> is the first factor fitted by <code>flashier</code>. This factor, which I often refer to as the “mean factor,” typically accounts for by far the largest proportion of variance explained. Then, <span class="math display">\[ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (L_{-1}F_{-1}&#39;)_{ij} + E_{ij} \right), \]</span> so that <span class="math inline">\(f\)</span> essentially acts as a vector of size factors. The difference is that this scaling is done after the log1p transformation rather then before.</p>
+<p>More sophisticated methods have been proposed. I particularly like an approach by Aaron Lun, Karsten Bach, and John Marioni which pools cells together and uses robust statistics to get more accurate estimates of size factors. The approach, detailed <a href="https://genomebiology.biomedcentral.com/articles/10.1186/s13059-016-0947-7">here</a>, is implemented in the <code>R</code> package <code>scran</code>. It took about minute to calculate size factors for the <a href="droplet.html">Montoro et al. droplet dataset</a>.</p>
+<p>A second approach that has gained some traction is <a href="https://www.nature.com/articles/nmeth.4263">Rhonda Bacher’s method</a> implemented in the <code>R</code> package <code>SCnorm</code>. I attempted to run it on the Montoro et al. dataset, but it simply set all scale factors to one (and it took a very long time to do so).</p>
+<p>The third method I consider is to not use scale factors at all. This is not as dumb as it might seem! Write the EBMF model as <span class="math display">\[ Y = \ell f&#39; + LF&#39; + E, \]</span> where <span class="math inline">\(\ell f&#39;\)</span> is the first factor fitted by <code>flashier</code>. This factor, which I usually refer to as the “mean factor,” typically accounts for by far the largest proportion of variance explained. Then, <span class="math display">\[ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (LF&#39;)_{ij} + E_{ij} \right), \]</span> so that <span class="math inline">\(f\)</span> essentially acts as a vector of size factors. The difference is that this scaling is done after the <code>log1p</code> transformation rather then before.</p>
+<p>In this analysis, I’ll argue that it’s worth it to calculate <code>scran</code> size factors. Qualitatively, factors are very similar, but there are measurable differences in fits, it doesn’t take very long to calculate the size factors, and in many ways it’s the correct thing to do.</p>
+<p>All fits were produced by adding 20 “greedy” factors to the Montoro et al. droplet dataset. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R">here</a>.</p>
 </div>
 <div id="results-scran-size-factors" class="section level2">
 <h2>Results: scran size factors</h2>
-<p>The size factors obtained using <code>scran</code> are very different from the size factors obtained via library size normalization. In particular, <code>scran</code> yields a narrower range of size factors.</p>
-<pre class="r"><code>sf.df &lt;- data.frame(libsize = res$libsize$sf, scran = res$scran$sf)
+<p>The size factors obtained using <code>scran</code> are very different from the size factors obtained via library size normalization. In particular, <code>scran</code> yields a somewhat narrower range of size factors.</p>
+<pre class="r"><code>sf.df &lt;- data.frame(libsize = res$libsize$size.factors, scran = res$scran$size.factors)
 ggplot(sf.df, aes(x = libsize, y = scran)) +
   geom_point(size = 0.2) +
   geom_abline(slope = 1) + 
   labs(x = &quot;library size normalization&quot;, y = &quot;scran&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/sf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sf-1">
+Past versions of sf-1.png
+</button>
+</p>
+<div id="fig-sf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/sf-1.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-elbo" class="section level2">
 <h2>Results: ELBO</h2>
-<p>I use a change-of-variables formula to compare ELBOs. Results suggest that it’s best not to use size factors.</p>
+<p>I use a change-of-variables formula to compare ELBOs. It’s probably not surprising that the most sophisticated method (<code>scran</code>) does best. The improvement in the ELBO is substantial: it’s approximately 600,000, which is the equivalent of 8-10 greedy factors. More surprisingly, library-size normalization does very poorly: worse, in fact, than not normalizing at all.</p>
 <pre class="r"><code>elbo.df &lt;- data.frame(method = c(&quot;No size factors&quot;, 
                                  &quot;Library size normalization&quot;,
-                                 &quot;scran&quot;),
+                                 &quot;scran size factors&quot;),
                       elbo = c(res$noscale$fl$elbo + res$noscale$elbo.adj,
                                res$libsize$fl$elbo + res$libsize$elbo.adj,
                                res$scran$fl$elbo + res$scran$elbo.adj))
 ggplot(elbo.df, aes(x = method, y = elbo)) + 
   geom_point() +
-  scale_x_discrete(limits = c(&quot;Library size normalization&quot;, &quot;scran&quot;, &quot;No size factors&quot;)) +
+  scale_x_discrete(limits = c(&quot;No size factors&quot;,
+                              &quot;Library size normalization&quot;, 
+                              &quot;scran size factors&quot;)) +
   labs(x = NULL, y = &quot;ELBO&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-elbo-1">
+Past versions of elbo-1.png
+</button>
+</p>
+<div id="fig-elbo-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/elbo-1.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-distribution-of-p-values" class="section level2">
 <h2>Results: Distribution of p-values</h2>
-<p>Again the laziest approach wins out, and convincingly so.</p>
+<p>The distribution of <span class="math inline">\(p\)</span>-values is very similar across methods, but the small differences confirm the above ranking: <code>scran</code> does best, while library-size normalization does worst.</p>
+<pre class="r"><code>KL &lt;- sapply(lapply(res, `[[`, &quot;p.vals&quot;), `[[`, &quot;KL.divergence&quot;)
+KL.df &lt;- data.frame(fit = names(KL), KL = KL)
+ggplot(KL.df, aes(x = fit, y = KL)) +
+  geom_bar(stat = &quot;identity&quot;) +
+  scale_x_discrete(limits = c(&quot;noscale&quot;, &quot;libsize&quot;, &quot;scran&quot;)) +
+  labs(x = NULL, y = &quot;KL divergence relative to uniform&quot;)</code></pre>
+<p><img src="figure/size_factors.Rmd/KL-1.png" width="672" style="display: block; margin: auto;" /></p>
 <div id="library-size-normalization" class="section level3">
 <h3>Library size normalization</h3>
 <pre class="r"><code>plot.p.vals(res$libsize$p.vals)</code></pre>
 <p><img src="figure/size_factors.Rmd/libsize.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-libsize.p-1">
+Past versions of libsize.p-1.png
+</button>
+</p>
+<div id="fig-libsize.p-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/libsize.p-1.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="scran" class="section level3">
 <h3>scran</h3>
 <pre class="r"><code>plot.p.vals(res$scran$p.vals)</code></pre>
 <p><img src="figure/size_factors.Rmd/scran.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-scran.p-1">
+Past versions of scran.p-1.png
+</button>
+</p>
+<div id="fig-scran.p-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/scran.p-1.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="no-size-factors" class="section level3">
-<h3>No size factors</h3>
-<pre class="r"><code>plot.p.vals(res$noscale$p.vals)</code></pre>
-<p><img src="figure/size_factors.Rmd/noscale.p-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
 </div>
 </div>
 <div id="results-factors-and-cell-types" class="section level2">
 <h2>Results: Factors and cell types</h2>
-<p>Factors are very similar across methods. I certainly don’t see anything that, contrary to the above evidence, would compel me to use size factors.</p>
-<pre class="r"><code>plot.factors(res$libsize$fl, processed$cell.type, 
-             order(res$libsize$fl$pve, decreasing = TRUE),
-             title = &quot;Library size normalization&quot;)</code></pre>
+<p>Factors are very similar across methods. I don’t see anything worth commenting on here.</p>
+<pre class="r"><code>plot.factors(res$noscale$fl, droplet$cell.type, title = &quot;No size factors&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/plot.factors-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$scran$fl, processed$cell.type, 
-             order(res$scran$fl$pve, decreasing = TRUE),
-             title = &quot;scran&quot;)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-1">
+Past versions of plot.factors-1.png
+</button>
+</p>
+<div id="fig-plot.factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/plot.factors-1.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$libsize$fl, droplet$cell.type, title = &quot;Library size normalization&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/plot.factors-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$noscale$fl, processed$cell.type, 
-             order(res$noscale$fl$pve, decreasing = TRUE),
-             title = &quot;No size factors&quot;)</code></pre>
-<img src="figure/size_factors.Rmd/plot.factors-3.png" width="672" style="display: block; margin: auto;" /> <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-2">
+Past versions of plot.factors-2.png
+</button>
+</p>
+<div id="fig-plot.factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/plot.factors-2.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$scran$fl, droplet$cell.type, title = &quot;scran&quot;)</code></pre>
+<p><img src="figure/size_factors.Rmd/plot.factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-3">
+Past versions of plot.factors-3.png
+</button>
+</p>
+<div id="fig-plot.factors-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/97767cf79d021c353d7499ac039fa9385cff3e4e/docs/figure/size_factors.Rmd/plot.factors-3.png" target="_blank">97767cf</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-24
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -742,7 +1041,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] flashier_0.1.11 ggplot2_3.2.0   Matrix_1.2-15  
+[1] flashier_0.1.15 ggplot2_3.2.0   Matrix_1.2-15  
 
 loaded via a namespace (and not attached):
  [1] Rcpp_1.0.1        plyr_1.8.4        compiler_3.5.3   
