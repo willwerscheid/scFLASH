@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-08-21
+<strong>Last updated:</strong> 2019-09-01
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeea3518e07cc950bcf8bbb81673044f280d574d53targetblankea3518ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/ea3518e07cc950bcf8bbb81673044f280d574d53" target="_blank">ea3518e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec8109e036de549db7e558289819ec0c03d624d16targetblankc8109e0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/c8109e036de549db7e558289819ec0c03d624d16" target="_blank">c8109e0</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeea3518e07cc950bcf8bbb81673044f280d574d53targetblankea3518ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec8109e036de549db7e558289819ec0c03d624d16targetblankc8109e0a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -556,14 +556,18 @@ Ignored files:
     Ignored:    .Rproj.user/
     Ignored:    data/droplet.rds
     Ignored:    output/backfit/
+    Ignored:    output/prior_type/
+    Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
     Untracked:  analysis/pseudocount2.Rmd
+    Untracked:  analysis/pseudocount_redux.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/prior_type/
+    Untracked:  code/prior_type/priortype_fits.R
+    Untracked:  code/pseudocount/
     Untracked:  code/pseudocounts.R
     Untracked:  code/trachea4.R
     Untracked:  data/Ensembl2Reactome.txt
@@ -572,12 +576,15 @@ Untracked files:
     Untracked:  data/hard_bimodal3.txt
     Untracked:  data/mus_pathways.rds
     Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  output/prior_type/
+    Untracked:  docs/figure/pseudocount_redux.Rmd/
     Untracked:  output/pseudocount/
 
 Unstaged changes:
+    Modified:   analysis/index.Rmd
     Modified:   analysis/pseudocount.Rmd
+    Deleted:    code/prior_type/flashier_fits.R
     Modified:   code/sc_comparisons.R
+    Modified:   code/size_factors/flashier_fits.R
     Modified:   code/utils.R
 
 </code></pre>
@@ -622,6 +629,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/c8109e036de549db7e558289819ec0c03d624d16/analysis/prior_type.Rmd" target="_blank">c8109e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-01
+</td>
+<td>
+wflow_publish(“analysis/prior_type.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/prior_type.html" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/ea3518e07cc950bcf8bbb81673044f280d574d53/analysis/prior_type.Rmd" target="_blank">ea3518e</a>
 </td>
 <td>
@@ -646,10 +687,11 @@ wflow_publish(“analysis/prior_type.Rmd”)
 <p>Here I consider the choice of prior families for the priors <span class="math inline">\(g_\ell^{(k)}\)</span> and <span class="math inline">\(g_f^{(k)}\)</span> in the EBMF model <span class="math display">\[ Y = LF&#39; + E,\ L_{ik} \sim g_\ell^{(k)},\ F_{jk} \sim g_f^{(k)}. \]</span></p>
 <p>The default prior family in <code>flashier</code> is the two-parameter family of point-normal priors <span class="math display">\[ \pi_0 \delta_0 + (1 - \pi_0) N(0, \sigma^2). \]</span> Another choice uses <code>ashr</code> to fit a scale mixture of normals (with mean zero). Since the family of point-normal priors is contained in the family of scale mixtures of normals, using the latter is guaranteed to improve the fit. Computation is a bit slower, but improvements to <code>mixsqp</code> and <code>ebnm</code> have narrowed the gap: my recent <a href="https://willwerscheid.github.io/FLASHvestigations/flashier_bench.html">benchmarking results</a> suggest that fitting point-normal priors is a little less than twice as fast as fitting scale-mixture-of-normal priors (and for very large datasets, the gap is even smaller).</p>
 <p>In addition to point-normal and scale-mixture-of-normal priors, I consider two semi-nonnegative factorizations obtained via the family of priors with nonnegative support and a unique mode at zero. One factorization puts the nonnegative prior on cell loadings with a point-normal prior on gene loadings; the other puts the nonnegative prior on gene loadings (with a point-normal prior on cell loadings).</p>
+<p>Fits were produced by adding 30 “greedy” factors to the <a href="droplet.html">Montoro et al. droplet dataset</a> and backfitting. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/prior_type/priortype_fits.R">here</a>.</p>
 <pre class="r"><code>source(&quot;./code/utils.R&quot;)
 droplet &lt;- readRDS(&quot;./data/droplet.rds&quot;)
-processed &lt;- preprocess.droplet(droplet)
-res &lt;- readRDS(&quot;./output/prior_type/flashier_fits.rds&quot;)</code></pre>
+droplet &lt;- preprocess.droplet(droplet)
+res &lt;- readRDS(&quot;./output/prior_type/priortype_fits.rds&quot;)</code></pre>
 </div>
 <div id="semi-nonnegative-factorizations-and-interpretability" class="section level2">
 <h2>Semi-nonnegative factorizations and interpretability</h2>
@@ -657,7 +699,7 @@ res &lt;- readRDS(&quot;./output/prior_type/flashier_fits.rds&quot;)</code></pre
 <p>Without any nonnegative prior, interpretation is less natural. Take the above interpretation of gene loadings as a pattern of over- and underexpression: if cell loadings are no longer constrained to be nonnegative, then one is forced to read the pattern in two ways, so that gene set A is overexpressed and gene set B is underexpressed in some cells, while A is underexpressed and B is overexpressed in other cells. Not only does this impede interpretation, but it doesn’t seem plausible to me that patterns of over- and underexpression would be simple mirror images of one another.</p>
 </div>
 <div id="results-fitting-time" class="section level2">
-<h2>Results: fitting time</h2>
+<h2>Results: Fitting time</h2>
 <p>Total fitting time is heavily dependent on the number of backfitting iterations required. In particular, the semi-nonnegative fits can be quite slow to converge.</p>
 <pre class="r"><code>format.t &lt;- function(t) {
   return(sapply(t, function(x) {
@@ -700,31 +742,31 @@ knitr::kable(time.df[c(1, 2, 4, 3), ],
 <tbody>
 <tr class="odd">
 <td>Point-normal</td>
-<td align="right">01m24s</td>
-<td align="right">58m05s</td>
-<td align="right">88</td>
-<td align="right">39s</td>
+<td align="right">02m29s</td>
+<td align="right">55m01s</td>
+<td align="right">85</td>
+<td align="right">38s</td>
 </tr>
 <tr class="even">
 <td>Scale mixture of normals</td>
-<td align="right">03m53s</td>
-<td align="right">52m01s</td>
-<td align="right">64</td>
-<td align="right">48s</td>
+<td align="right">05m20s</td>
+<td align="right">46m07s</td>
+<td align="right">53</td>
+<td align="right">52s</td>
 </tr>
 <tr class="odd">
 <td>Semi-nonnegative (NN genes)</td>
-<td align="right">06m41s</td>
-<td align="right">02h48m19s</td>
-<td align="right">146</td>
-<td align="right">01m09s</td>
+<td align="right">06m23s</td>
+<td align="right">05h00m46s</td>
+<td align="right">265</td>
+<td align="right">01m08s</td>
 </tr>
 <tr class="even">
 <td>Semi-nonnegative (NN cells)</td>
-<td align="right">03m16s</td>
-<td align="right">04h58m09s</td>
-<td align="right">345</td>
-<td align="right">51s</td>
+<td align="right">04m14s</td>
+<td align="right">03h35m50s</td>
+<td align="right">246</td>
+<td align="right">52s</td>
 </tr>
 </tbody>
 </table>
@@ -752,34 +794,218 @@ elbo.df &lt;- rbind(res$pn$output, res$ash$output, res$snn.cell$output, res$snn.
 ggplot(subset(elbo.df, !(Factor %in% as.character(1:10)) &amp; Iter &lt; 75), 
        aes(x = row, y = Obj, color = Type, shape = Fit)) +
   geom_point() +
-  labs(x = NULL, y = &quot;elbo&quot;,
+  labs(x = NULL, y = &quot;ELBO (unadjusted)&quot;,
        title = &quot;Greedy factors 11-30 and first 75 backfitting iterations&quot;) +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())</code></pre>
 <p><img src="figure/prior_type.Rmd/pn.v.ash.elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pn.v.ash.elbo-1">
+Past versions of pn.v.ash.elbo-1.png
+</button>
+</p>
+<div id="fig-pn.v.ash.elbo-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/pn.v.ash.elbo-1.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-point-normal-priors-vs.scale-mixtures-of-normals" class="section level2">
-<h2>Results: point-normal priors vs. scale mixtures of normals</h2>
+<h2>Results: Point-normal priors vs. scale mixtures of normals</h2>
 <p>I plot the point-normal factors in order of proportion of variance explained, and I line up the scale-mixture-of-normal factors so that similar factors are shown one on top of the other. Results are nearly identical.</p>
 <pre class="r"><code>pn.v.ash  &lt;- compare.factors(res$pn$fl, res$ash$fl)
 pn.order  &lt;- match(order(res$pn$fl$pve, decreasing = TRUE), pn.v.ash$fl1.k)
 ash.order &lt;- match(order(res$pn$fl$pve, decreasing = TRUE), pn.v.ash$fl2.k)
-plot.factors(res$pn$fl, processed$cell.type, pn.order[1:15],
+plot.factors(res$pn$fl, droplet$cell.type, pn.order[1:15],
              title = &quot;Point-normal priors (factors 1-15)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/pn.v.ash.factors-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$ash$fl, processed$cell.type, ash.order[1:15],
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pn.v.ash.factors-1">
+Past versions of pn.v.ash.factors-1.png
+</button>
+</p>
+<div id="fig-pn.v.ash.factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/pn.v.ash.factors-1.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$ash$fl, droplet$cell.type, ash.order[1:15],
              title = &quot;Scale mixtures of normals (factors 1-15)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/pn.v.ash.factors-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$pn$fl, processed$cell.type, pn.order[16:30],
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pn.v.ash.factors-2">
+Past versions of pn.v.ash.factors-2.png
+</button>
+</p>
+<div id="fig-pn.v.ash.factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/pn.v.ash.factors-2.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$pn$fl, droplet$cell.type, pn.order[16:30],
              title = &quot;Point-normal priors (factors 16-30)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/pn.v.ash.factors-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$ash$fl, processed$cell.type, ash.order[16:30],
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pn.v.ash.factors-3">
+Past versions of pn.v.ash.factors-3.png
+</button>
+</p>
+<div id="fig-pn.v.ash.factors-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/pn.v.ash.factors-3.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$ash$fl, droplet$cell.type, ash.order[16:30],
              title = &quot;Scale mixtures of normals (factors 16-30)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/pn.v.ash.factors-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-pn.v.ash.factors-4">
+Past versions of pn.v.ash.factors-4.png
+</button>
+</p>
+<div id="fig-pn.v.ash.factors-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/pn.v.ash.factors-4.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-semi-nonnegative-factorizations" class="section level2">
-<h2>Results: semi-nonnegative factorizations</h2>
-<p>For ease of comparison, I only consider the semi-nonnegative fit that puts nonnegative priors on gene loadings. As above, I line up similar factors. I denote a semi-nonnegative factor as “similar” to a point-normal factor if the gene loadings are strongly correlated (<span class="math inline">\(r \ge 0.7\)</span>) with either the positive or the negative component of the point-normal gene loadings. Thus there can be duplicates: factors 2 and 3 are represented by a single point-normal factor (one semi-nonnonegative factor is correlated with the positive component while another is correlated with the negative). The same is true of goblet factors 18 and 19.</p>
-<p>In two cases, there are also duplicate semi-nonnegative factors: as it turns out, one of the semi-nonnegative tuft factors is similar to both point-normal tuft factors (factors 7 and 23 below). Point-normal hillock factors 6 and 12 are also matched by a single semi-nonnegative factor.</p>
+<h2>Results: Semi-nonnegative factorizations</h2>
+<p>For ease of comparison, I only consider the semi-nonnegative fit that puts nonnegative priors on gene loadings. As above, I line up similar factors. I denote a semi-nonnegative factor as “similar” to a point-normal factor if the gene loadings are strongly correlated (<span class="math inline">\(r \ge 0.7\)</span>) with either the positive or the negative component of the point-normal gene loadings. Thus there can be duplicates: a single semi-nonnonegative tuft factor is strongly correlated with two point-normal factors (factors 6 and 21). Further, there are two distinct goblet factors for each fit, but each is highly correlated with both of the goblet factors from the other fit.</p>
 <pre class="r"><code>cor.thresh &lt;- 0.7
 
 pn.pos &lt;- pmax(res$pn$fl$loadings.pm[[2]], 0)
@@ -798,83 +1024,388 @@ snn.matched &lt;- unlist(lapply(pn.matched, function(x) which(is.cor[, x])))
 # Duplicate factors where need be.
 pn.matched &lt;- rep(1:res$pn$fl$n.factors, times = apply(is.cor, 2, sum))
 
-plot.factors(res$pn$fl, processed$cell.type,
+plot.factors(res$pn$fl, droplet$cell.type,
              pn.matched, title = &quot;Point-normal (matched factors)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/snn.matched-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$snn.gene$fl, processed$cell.type,
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-snn.matched-1">
+Past versions of snn.matched-1.png
+</button>
+</p>
+<div id="fig-snn.matched-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/snn.matched-1.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$snn.gene$fl, droplet$cell.type,
              snn.matched, title = &quot;Semi-nonnegative (matched factors)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/snn.matched-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-snn.matched-2">
+Past versions of snn.matched-2.png
+</button>
+</p>
+<div id="fig-snn.matched-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/snn.matched-2.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Next I plot the remaining “unmatched” factors. I’m not especially interested in trying to tease out the nuances in basal, club, and hillock factors that make up the majority of these factors. Worthy of note are:</p>
 <ul>
-<li><p>Point-normal factor 7, which promises to identify a subpopulation of ciliated cells that is not represented by the semi-nonnegative fit. However, since the point-normal fit can, in theory, accommodate twice as many gene sets as the semi-nonnegative fit, it’s not terribly surprising that it yields at least one additional factor of interest.</p></li>
-<li><p>The tuft factor (semi-nonnegative factor 9), which is not so much an additional factor as compensation for the fact that a single semi-nonnegative tuft factor does the work of two point-normal factors: see below.</p></li>
+<li><p>Point-normal factor 8, which promises to identify a subpopulation of ciliated cells that is not represented by the semi-nonnegative fit. However, since the point-normal fit can, in theory, accommodate twice as many gene sets as the semi-nonnegative fit, it’s not terribly surprising that it yields at least one additional factor of interest.</p></li>
+<li><p>The tuft factor (semi-nonnegative factor 10), which is not so much an additional factor as compensation for the fact that a single semi-nonnegative tuft factor does the work of two point-normal factors: see below.</p></li>
 </ul>
 <pre class="r"><code>snn.unmatched &lt;- setdiff(1:res$snn.gene$fl$n.factors, snn.matched)
 pn.unmatched &lt;- setdiff(1:res$pn$fl$n.factors, pn.matched)
 
-plot.factors(res$pn$fl, processed$cell.type,
+plot.factors(res$pn$fl, droplet$cell.type,
              pn.unmatched, title = &quot;Point-normal (unmatched factors)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/snn.unmatched-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res$snn.gene$fl, processed$cell.type,
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-snn.unmatched-1">
+Past versions of snn.unmatched-1.png
+</button>
+</p>
+<div id="fig-snn.unmatched-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/snn.unmatched-1.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.factors(res$snn.gene$fl, droplet$cell.type,
              snn.unmatched, title = &quot;Semi-nonnegative (unmatched factors)&quot;)</code></pre>
 <p><img src="figure/prior_type.Rmd/snn.unmatched-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-snn.unmatched-2">
+Past versions of snn.unmatched-2.png
+</button>
+</p>
+<div id="fig-snn.unmatched-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/snn.unmatched-2.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-tuft-factors" class="section level2">
-<h2>Results: tuft factors</h2>
-<p>Counting unnmatched semi-nonnegative factor 9, there are a total of two semi-nonnegative tuft factors, which is the same number of tuft factors as there are in the point-normal fit. And indeed, both fits similarly separate out tuft-1 and tuft-2 populations. The most obvious difference is that the point-normal fit gives us one factor (7) that identifies tuft cells and another factor (23) that discriminates between tuft-1 cells (positive loadings) and tuft-2 cells (negative loadings). In contrast, the semi-nonnegative fit gives us a factor that identifies tuft cells and a factor that further delimits tuft-1 cells; to get the tuft-2 gene set, one would need to “subtract” the tuft-1 loadings from the generic tuft loadings. So, although I claimed above that semi-nonnegative fits ought to be more interpretable, the point-normal fit is in fact easier to interpret here.</p>
+<h2>Results: Tuft factors</h2>
+<p>Counting unnmatched semi-nonnegative factor 10, there are a total of two semi-nonnegative tuft factors, which is the same number of tuft factors as there are in the point-normal fit. And indeed, both fits similarly separate out tuft-1 and tuft-2 populations. The most obvious difference is that the point-normal fit gives us one factor (6) that identifies tuft cells and another factor (21) that discriminates between tuft-1 cells (positive loadings) and tuft-2 cells (negative loadings). In contrast, the semi-nonnegative fit gives us a factor that identifies tuft cells and a factor that further delimits tuft-1 cells; to get the tuft-2 gene set, one would need to “subtract” the tuft-1 loadings from the generic tuft loadings. So, although I claimed above that semi-nonnegative fits ought to be more interpretable, the point-normal fit is in fact easier to interpret here.</p>
 <p>The relevant gene sets are plotted below. Genes that Montoro et al. identify as more highly expressed in tuft-1 cells are in blue, while genes that express more highly in tuft-2 cells are in red.</p>
-<pre class="r"><code>tuft1.genes &lt;- c(&quot;Gnb3&quot;, &quot;Gng13&quot;, &quot;Itpr3&quot;, &quot;Plcb2&quot;, &quot;Gnat3&quot;, &quot;Ovol3&quot;, &quot;Commd1&quot;, &quot;Cited2&quot;, &quot;Atp1b1&quot;, &quot;Fxyd6&quot;, &quot;Pou2f3&quot;)
-tuft2.genes &lt;- c(&quot;Alox5ap&quot;, &quot;Ptprc&quot;, &quot;Spib&quot;, &quot;Sox9&quot;, &quot;Mgst3&quot;, &quot;Gpx2&quot;, &quot;Ly6e&quot;, &quot;S100a11&quot;, &quot;Cst3&quot;, &quot;Cd24a&quot;, &quot;B2m&quot;, &quot;Dclk1&quot;, &quot;Sdc4&quot;, &quot;Il13ra1&quot;)
-all.tuft.genes &lt;- c(&quot;Il25&quot;, &quot;Tslp&quot;, tuft1.genes, tuft2.genes)
-
-gene.colors &lt;- c(rep(&quot;black&quot;, 2), 
-                 rep(&quot;blue&quot;, length(tuft1.genes)),
-                 rep(&quot;red&quot;, length(tuft2.genes)))
-
-plot.one.factor(res$pn$fl, pn.matched[7], all.tuft.genes, 
-                &quot;Point-normal, Factor 7&quot;, 
-                invert = FALSE, gene.colors = gene.colors)</code></pre>
+<pre class="r"><code>plot.one.factor(res$pn$fl, pn.matched[6], droplet$all.tuft.genes, 
+                title = &quot;Point-normal, Factor 6&quot;, 
+                invert = FALSE, gene.colors = droplet$all.tuft.colors)</code></pre>
 <p><img src="figure/prior_type.Rmd/tuft-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$pn$fl, pn.matched[23], all.tuft.genes, 
-                &quot;Point-normal, Factor 23 (positive component)&quot;, 
-                invert = FALSE, gene.colors = gene.colors)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-1">
+Past versions of tuft-1.png
+</button>
+</p>
+<div id="fig-tuft-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/tuft-1.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$pn$fl, pn.matched[21], droplet$all.tuft.genes, 
+                title = &quot;Point-normal, Factor 21 (positive component)&quot;, 
+                invert = FALSE, gene.colors = droplet$all.tuft.colors)</code></pre>
 <p><img src="figure/prior_type.Rmd/tuft-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$pn$fl, pn.matched[23], all.tuft.genes, 
-                &quot;Point-normal, Factor 23 (negative component)&quot;, 
-                invert = TRUE, gene.colors = gene.colors)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-2">
+Past versions of tuft-2.png
+</button>
+</p>
+<div id="fig-tuft-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/tuft-2.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$pn$fl, pn.matched[21], droplet$all.tuft.genes, 
+                title = &quot;Point-normal, Factor 21 (negative component)&quot;, 
+                invert = TRUE, gene.colors = droplet$all.tuft.colors)</code></pre>
 <p><img src="figure/prior_type.Rmd/tuft-3.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$snn.gene$fl, snn.matched[7], all.tuft.genes, 
-                &quot;Semi-nonnegative, Factor 7&quot;, 
-                invert = FALSE, gene.colors = gene.colors)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-3">
+Past versions of tuft-3.png
+</button>
+</p>
+<div id="fig-tuft-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/tuft-3.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$snn.gene$fl, snn.matched[6], droplet$all.tuft.genes, 
+                title = &quot;Semi-nonnegative, Factor 6&quot;, 
+                invert = FALSE, gene.colors = droplet$all.tuft.colors)</code></pre>
 <p><img src="figure/prior_type.Rmd/tuft-4.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.one.factor(res$snn.gene$fl, snn.unmatched[9], all.tuft.genes, 
-                &quot;Semi-nonnegative, Unmatched factor 9&quot;, 
-                invert = FALSE, gene.colors = gene.colors)</code></pre>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-4">
+Past versions of tuft-4.png
+</button>
+</p>
+<div id="fig-tuft-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/tuft-4.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<pre class="r"><code>plot.one.factor(res$snn.gene$fl, snn.unmatched[10], droplet$all.tuft.genes, 
+                title = &quot;Semi-nonnegative, Unmatched factor 10&quot;, 
+                invert = FALSE, gene.colors = droplet$all.tuft.colors)</code></pre>
 <p><img src="figure/prior_type.Rmd/tuft-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-5">
+Past versions of tuft-5.png
+</button>
+</p>
+<div id="fig-tuft-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/24e276176a2f887e09b1ef055d7ded4e0cec49aa/docs/figure/prior_type.Rmd/tuft-5.png" target="_blank">24e2761</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-21
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="some-conclusions" class="section level2">
 <h2>Some conclusions</h2>
-<p>I don’t think the semi-nonnegative fits are worth the trouble, at least with this dataset. They’re slow to fit and I’m not sure that they’re actually any more interpretable. If other datasets confirm that scale mixtures of normals can be fit nearly as quickly as point-normal priors, then I think that scale mixtures of normals might be the way to go.</p>
-<pre class="r"><code># hillock.genes &lt;- c(&quot;Krt13&quot;, &quot;Krt4&quot;, &quot;Ecm1&quot;, &quot;S100a11&quot;, &quot;Cldn3&quot;, &quot;Lgals3&quot;, &quot;Anxa1&quot;,
-#                    &quot;S100a6&quot;, &quot;Upk3bl&quot;, &quot;Aqp5&quot;, &quot;Anxa2&quot;, &quot;Crip1&quot;, &quot;Gsto1&quot;, &quot;Tppp3&quot;)
-# 
-# snn.pve &lt;- signif(res$snn.gene$fl$pve, digits = 2)
-# plot.one.factor(res$snn.gene$fl, snn.matched[6], hillock.genes, 
-#                 paste0(&quot;Semi-nonnegative, Factor 6 (PVE: &quot;, 
-#                        snn.pve[snn.matched[6]], &quot;)&quot;))
-# plot.one.factor(res$snn.gene$fl, snn.matched[13], hillock.genes, 
-#                 paste0(&quot;Semi-nonnegative, Factor 13 (PVE: &quot;, 
-#                        snn.pve[snn.matched[13]], &quot;)&quot;))
-# plot.one.factor(res$snn.gene$fl, snn.unmatched[3], hillock.genes, 
-#                 paste0(&quot;Semi-nonnegative, Unmatched factor 3 (PVE: &quot;,
-#                        snn.pve[snn.unmatched[3]], &quot;)&quot;))
-# plot.one.factor(res$snn.gene$fl, snn.unmatched[5], hillock.genes, 
-#                 paste0(&quot;Semi-nonnegative, Unmatched factor 5 (PVE: &quot;,
-#                        snn.pve[snn.unmatched[5]], &quot;)&quot;))
-# plot.one.factor(res$snn.gene$fl, snn.unmatched[6], hillock.genes, 
-#                 paste0(&quot;Semi-nonnegative, Unmatched factor 6 (PVE: &quot;,
-#                        snn.pve[snn.unmatched[6]], &quot;)&quot;))</code></pre>
-<br> <br>
+Even though they might be more in line with biological reality, I don’t think the semi-nonnegative fits are worth the trouble, at least with this dataset. They’re slow to fit and I’m not sure that they’re actually any more interpretable. If other datasets confirm that scale mixtures of normals can be fit nearly as quickly as point-normal priors, then I think that scale mixtures of normals might be the way to go. <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -897,7 +1428,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] flashier_0.1.11 ggplot2_3.2.0   Matrix_1.2-15  
+[1] flashier_0.1.15 ggplot2_3.2.0   Matrix_1.2-15  
 
 loaded via a namespace (and not attached):
  [1] Rcpp_1.0.1        plyr_1.8.4        highr_0.8        
