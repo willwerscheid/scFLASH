@@ -12,19 +12,23 @@ output:
 
 [Calculating $p$-values.](pvals.html)
 
-## Datasets
+## Fitting the droplet-based 3' scRNA-seq dataset from Montoro et al.
 
-[Droplet-based 3' scRNA-seq dataset from Montoro et al.](droplet.html)
+1. [A preliminary look at the data.](droplet.html)
 
-## Investigations
+1. [A comparison of different variance structures.](var_type.html)
 
-[Comparing variance structures.](var_type.html)
+1. [An argument for backfitting.](backfit.html)
 
-[Greedy vs. backfit.](backfit.html)
+1. [A comparison of different prior families.](prior_type.html)
 
-[Comparing prior types.](prior_type.html)
+1. [A discussion of size factors.](size_factors.html)
 
-## Etc
+Forthcoming: Pseudocounts.
+
+Forthcoming: Number of factors.
+
+## Archived
 
 [Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
 
