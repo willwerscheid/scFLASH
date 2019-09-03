@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-08-30
+<strong>Last updated:</strong> 2019-09-03
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreecb853023cf9160b289bd1a1616e512ed7fe198c5targetblankcb85302a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/cb853023cf9160b289bd1a1616e512ed7fe198c5" target="_blank">cb85302</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree71f85edf5626d770566fba7c56e2d9182a868341targetblank71f85eda"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/71f85edf5626d770566fba7c56e2d9182a868341" target="_blank">71f85ed</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreecb853023cf9160b289bd1a1616e512ed7fe198c5targetblankcb85302a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree71f85edf5626d770566fba7c56e2d9182a868341targetblank71f85eda" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -562,14 +562,12 @@ Ignored files:
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
-    Untracked:  analysis/pseudocount2.Rmd
     Untracked:  analysis/pseudocount_redux.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
     Untracked:  code/pseudocount/
     Untracked:  code/pseudocounts.R
     Untracked:  code/trachea4.R
-    Untracked:  code/var_type/vartype_fits.R
     Untracked:  data/Ensembl2Reactome.txt
     Untracked:  data/hard_bimodal1.txt
     Untracked:  data/hard_bimodal2.txt
@@ -583,9 +581,7 @@ Unstaged changes:
     Modified:   analysis/index.Rmd
     Modified:   analysis/pseudocount.Rmd
     Modified:   code/sc_comparisons.R
-    Modified:   code/size_factors/flashier_fits.R
     Modified:   code/utils.R
-    Deleted:    code/var_type/flashier_fits.R
 
 </code></pre>
 <p>
@@ -624,6 +620,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/71f85edf5626d770566fba7c56e2d9182a868341/analysis/pvals.Rmd" target="_blank">71f85ed</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+wflow_publish(“analysis/pvals.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/ebf00c1159d15b480e042b562bfe2fcebfcae15a/docs/pvals.html" target="_blank">ebf00c1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-08-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -687,10 +717,11 @@ wflow_publish(“analysis/pvals.Rmd”)
 <p>To assess goodness of fit, I’d like to be able to look at the distribution of <span class="math inline">\(p\)</span>-values for the residuals from a <code>flashier</code> fit.</p>
 <p>The problem is that the model that’s being fitted doesn’t correspond to a plausible (or even feasible) model for generating the data. In effect, we’re fitting <span class="math display">\[ \log(Y_{ij} / \lambda_j + 1) = LF&#39; + E,\ E_{ij} \sim N(0, \sigma_{ij}^2), \]</span> so that <span class="math inline">\(Y_{ij}\)</span> is modelled as having a shifted lognormal distribution <span class="math display">\[ Y_{ij} \sim \text{lognormal}(\mu_{ij}, \sigma_{ij}^2) - \lambda_j, \]</span> where <span class="math inline">\(\mu_{ij} = (LF&#39;)_{ij} + \log(\lambda_j)\)</span>.</p>
 <p>This implies that <span class="math inline">\(Y_{ij}\)</span> is supported on the interval <span class="math inline">\((-\lambda_j, \infty)\)</span>, whereas a feasible data-generating model would only be supported on the nonnegative integers.</p>
-<p>To calculate <span class="math inline">\(p\)</span>-values, I’d like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily.</p>
+<p>To calculate <span class="math inline">\(p\)</span>-values, I’d like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily. I call this distribution the “implied discrete distribution.”</p>
 <p>Here’s how I proceed: First, to guarantee that <span class="math inline">\(\mathbb{E}Y_{ij}\)</span> is positive, I put all of the mass from <span class="math inline">\((-\lambda_j, 0)\)</span> onto a point mass at zero, which gives a mixture of a point mass at zero and a shifted and truncated lognormal distribution with support on the positive reals: <span class="math display">\[ Y_{ij} \sim \pi_0 \delta_0 + (1 - \pi_0) \left[ \text{TLN}(\mu_{ij}, \sigma_{ij}^2; \lambda_j, \infty) - \lambda_j \right]\]</span></p>
 <p>Next, I match moments to find a Poisson or negative binomial distribution that approximates this mixture. If the variance of the mixture is less than the expectation, I choose the Poisson distribution with the same mean. Otherwise, I match the first and second moments to get a negative binomial distribution.</p>
 <p>Finally, I use a randomization strategy to get a continuous range of <span class="math inline">\(p\)</span>-values. For example, if <span class="math inline">\(Y_{ij}\)</span> is approximately <span class="math inline">\(\text{Poisson}(\nu_{ij})\)</span>, then I draw <span class="math display">\[ c_{ij} \sim \text{Unif}[0, 1] \]</span> and set <span class="math display">\[ p_{ij} = c_{ij} \cdot \text{ppois}(Y_{ij} - 1; \nu_{ij}) + (1 - c_{ij}) \cdot \text{ppois}(Y_{ij}; \nu_{ij}) \]</span></p>
+<p>The usefulness of the implied discrete distribution is not limited to plotting <span class="math inline">\(p\)</span>-values. In particular, it will allow me to calculate a data log likelihood that puts different data transformations on an equal footing. A <a href="pseudocount.html">previous analysis</a> suggested that the ELBO can be monotonically decreasing as a function of the pseudocount, which makes it useless as a metric. In such cases, the log likelihood of the implied distribution can be used instead.</p>
 </div>
 <div id="mixture-proportions" class="section level2">
 <h2>Mixture proportions</h2>
@@ -730,7 +761,8 @@ wflow_publish(“analysis/pvals.Rmd”)
 </div>
 <div id="estimating-lf" class="section level2">
 <h2>Estimating LF’</h2>
-Rather than trying to take expectations with respect to <span class="math inline">\(L\)</span> and <span class="math inline">\(F\)</span>, I simply use the plug-in estimator <span class="math inline">\(\mathbb{E}(LF&#39;)\)</span>. One could try sampling from the posterior on <span class="math inline">\(LF&#39;\)</span> to see whether the <span class="math inline">\(p\)</span>-value plots change, but I don’t think that it’s worth the trouble given that so many other approximations are already being made. <br> <br>
+<p>Rather than trying to take expectations with respect to <span class="math inline">\(L\)</span> and <span class="math inline">\(F\)</span>, I simply use the plug-in estimator <span class="math inline">\(\mathbb{E}(LF&#39;)\)</span>. One could try sampling from the posterior on <span class="math inline">\(LF&#39;\)</span> to see whether the <span class="math inline">\(p\)</span>-value plots change, but I don’t think that it’s worth the trouble given that so many other approximations are already being made.</p>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
