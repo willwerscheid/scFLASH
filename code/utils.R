@@ -328,6 +328,7 @@ calc.p.vals <- function(orig.data, processed, fl, var.type) {
   pois.c <- runif(length(pois.data))
   pois.pvals <- (pois.c * ppois(pois.data, pois.EY)
                  + (1 - pois.c) * ppois(pois.data - 1, pois.EY))
+  pois.llik <- sum(dpois(pois.data, pois.EY, log = TRUE))
 
   NB.data <- orig.data[EY < VarY]
   NB.p <- EY[EY < VarY] / VarY[EY < VarY]
@@ -335,6 +336,7 @@ calc.p.vals <- function(orig.data, processed, fl, var.type) {
   NB.c <- runif(length(NB.data))
   NB.pvals <- (NB.c * pnbinom(NB.data, NB.r, NB.p)
                + (1 - NB.c) * pnbinom(NB.data - 1, NB.r, NB.p))
+  NB.llik <- sum(dnbinom(NB.data, NB.r, NB.p, log = TRUE))
 
   p.vals  <- c(pois.pvals, NB.pvals)
   p.vals  <- ceiling(100 * p.vals)
@@ -342,8 +344,9 @@ calc.p.vals <- function(orig.data, processed, fl, var.type) {
 
   probs <- p.table / sum(p.table)
   KL.div  <- sum(probs * log(100 * probs))
+  llik <- pois.llik + NB.llik
 
-  return(list(table = p.table, KL.divergence = KL.div))
+  return(list(table = p.table, KL.divergence = KL.div, llik = llik))
 }
 
 plot.p.vals <- function(p.vals) {
