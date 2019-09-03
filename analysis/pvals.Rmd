@@ -23,7 +23,7 @@ where $\mu_{ij} = (LF')_{ij} + \log(\lambda_j)$.
 
 This implies that $Y_{ij}$ is supported on the interval $(-\lambda_j, \infty)$, whereas a feasible data-generating model would only be supported on the nonnegative integers.
 
-To calculate $p$-values, I'd like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily.
+To calculate $p$-values, I'd like to at least use a feasible model. To this end, I find a discrete distribution that is close to the shifted lognormal distribution fitted by the model and that can be found easily. I call this distribution the "implied discrete distribution."
 
 Here's how I proceed: First, to guarantee that $\mathbb{E}Y_{ij}$ is positive, I put all of the mass from $(-\lambda_j, 0)$ onto a point mass at zero, which gives a mixture of a point mass at zero and a shifted and truncated lognormal distribution with support on the positive reals: 
 $$ Y_{ij} \sim \pi_0 \delta_0 + (1 - \pi_0) \left[ \text{TLN}(\mu_{ij}, \sigma_{ij}^2; \lambda_j, \infty) - \lambda_j \right]$$
@@ -34,6 +34,8 @@ Finally, I use a randomization strategy to get a continuous range of $p$-values.
 $$ c_{ij} \sim \text{Unif}[0, 1] $$
 and set
 $$ p_{ij} = c_{ij} \cdot \text{ppois}(Y_{ij} - 1; \nu_{ij}) + (1 - c_{ij}) \cdot \text{ppois}(Y_{ij}; \nu_{ij}) $$
+
+The usefulness of the implied discrete distribution is not limited to plotting $p$-values. In particular, it will allow me to calculate a data log likelihood that puts different data transformations on an equal footing. A [previous analysis](pseudocount.html) suggested that the ELBO can be monotonically decreasing as a function of the pseudocount, which makes it useless as a metric. In such cases, the log likelihood of the implied distribution can be used instead.
 
 ## Mixture proportions
 
@@ -88,3 +90,4 @@ $$ \begin{aligned}
 ## Estimating LF'
 
 Rather than trying to take expectations with respect to $L$ and $F$, I simply use the plug-in estimator $\mathbb{E}(LF')$. One could try sampling from the posterior on $LF'$ to see whether the $p$-value plots change, but I don't think that it's worth the trouble given that so many other approximations are already being made.
+
