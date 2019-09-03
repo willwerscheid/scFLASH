@@ -153,7 +153,7 @@ elbo.df <- data.frame(fit = names(elbo), elbo = elbo)
 ggplot(subset(elbo.df, elbo > 40000000), aes(x = fit, y = elbo)) + 
   geom_point() +
   scale_x_discrete(limits = c("scale.genes", "scale.cells", "scale.both", "kron")) +
-  labs(x = NULL)
+  labs(x = NULL, y = "ELBO")
 ```
 
 ## Results: Distribution of p-values
@@ -185,6 +185,24 @@ I omit the other Kronecker-like fits here; to the eye, they are indistinguishabl
 
 ```{r kron.p}
 plot.p.vals(res$kron$p.vals)
+```
+
+## Results: Log likelihood of implied distribution
+
+Since the change-of-variables ELBO adjustments [are not entirely reliable](pseudocount.html#elbo_comparison), it's useful to compare the log likelihoods of the [implied discrete distributions](pvals.html) as well. 
+
+From this perspective, the Kronecker fit does best, followed by the Kronecker-like fit that pre-scales cells. I'm inclined to believe these statistics more than the ELBOs. In effect, since sparse genes have very small residual standard deviations, the $p$-value prior on genes implies that nonzero loadings are expected to be much larger for sparse genes than for genes that are highly expressed. The $p$-value prior on cells doesn't make much sense either, but the range of residual standard deviations for cells is much smaller, so there's less of a difference between the $p$-value prior and the usual prior.
+
+On the other hand, the $p$-value prior on genes has the welcome effect of inducing less shrinkage among sparser genes than among highly expressed genes. When I'm looking at gene loadings for a particular factor, I'm typically more interested in genes that are uniquely highly expressed in that factor rather than genes that are highly expressed across all factors. Since the former tend to be on the sparser side, the $p$-value prior can help to make these factor-specific genes more visible in a top-$n$ loadings plot. Some examples are below.
+
+```{r llik}
+llik <- sapply(lapply(res, `[[`, "p.vals"), `[[`, "llik")
+llik.df <- data.frame(fit = names(llik), llik = llik)
+ggplot(llik.df, aes(x = fit, y = llik)) + 
+  geom_point() +
+  scale_x_discrete(limits = c("const", "bycell", "bygene", "kron", 
+                              "scale.genes", "scale.cells", "scale.both")) +
+  labs(x = NULL, y = "Log likelihood of implied distribution")
 ```
 
 ## Results: Factors and cell types
