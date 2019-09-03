@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree27a4d37eb0908f79aa4533fae593ec2473feae67targetblank27a4d37a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/27a4d37eb0908f79aa4533fae593ec2473feae67" target="_blank">27a4d37</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed9d193a8e8d8403997ef2eb59e22c763ec2825fdtargetblankd9d193aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/d9d193a8e8d8403997ef2eb59e22c763ec2825fd" target="_blank">d9d193a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree27a4d37eb0908f79aa4533fae593ec2473feae67targetblank27a4d37a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed9d193a8e8d8403997ef2eb59e22c763ec2825fdtargetblankd9d193aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -619,6 +619,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/d9d193a8e8d8403997ef2eb59e22c763ec2825fd/analysis/size_factors.Rmd" target="_blank">d9d193a</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+wflow_publish(“analysis/size_factors.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/5307ec18d127a271adb58d70dd7df4cee7c4f7e0/docs/size_factors.html" target="_blank">5307ec1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -728,7 +762,7 @@ res &lt;- readRDS(&quot;./output/size_factors/sizefactor_fits.rds&quot;)</code><
 <p>A second approach that has gained some traction is <a href="https://www.nature.com/articles/nmeth.4263">Rhonda Bacher’s method</a> implemented in the <code>R</code> package <code>SCnorm</code>. I attempted to run it on the Montoro et al. dataset, but it simply set all scale factors to one (and it took a very long time to do so).</p>
 <p>The third method I consider is to not use scale factors at all. This is not as dumb as it might seem! Write the EBMF model as <span class="math display">\[ Y = \ell f&#39; + LF&#39; + E, \]</span> where <span class="math inline">\(\ell f&#39;\)</span> is the first factor fitted by <code>flashier</code>. This factor, which I usually refer to as the “mean factor,” typically accounts for by far the largest proportion of variance explained. Then, <span class="math display">\[ X_{ij} + 1 = e^{\ell_i} e^{f_j} \exp \left( (LF&#39;)_{ij} + E_{ij} \right), \]</span> so that <span class="math inline">\(f\)</span> essentially acts as a vector of size factors. The difference is that this scaling is done after the <code>log1p</code> transformation rather then before.</p>
 <p>In this analysis, I’ll argue that it’s worth it to calculate <code>scran</code> size factors. Qualitatively, factors are very similar, but there are measurable differences in fits, it doesn’t take very long to calculate the size factors, and in many ways it’s the correct thing to do.</p>
-<p>All fits were produced by adding 20 “greedy” factors to the Montoro et al. droplet dataset. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R">here</a>.</p>
+<p>All fits were produced by adding 20 “greedy” factors to the Montoro et al. droplet dataset and backfitting. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R">here</a>.</p>
 </div>
 <div id="results-scran-size-factors" class="section level2">
 <h2>Results: scran size factors</h2>
@@ -873,6 +907,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/5307ec18d127a271adb58d70dd7df4cee7c4f7e0/docs/figure/size_factors.Rmd/KL-1.png" target="_blank">5307ec1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/2fe674bb6a36d71d41e0116efcedc6a76d72066f/docs/figure/size_factors.Rmd/KL-1.png" target="_blank">2fe674b</a>
 </td>
 <td>
@@ -897,6 +942,43 @@ ggplot(llik.df, aes(x = method, y = llik)) +
   scale_x_discrete(limits = method.names) +
   labs(x = NULL, y = &quot;Log likelihood of implied distribution&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/llik-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-llik-1">
+Past versions of llik-1.png
+</button>
+</p>
+<div id="fig-llik-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/5307ec18d127a271adb58d70dd7df4cee7c4f7e0/docs/figure/size_factors.Rmd/llik-1.png" target="_blank">5307ec1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-factors-and-cell-types" class="section level2">
 <h2>Results: Factors and cell types</h2>
