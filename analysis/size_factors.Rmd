@@ -47,7 +47,7 @@ so that $f$ essentially acts as a vector of size factors. The difference is that
 
 In this analysis, I'll argue that it's worth it to calculate `scran` size factors. Qualitatively, factors are very similar, but there are measurable differences in fits, it doesn't take very long to calculate the size factors, and in many ways it's the correct thing to do.
 
-All fits were produced by adding 20 "greedy" factors to the Montoro et al. droplet dataset. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R).
+All fits were produced by adding 20 "greedy" factors to the Montoro et al. droplet dataset and backfitting. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactor_fits.R).
 
 ## Results: scran size factors
 
