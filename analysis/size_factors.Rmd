@@ -66,48 +66,46 @@ ggplot(sf.df, aes(x = libsize, y = scran)) +
 I use a change-of-variables formula to compare ELBOs. It's probably not surprising that the most sophisticated method (`scran`) does best. The improvement in the ELBO is substantial: it's approximately 600,000, which is the equivalent of 8-10 greedy factors. More surprisingly, library-size normalization does very poorly: worse, in fact, than not normalizing at all.
 
 ```{r elbo}
-elbo.df <- data.frame(method = c("No size factors", 
-                                 "Library size normalization",
-                                 "scran size factors"),
-                      elbo = c(res$noscale$fl$elbo + res$noscale$elbo.adj,
-                               res$libsize$fl$elbo + res$libsize$elbo.adj,
-                               res$scran$fl$elbo + res$scran$elbo.adj))
+method.names <- c("No size factors", 
+                  "Library size normalization",
+                  "scran size factors")
+elbo.df <- data.frame(method = method.names,
+                      elbo = sapply(res, function(x) x$fl$elbo + x$elbo.adj))
 ggplot(elbo.df, aes(x = method, y = elbo)) + 
   geom_point() +
-  scale_x_discrete(limits = c("No size factors",
-                              "Library size normalization", 
-                              "scran size factors")) +
+  scale_x_discrete(limits = method.names) +
   labs(x = NULL, y = "ELBO")
 ```
 
 ## Results: Distribution of p-values
 
-The distribution of $p$-values is very similar across methods, but the small differences confirm the above ranking: `scran` does best, while library-size normalization does worst.
+The distribution of $p$-values is very similar across methods, but the small differences confirm the above ranking: `scran` does best, while library-size normalization does worst. (I omit the individual plots, which are nearly indistinguishable to the eye.)
 
 ```{r KL}
-KL <- sapply(lapply(res, `[[`, "p.vals"), `[[`, "KL.divergence")
-KL.df <- data.frame(fit = names(KL), KL = KL)
-ggplot(KL.df, aes(x = fit, y = KL)) +
+KL.df <- data.frame(method = method.names, 
+                    KL = sapply(res, function(x) x$p.vals$KL.divergence))
+ggplot(KL.df, aes(x = method, y = KL)) +
   geom_bar(stat = "identity") +
-  scale_x_discrete(limits = c("noscale", "libsize", "scran")) +
+  scale_x_discrete(limits = method.names) +
   labs(x = NULL, y = "KL divergence relative to uniform")
 ```
 
-### Library size normalization
+## Results: Log likelihood of implied distribution
 
-```{r libsize.p}
-plot.p.vals(res$libsize$p.vals)
-```
+Using the log likelihood of the implied discrete distribution --- which, I've [suggested](pvals.html), might be more reliable than the ELBO when different data transformations are in play --- the relative rankings of the methods are more in line with what I'd expect. Once again, `scran` wins out.
 
-### scran
-
-```{r scran.p}
-plot.p.vals(res$scran$p.vals)
+```{r llik}
+llik.df <- data.frame(method = method.names, 
+                      llik = sapply(res, function(x) x$p.vals$llik))
+ggplot(llik.df, aes(x = method, y = llik)) + 
+  geom_point() +
+  scale_x_discrete(limits = method.names) +
+  labs(x = NULL, y = "Log likelihood of implied distribution")
 ```
 
 ## Results: Factors and cell types
 
-Factors are very similar across methods. I don't see anything worth commenting on here.
+Qualitatively, factors are very similar across methods. I don't see anything worth commenting on here.
 
 ```{r plot.factors}
 plot.factors(res$noscale$fl, droplet$cell.type, title = "No size factors")
