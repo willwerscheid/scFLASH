@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-01
+<strong>Last updated:</strong> 2019-09-03
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreefc78232542efa2327891106309580aa8f276b6c2targetblankfc78232a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/fc78232542efa2327891106309580aa8f276b6c2" target="_blank">fc78232</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree723ee8818b2172ecce7829d77d0977acc6815740targetblank723ee88a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/723ee8818b2172ecce7829d77d0977acc6815740" target="_blank">723ee88</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreefc78232542efa2327891106309580aa8f276b6c2targetblankfc78232a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree723ee8818b2172ecce7829d77d0977acc6815740targetblank723ee88a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -562,14 +562,11 @@ Ignored files:
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
-    Untracked:  analysis/pseudocount2.Rmd
     Untracked:  analysis/pseudocount_redux.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/prior_type/priortype_fits.R
     Untracked:  code/pseudocount/
     Untracked:  code/pseudocounts.R
-    Untracked:  code/size_factors/sizefactor_fits.R
     Untracked:  code/trachea4.R
     Untracked:  data/Ensembl2Reactome.txt
     Untracked:  data/hard_bimodal1.txt
@@ -583,10 +580,7 @@ Untracked files:
 Unstaged changes:
     Modified:   analysis/index.Rmd
     Modified:   analysis/pseudocount.Rmd
-    Deleted:    code/prior_type/flashier_fits.R
     Modified:   code/sc_comparisons.R
-    Deleted:    code/size_factors/flashier_fits.R
-    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -625,6 +619,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/723ee8818b2172ecce7829d77d0977acc6815740/analysis/var_type.Rmd" target="_blank">723ee88</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+wflow_publish(“analysis/var_type.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/851baf81070c51d052c48571d7c2cea5be742bda/docs/var_type.html" target="_blank">851baf8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -1111,7 +1139,7 @@ knitr::kable(nested.df[1:2, ], col.names = col.names)</code></pre>
 ggplot(subset(elbo.df, elbo &gt; 40000000), aes(x = fit, y = elbo)) + 
   geom_point() +
   scale_x_discrete(limits = c(&quot;scale.genes&quot;, &quot;scale.cells&quot;, &quot;scale.both&quot;, &quot;kron&quot;)) +
-  labs(x = NULL)</code></pre>
+  labs(x = NULL, y = &quot;ELBO&quot;)</code></pre>
 <p><img src="figure/var_type.Rmd/kron.compare-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-kron.compare-1">
@@ -1380,6 +1408,20 @@ Jason Willwerscheid
 </div>
 </div>
 </div>
+</div>
+<div id="results-log-likelihood-of-implied-distribution" class="section level2">
+<h2>Results: Log likelihood of implied distribution</h2>
+<p>Since the change-of-variables ELBO adjustments <a href="pseudocount.html#elbo_comparison">are not entirely reliable</a>, it’s useful to compare the log likelihoods of the <a href="pvals.html">implied discrete distributions</a> as well.</p>
+<p>From this perspective, the Kronecker fit does best, followed by the Kronecker-like fit that pre-scales cells. I’m inclined to believe these statistics more than the ELBOs. In effect, since sparse genes have very small residual standard deviations, the <span class="math inline">\(p\)</span>-value prior on genes implies that nonzero loadings are expected to be much larger for sparse genes than for genes that are highly expressed. The <span class="math inline">\(p\)</span>-value prior on cells doesn’t make much sense either, but the range of residual standard deviations for cells is much smaller, so there’s less of a difference between the <span class="math inline">\(p\)</span>-value prior and the usual prior.</p>
+<p>On the other hand, the <span class="math inline">\(p\)</span>-value prior on genes has the welcome effect of inducing less shrinkage among sparser genes than among highly expressed genes. When I’m looking at gene loadings for a particular factor, I’m typically more interested in genes that are uniquely highly expressed in that factor rather than genes that are highly expressed across all factors. Since the former tend to be on the sparser side, the <span class="math inline">\(p\)</span>-value prior can help to make these factor-specific genes more visible in a top-<span class="math inline">\(n\)</span> loadings plot. Some examples are below.</p>
+<pre class="r"><code>llik &lt;- sapply(lapply(res, `[[`, &quot;p.vals&quot;), `[[`, &quot;llik&quot;)
+llik.df &lt;- data.frame(fit = names(llik), llik = llik)
+ggplot(llik.df, aes(x = fit, y = llik)) + 
+  geom_point() +
+  scale_x_discrete(limits = c(&quot;const&quot;, &quot;bycell&quot;, &quot;bygene&quot;, &quot;kron&quot;, 
+                              &quot;scale.genes&quot;, &quot;scale.cells&quot;, &quot;scale.both&quot;)) +
+  labs(x = NULL, y = &quot;Log likelihood of implied distribution&quot;)</code></pre>
+<p><img src="figure/var_type.Rmd/llik-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="results-factors-and-cell-types" class="section level2">
 <h2>Results: Factors and cell types</h2>
