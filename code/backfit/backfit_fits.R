@@ -4,7 +4,7 @@ droplet <- readRDS("../../data/droplet.rds")
 processed <- preprocess(droplet,
                         min.nzcts = 10,
                         max.libsize = 30000,
-                        prescale = "both")
+                        prescale = "cells")
 
 greedy.Kmax <- 20
 
