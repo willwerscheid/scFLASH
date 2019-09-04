@@ -20,8 +20,7 @@ I prefer the former because it preserves sparsity.
 For a range of "reasonable" pseudocounts (from $2^{-4}$ to $2^4$), I fit  `flashier` objects to the 158 tuft cells in the drop-seq dataset described in [Montoro et al.](https://www.nature.com/articles/s41586-018-0393-7). I retain 500 highly variable genes and then I subsample 1500 random genes from what's left. The code used to create the `tuft` dataset lives [here](https://github.com/willwerscheid/scFLASH/blob/master/data/tuft.R).
 
 ```{r fits}
-# library(flashier) -- uncomment after pushing 0.1.1 updates to master
-devtools::load_all("~/Github/flashier")
+library(flashier)
 library(Matrix)
 library(reshape2)
 library(plyr)
@@ -36,8 +35,8 @@ fl.list <- list()
 for (i in 1:length(pseudocounts)) {
   ct <- pseudocounts[i]
   fl.list[[i]] <- flashier(log1p(tuft / ct),
-                           var.type = 1, prior.type = "point.normal",
-                           greedy.Kmax = 10, backfit = "none",
+                           var.type = 1, prior.family = prior.point.normal(),
+                           greedy.Kmax = 10, fit = "greedy",
                            verbose.lvl = 0)
 }
 ```
@@ -47,7 +46,7 @@ for (i in 1:length(pseudocounts)) {
 After adjusting the ELBO using a change-of-variables formula, the ELBO is monotonically decreasing as a function of $\alpha$:
 
 ```{r elbo}
-elbo <- sapply(fl.list, `[[`, "objective")
+elbo <- sapply(fl.list, `[[`, "elbo")
 chg.var <- sapply(pseudocounts, function(ct) sum(log1p(tuft / ct) + log(ct)))
 adj.elbo <- elbo - chg.var
 elbo.df <- data.frame(pseudocount = pseudocounts, elbo = adj.elbo)
@@ -58,7 +57,7 @@ ggplot(elbo.df, aes(x = pseudocount, y = elbo)) +
 To see why, it's useful to split the ELBO into component parts. I consider the contribution from the most lowly expressed 50% of genes, the next 30% of genes (up to the 80th quantile), and the next 10%, 5%, 4%, and 1% of genes (up to the 90th, 95th, 99th, and 100th quantiles). It's clear that the above behavior is driven by genes with low to moderate expression levels. Only the top 5% of genes show more interesting behavior. (The KL component increases sharply for large $\alpha$ because `flashier` is unable to fit the full number of factors.)
 
 ```{r elbo_breakdown}
-KL <- sapply(fl.list, function(fl) sum(unlist(fl$fit$KL)))
+KL <- sapply(fl.list, function(fl) sum(unlist(fl$flash.fit$KL)))
 elbo.breakdown <- data.frame(pseudocount = pseudocounts,
                              component = "KL",
                              value = KL)
@@ -68,7 +67,7 @@ n.genes <- nrow(tuft)
 gene.means <- apply(tuft, 1, mean)
 sorted.genes <- order(gene.means)
 for (i in 1:length(fl.list)) {
-  fl <- fl.list[[i]]$fit
+  fl <- fl.list[[i]]$flash.fit
   R2 <- flashier:::calc.R2(fl) # per-gene sum of squared residuals
   normal.llik <- -0.5 * (n.cells * log(2 * pi / fl$tau) + fl$tau * R2)
   adj.llik <- (normal.llik - rowSums(log1p(tuft / pseudocounts[i]))
@@ -180,7 +179,7 @@ ggplot(subset(impute, metric == "log2p.err"),
 
 ## Missing data imputation: Spearman rank correlation
 
-One can instead calculate the Spearman rank correlation for each choice of $\alpha$. We want small predictions to correspond to small counts, and large predictions for large counts. The Spearman correlation will capture this. These results suggest that setting $\alpha$ to be something between 0.5 and 1 is best. 
+One can instead calculate the Spearman rank correlation for each choice of $\alpha$. We want small predictions to correspond to small counts, and large predictions for large counts. The Spearman correlation will capture this. These results suggest that setting $\alpha$ to be something between 0.35 and 1 is best. 
 
 ```{r spearman}
 ggplot(subset(impute, metric == "spearman"), 
@@ -204,7 +203,7 @@ shrinkage.res <- data.frame(pseudocount = 0,
                             mean.fitted = log1p(true.vals[, 2]))
 for (i in 1:length(fl.list)) {
   ct <- pseudocounts[i]
-  preds <- ct * exp(flashier:::lowrank.expand(fl.list[[i]]$fit$EF)) - ct
+  preds <- ct * exp(flashier:::lowrank.expand(fl.list[[i]]$flash.fit$EF)) - ct
   mean.table <- aggregate(as.vector(preds), by = list(bins), mean)
   shrinkage.res <- rbind(shrinkage.res, 
                          data.frame(pseudocount = ct,
@@ -225,9 +224,9 @@ To see how much of a difference is made with respect to individual factors, I fi
 ```{r inspect_factors}
 # Match up factors.
 log1p.idx <- which(pseudocounts == 1)
-log1p.LL <- fl.list[[log1p.idx]]$loadings$normalized.loadings[[1]]
+log1p.LL <- fl.list[[log1p.idx]]$loadings.pm[[1]]
 factor.idx <- lapply(fl.list, function(fl) {
-  corr <- abs(crossprod(fl$loadings$normalized.loadings[[1]], log1p.LL))
+  corr <- abs(crossprod(fl$loadings.pm[[1]], log1p.LL))
   apply(corr, 1, function(x) if (max(x) > .7) which.max(x) else NA)
 })
 
@@ -255,7 +254,7 @@ for (k in c(2, 5, 8)) {
   match.k <- lapply(factor.idx, function(idx) which(idx == k))
   LL <- mapply(FUN = function(fl, match.k) {
     if (length(match.k) > 0) {
-      return(fl$loadings$normalized.loadings[[1]][, match.k])
+      return(fl$loadings.pm[[1]][, match.k])
     } else {
       return(NULL)
     }
@@ -287,24 +286,24 @@ Qualitatively, it's clear that the choice of pseudocount makes an important diff
 ```{r lme}
 # Calculate weighted log.mean.exp for each factor.
 all.lme <- lapply(fl.list, function(fl) {
-  apply(fl$loadings$normalized.loadings[[1]], 2, function(x) {
+  apply(fl$loadings.pm[[1]], 2, function(x) {
     sum(x^2 * log.mean.exp)})
 })
 # Sparsity.
 all.sprs <- lapply(fl.list, function(fl) {
-  sapply(fl$fit$g, function(g) g[[1]]$pi0)
+  sapply(fl$fitted.g[[1]], function(x) x$pi[1])
 })
 
 lme.mat <- mapply(function(idx, lme) {
   lme[sapply(1:log1p.K, function(k) {
-    if (k %in% idx) which(k == idx) else NA
+    if (k %in% idx) which(k == idx)[1] else NA
   })]
 }, factor.idx, all.lme)
 # Make relative to alpha = 1.
 lme.mat <- lme.mat - lme.mat[, log1p.idx]
 sprs.mat <- mapply(function(idx, sprs) {
   sprs[sapply(1:log1p.K, function(k) {
-    if (k %in% idx) which(k == idx) else NA
+    if (k %in% idx) which(k == idx)[1] else NA
   })]
 }, factor.idx, all.sprs)
 sprs.mat <- sprs.mat / sprs.mat[, log1p.idx]
@@ -377,3 +376,4 @@ ggplot(alpha.df, aes(x = lambda, y = alpha)) + geom_line() +
 One could simply choose $\alpha = 0.5$, or one chould choose different $\alpha_{ij}$s for each count. To preserve sparsity in the latter case, one would need to assign the same pseudocount $\alpha_0$ to all zero counts and then reparametrize as
 $$ Y_{ij} = \log \left (\frac{X_{ij}}{\alpha_0} 
 + \frac{\alpha_{ij}}{\alpha_0} \right)$$
+
