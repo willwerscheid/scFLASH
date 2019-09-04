@@ -10,7 +10,11 @@ analysis/*html
 analysis/*_cache
 analysis/site_libs
 data/droplet.rds
+data/Ensembl2Reactome.txt
+data/mus_pathways.rds
+output/pseudocount
 output/var_type
 output/backfit
 output/prior_type
 output/size_factors
+output/pseudocount_redux
