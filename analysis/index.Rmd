@@ -10,7 +10,8 @@ output:
 
 [Introduction.](intro.html)
 
-[Calculating $p$-values.](pvals.html)
+[Calculating $p$-values: the "implied discrete distribution."](pvals.html)
+
 
 ## Fitting the droplet-based 3' scRNA-seq dataset from Montoro et al.
 
@@ -24,16 +25,18 @@ output:
 
 1. [A discussion of size factors.](size_factors.html)
 
-Forthcoming: Pseudocounts.
+1. [A second look at pseudocounts.](pseudocount_redux.html)
 
 Forthcoming: Number of factors.
 
+
 ## Archived
 
-[Comparing methods for fitting flash to single-cell data.](sc_comparisons.html)
+These analyses have not necessarily been updated to use the newest version of `flashier`:
 
-[Exploring different pseudocounts.](pseudocount.html)
+[A brief discussion of Poisson $p$-values.](poisson_p.html)
 
-[Investigating backfits for flash-drift fits.](drift_backfit.html)
+[An early exploration of pseudocounts.](pseudocount.html)
 
-[On Poisson $p$-values.](poisson_p.html)
+[An investigation into backfitting flash-drift fits.](drift_backfit.html)
+
