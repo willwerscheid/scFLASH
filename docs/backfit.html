@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebcfa0cc6e0c26ca217324ce775a906ec6b06b879targetblankbcfa0cca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/bcfa0cc6e0c26ca217324ce775a906ec6b06b879" target="_blank">bcfa0cc</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree355b4c419788f50a556a3d3eff3d650c709a8e09targetblank355b4c4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/355b4c419788f50a556a3d3eff3d650c709a8e09" target="_blank">355b4c4</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebcfa0cc6e0c26ca217324ce775a906ec6b06b879targetblankbcfa0cca" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree355b4c419788f50a556a3d3eff3d650c709a8e09targetblank355b4c4a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -615,6 +615,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/355b4c419788f50a556a3d3eff3d650c709a8e09/analysis/backfit.Rmd" target="_blank">355b4c4</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+<td>
+wflow_publish(“analysis/backfit.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/f2d8ab192f58f02506f41de852ef06e13ed0c8c9/docs/backfit.html" target="_blank">f2d8ab1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -799,6 +833,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2d8ab192f58f02506f41de852ef06e13ed0c8c9/docs/figure/backfit.Rmd/progress-1.png" target="_blank">f2d8ab1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/progress-1.png" target="_blank">dbfc274</a>
 </td>
 <td>
@@ -826,7 +871,7 @@ Jason Willwerscheid
 </div>
 <div id="results-factor-comparisons" class="section level2">
 <h2>Results: Factor comparisons</h2>
-<p>The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6, 8, 11, 16, and 17 are much sparser and are more easily readable as cell-type specific factors. In addition, factor 2 more clearly indexes a basal-to-club gradation without ciliated cells mucking up the situation.</p>
+<p>The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6, 8, 11, 16, and 17 are much sparser and are more easily readable as cell-type specific factors. In addition, factor 2 more clearly indexes a basal-to-club trajectory without ciliated cells mucking up the situation.</p>
 <pre class="r"><code>plot.factors(res$greedy, droplet$cell.type, kset = 1:20, title = &quot;Greedy&quot;)</code></pre>
 <p><img src="figure/backfit.Rmd/factors-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
@@ -851,6 +896,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2d8ab192f58f02506f41de852ef06e13ed0c8c9/docs/figure/backfit.Rmd/factors-1.png" target="_blank">f2d8ab1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factors-1.png" target="_blank">dbfc274</a>
@@ -901,6 +957,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2d8ab192f58f02506f41de852ef06e13ed0c8c9/docs/figure/backfit.Rmd/factors-2.png" target="_blank">f2d8ab1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factors-2.png" target="_blank">dbfc274</a>
@@ -959,6 +1026,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2d8ab192f58f02506f41de852ef06e13ed0c8c9/docs/figure/backfit.Rmd/pve-1.png" target="_blank">f2d8ab1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/pve-1.png" target="_blank">dbfc274</a>
