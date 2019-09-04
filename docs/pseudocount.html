@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-05-02
+<strong>Last updated:</strong> 2019-09-04
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5b0637a31ac2522888ce7e0f47e41b2e3fe2ecddtargetblank5b0637aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/5b0637a31ac2522888ce7e0f47e41b2e3fe2ecdd" target="_blank">5b0637a</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9e5e15b6643fc34fbf58687e754df4ae070d2d4atargetblank9e5e15ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/9e5e15b6643fc34fbf58687e754df4ae070d2d4a" target="_blank">9e5e15b</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5b0637a31ac2522888ce7e0f47e41b2e3fe2ecddtargetblank5b0637aa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree9e5e15b6643fc34fbf58687e754df4ae070d2d4atargetblank9e5e15ba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,16 +554,35 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
-    Ignored:    data/GSE103354_Trachea_droplet_UMIcounts.txt
+    Ignored:    code/initialization/
+    Ignored:    data/droplet.rds
+    Ignored:    output/backfit/
+    Ignored:    output/prior_type/
+    Ignored:    output/size_factors/
+    Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
+    Untracked:  analysis/deleted.Rmd
+    Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
+    Untracked:  code/pseudocount_redux/
     Untracked:  code/pseudocounts.R
+    Untracked:  code/trachea4.R
+    Untracked:  data/Ensembl2Reactome.txt
+    Untracked:  data/hard_bimodal1.txt
+    Untracked:  data/hard_bimodal2.txt
+    Untracked:  data/hard_bimodal3.txt
+    Untracked:  data/mus_pathways.rds
+    Untracked:  docs/figure/pseudocount2.Rmd/
     Untracked:  output/pseudocount/
+    Untracked:  output/pseudocount_redux/
 
 Unstaged changes:
+    Modified:   analysis/index.Rmd
+    Modified:   code/backfit/backfit_fits.R
     Modified:   code/sc_comparisons.R
+    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -607,6 +626,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9e5e15b6643fc34fbf58687e754df4ae070d2d4a/analysis/pseudocount.Rmd" target="_blank">9e5e15b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+<td>
+update to newest interface
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/pseudocount.html" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/5b0637a31ac2522888ce7e0f47e41b2e3fe2ecdd/analysis/pseudocount.Rmd" target="_blank">5b0637a</a>
 </td>
 <td>
@@ -628,8 +681,7 @@ wflow_publish(“analysis/pseudocount.Rmd”)
 </div>
 <p>I explore the family of transformations <span class="math display">\[ Y = \log \left( \frac{X}{\alpha} + 1 \right), \]</span> where <span class="math inline">\(X\)</span> is a matrix of counts (here, scRNA-seq data). Note that, up to a constant, this is equivalent to adding a “pseudocount” to the data before taking logs: <span class="math display">\[ Y = \log(X + \alpha) \]</span> I prefer the former because it preserves sparsity.</p>
 <p>For a range of “reasonable” pseudocounts (from <span class="math inline">\(2^{-4}\)</span> to <span class="math inline">\(2^4\)</span>), I fit <code>flashier</code> objects to the 158 tuft cells in the drop-seq dataset described in <a href="https://www.nature.com/articles/s41586-018-0393-7">Montoro et al.</a>. I retain 500 highly variable genes and then I subsample 1500 random genes from what’s left. The code used to create the <code>tuft</code> dataset lives <a href="https://github.com/willwerscheid/scFLASH/blob/master/data/tuft.R">here</a>.</p>
-<pre class="r"><code># library(flashier) -- uncomment after pushing 0.1.1 updates to master
-devtools::load_all(&quot;~/Github/flashier&quot;)
+<pre class="r"><code>library(flashier)
 library(Matrix)
 library(reshape2)
 library(plyr)
@@ -644,22 +696,59 @@ fl.list &lt;- list()
 for (i in 1:length(pseudocounts)) {
   ct &lt;- pseudocounts[i]
   fl.list[[i]] &lt;- flashier(log1p(tuft / ct),
-                           var.type = 1, prior.type = &quot;point.normal&quot;,
-                           greedy.Kmax = 10, backfit = &quot;none&quot;,
+                           var.type = 1, prior.family = prior.point.normal(),
+                           greedy.Kmax = 10, fit = &quot;greedy&quot;,
                            verbose.lvl = 0)
 }</code></pre>
 <div id="elbo-comparison" class="section level2">
 <h2>ELBO comparison</h2>
 <p>After adjusting the ELBO using a change-of-variables formula, the ELBO is monotonically decreasing as a function of <span class="math inline">\(\alpha\)</span>:</p>
-<pre class="r"><code>elbo &lt;- sapply(fl.list, `[[`, &quot;objective&quot;)
+<pre class="r"><code>elbo &lt;- sapply(fl.list, `[[`, &quot;elbo&quot;)
 chg.var &lt;- sapply(pseudocounts, function(ct) sum(log1p(tuft / ct) + log(ct)))
 adj.elbo &lt;- elbo - chg.var
 elbo.df &lt;- data.frame(pseudocount = pseudocounts, elbo = adj.elbo)
 ggplot(elbo.df, aes(x = pseudocount, y = elbo)) + 
   geom_point() + scale_x_log10() + labs(y = &quot;ELBO (adjusted)&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-elbo-1">
+Past versions of elbo-1.png
+</button>
+</p>
+<div id="fig-elbo-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/elbo-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>To see why, it’s useful to split the ELBO into component parts. I consider the contribution from the most lowly expressed 50% of genes, the next 30% of genes (up to the 80th quantile), and the next 10%, 5%, 4%, and 1% of genes (up to the 90th, 95th, 99th, and 100th quantiles). It’s clear that the above behavior is driven by genes with low to moderate expression levels. Only the top 5% of genes show more interesting behavior. (The KL component increases sharply for large <span class="math inline">\(\alpha\)</span> because <code>flashier</code> is unable to fit the full number of factors.)</p>
-<pre class="r"><code>KL &lt;- sapply(fl.list, function(fl) sum(unlist(fl$fit$KL)))
+<pre class="r"><code>KL &lt;- sapply(fl.list, function(fl) sum(unlist(fl$flash.fit$KL)))
 elbo.breakdown &lt;- data.frame(pseudocount = pseudocounts,
                              component = &quot;KL&quot;,
                              value = KL)
@@ -669,7 +758,7 @@ n.genes &lt;- nrow(tuft)
 gene.means &lt;- apply(tuft, 1, mean)
 sorted.genes &lt;- order(gene.means)
 for (i in 1:length(fl.list)) {
-  fl &lt;- fl.list[[i]]$fit
+  fl &lt;- fl.list[[i]]$flash.fit
   R2 &lt;- flashier:::calc.R2(fl) # per-gene sum of squared residuals
   normal.llik &lt;- -0.5 * (n.cells * log(2 * pi / fl$tau) + fl$tau * R2)
   adj.llik &lt;- (normal.llik - rowSums(log1p(tuft / pseudocounts[i]))
@@ -694,6 +783,43 @@ ggplot(subset(elbo.breakdown,
   labs(y = &quot;Component contributions to ELBO&quot;, 
        title = &quot;Genes with low to moderate mean expression&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/elbo_breakdown-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-elbo_breakdown-1">
+Past versions of elbo_breakdown-1.png
+</button>
+</p>
+<div id="fig-elbo_breakdown-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/elbo_breakdown-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(subset(elbo.breakdown, 
               !(component %in% c(&quot;Group1&quot;, &quot;Group2&quot;, &quot;Group3&quot;))), 
        aes(x = pseudocount, y = value, color = component)) + 
@@ -704,6 +830,43 @@ ggplot(subset(elbo.breakdown,
   labs(y = &quot;Component contributions to ELBO&quot;, 
        title = &quot;KL and genes with high mean expression&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/elbo_breakdown-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-elbo_breakdown-2">
+Past versions of elbo_breakdown-2.png
+</button>
+</p>
+<div id="fig-elbo_breakdown-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/elbo_breakdown-2.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="missing-data-imputation-mse" class="section level2">
 <h2>Missing data imputation: MSE</h2>
@@ -765,25 +928,173 @@ ggplot(subset(impute, metric == &quot;log0.5p.err&quot;),
   geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 0.5) fit)&quot;, 
                         title = &quot;log(X + 0.5) scale&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/impute_res-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-impute_res-1">
+Past versions of impute_res-1.png
+</button>
+</p>
+<div id="fig-impute_res-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/impute_res-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(subset(impute, metric == &quot;log1p.err&quot;), 
        aes(x = pseudocount, y = value)) + 
   geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 1) fit)&quot;, 
                         title = &quot;log(X + 1) scale&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/impute_res-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-impute_res-2">
+Past versions of impute_res-2.png
+</button>
+</p>
+<div id="fig-impute_res-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/impute_res-2.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>ggplot(subset(impute, metric == &quot;log2p.err&quot;), 
        aes(x = pseudocount, y = value)) + 
   geom_boxplot() + labs(y = &quot;Relative MSE (relative to log(X + 2) fit)&quot;, 
                         title = &quot;log(X + 2) scale&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/impute_res-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-impute_res-3">
+Past versions of impute_res-3.png
+</button>
+</p>
+<div id="fig-impute_res-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/impute_res-3.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="missing-data-imputation-spearman-rank-correlation" class="section level2">
 <h2>Missing data imputation: Spearman rank correlation</h2>
-<p>One can instead calculate the Spearman rank correlation for each choice of <span class="math inline">\(\alpha\)</span>. We want small predictions to correspond to small counts, and large predictions for large counts. The Spearman correlation will capture this. These results suggest that setting <span class="math inline">\(\alpha\)</span> to be something between 0.5 and 1 is best.</p>
+<p>One can instead calculate the Spearman rank correlation for each choice of <span class="math inline">\(\alpha\)</span>. We want small predictions to correspond to small counts, and large predictions for large counts. The Spearman correlation will capture this. These results suggest that setting <span class="math inline">\(\alpha\)</span> to be something between 0.35 and 1 is best.</p>
 <pre class="r"><code>ggplot(subset(impute, metric == &quot;spearman&quot;), 
        aes(x = pseudocount, y = value)) + 
   geom_boxplot() + 
   labs(y = &quot;Spearman rank corr (relative to log1p fit)&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/spearman-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-spearman-1">
+Past versions of spearman-1.png
+</button>
+</p>
+<div id="fig-spearman-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/spearman-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="shrinkage-comparison" class="section level2">
 <h2>Shrinkage comparison</h2>
@@ -797,7 +1108,7 @@ shrinkage.res &lt;- data.frame(pseudocount = 0,
                             mean.fitted = log1p(true.vals[, 2]))
 for (i in 1:length(fl.list)) {
   ct &lt;- pseudocounts[i]
-  preds &lt;- ct * exp(flashier:::lowrank.expand(fl.list[[i]]$fit$EF)) - ct
+  preds &lt;- ct * exp(flashier:::lowrank.expand(fl.list[[i]]$flash.fit$EF)) - ct
   mean.table &lt;- aggregate(as.vector(preds), by = list(bins), mean)
   shrinkage.res &lt;- rbind(shrinkage.res, 
                          data.frame(pseudocount = ct,
@@ -810,15 +1121,52 @@ ggplot(shrinkage.res, aes(x = bin, y = mean.fitted, color = pseudocount)) +
   geom_line(data = subset(shrinkage.res, pseudocount == 0)) + 
   labs(x = &quot;Binned log1p data value&quot;, y = &quot;Mean fitted value (log1p scale)&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/shrinkage-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-shrinkage-1">
+Past versions of shrinkage-1.png
+</button>
+</p>
+<div id="fig-shrinkage-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/shrinkage-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="comparison-of-factor-loadings" class="section level2">
 <h2>Comparison of factor loadings</h2>
 <p>To see how much of a difference is made with respect to individual factors, I first align the factors, using the log1p fit as reference. One sees, for example, that the same 10 factors are selected for <span class="math inline">\(\alpha \in \{0.5, 0.71, 1, 2\}\)</span>, but only 6 factors are shared between <span class="math inline">\(\alpha = 0.25\)</span> or <span class="math inline">\(\alpha = 0.35\)</span> and <span class="math inline">\(\alpha = 1\)</span>. (I judge factor <span class="math inline">\(k\)</span> for pseudocount <span class="math inline">\(\alpha\)</span> to be the “same” as factor <span class="math inline">\(k&#39;\)</span> for pseudocount <span class="math inline">\(\alpha&#39;\)</span> if <span class="math inline">\(l_{\alpha_k}^T l_{\alpha&#39;_{k&#39;}} &gt; 0.7\)</span>, where the <span class="math inline">\(l\)</span>s are <span class="math inline">\(l_2\)</span>-normalized loadings vectors.)</p>
 <pre class="r"><code># Match up factors.
 log1p.idx &lt;- which(pseudocounts == 1)
-log1p.LL &lt;- fl.list[[log1p.idx]]$loadings$normalized.loadings[[1]]
+log1p.LL &lt;- fl.list[[log1p.idx]]$loadings.pm[[1]]
 factor.idx &lt;- lapply(fl.list, function(fl) {
-  corr &lt;- abs(crossprod(fl$loadings$normalized.loadings[[1]], log1p.LL))
+  corr &lt;- abs(crossprod(fl$loadings.pm[[1]], log1p.LL))
   apply(corr, 1, function(x) if (max(x) &gt; .7) which.max(x) else NA)
 })
 
@@ -835,6 +1183,43 @@ factor.df &lt;- data.frame(pseudocount = rep(factor(signif(pseudocounts, 2)),
 ggplot(factor.df, aes(x = log1p.k, y = pseudocount, fill = is.represented)) +
   geom_tile(color = &quot;white&quot;) + scale_fill_grey()</code></pre>
 <p><img src="figure/pseudocount.Rmd/inspect_factors-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-inspect_factors-1">
+Past versions of inspect_factors-1.png
+</button>
+</p>
+<div id="fig-inspect_factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/inspect_factors-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I choose a few factors that line up and inspect the loadings. The following plots show how loadings vary across pseudocounts for the top 50 genes in the log1p fit.</p>
 <pre class="r"><code># Look at how a few factors vary.
 top.genes &lt;- 50
@@ -843,7 +1228,7 @@ for (k in c(2, 5, 8)) {
   match.k &lt;- lapply(factor.idx, function(idx) which(idx == k))
   LL &lt;- mapply(FUN = function(fl, match.k) {
     if (length(match.k) &gt; 0) {
-      return(fl$loadings$normalized.loadings[[1]][, match.k])
+      return(fl$loadings.pm[[1]][, match.k])
     } else {
       return(NULL)
     }
@@ -866,31 +1251,144 @@ for (k in c(2, 5, 8)) {
     labs(x = &quot;&quot;, title = paste(&quot;Factor&quot;, k))
   print(plt)
 }</code></pre>
-<p><img src="figure/pseudocount.Rmd/plt_factors-1.png" width="672" style="display: block; margin: auto;" /><img src="figure/pseudocount.Rmd/plt_factors-2.png" width="672" style="display: block; margin: auto;" /><img src="figure/pseudocount.Rmd/plt_factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p><img src="figure/pseudocount.Rmd/plt_factors-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plt_factors-1">
+Past versions of plt_factors-1.png
+</button>
+</p>
+<div id="fig-plt_factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/plt_factors-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pseudocount.Rmd/plt_factors-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plt_factors-2">
+Past versions of plt_factors-2.png
+</button>
+</p>
+<div id="fig-plt_factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/plt_factors-2.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p><img src="figure/pseudocount.Rmd/plt_factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plt_factors-3">
+Past versions of plt_factors-3.png
+</button>
+</p>
+<div id="fig-plt_factors-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/plt_factors-3.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factor-mean-expression-and-sparsity" class="section level2">
 <h2>Factor mean expression and sparsity</h2>
 <p>Qualitatively, it’s clear that the choice of pseudocount makes an important difference in individual gene loadings. To attempt to generalize, I calculate the average log mean expression for each factor, where the log mean expression for each gene is weighted by its squared factor loading. With the exception of factor 4, larger pseudocounts tend to favor more highly expressed genes. I plot everything relative to the log1p fit.</p>
 <pre class="r"><code># Calculate weighted log.mean.exp for each factor.
 all.lme &lt;- lapply(fl.list, function(fl) {
-  apply(fl$loadings$normalized.loadings[[1]], 2, function(x) {
+  apply(fl$loadings.pm[[1]], 2, function(x) {
     sum(x^2 * log.mean.exp)})
 })
 # Sparsity.
 all.sprs &lt;- lapply(fl.list, function(fl) {
-  sapply(fl$fit$g, function(g) g[[1]]$pi0)
+  sapply(fl$fitted.g[[1]], function(x) x$pi[1])
 })
 
 lme.mat &lt;- mapply(function(idx, lme) {
   lme[sapply(1:log1p.K, function(k) {
-    if (k %in% idx) which(k == idx) else NA
+    if (k %in% idx) which(k == idx)[1] else NA
   })]
 }, factor.idx, all.lme)
 # Make relative to alpha = 1.
 lme.mat &lt;- lme.mat - lme.mat[, log1p.idx]
 sprs.mat &lt;- mapply(function(idx, sprs) {
   sprs[sapply(1:log1p.K, function(k) {
-    if (k %in% idx) which(k == idx) else NA
+    if (k %in% idx) which(k == idx)[1] else NA
   })]
 }, factor.idx, all.sprs)
 sprs.mat &lt;- sprs.mat / sprs.mat[, log1p.idx]
@@ -911,11 +1409,85 @@ ggplot(lme.df, aes(x = log1p.k, y = pseudocount, fill = lme)) +
   geom_tile(color = &quot;white&quot;) +
   labs(title = &quot;Weighted average of log mean expression (relative to log1p fit)&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/lme-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-lme-1">
+Past versions of lme-1.png
+</button>
+</p>
+<div id="fig-lme-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/lme-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I also calculate the sparsity of each factor, which is simply calculated as the estimated <span class="math inline">\(\pi_0\)</span> for the prior on the gene loadings. Again, everything is plotted relative to the log1p fit.</p>
 <pre class="r"><code>ggplot(sprs.df, aes(x = log1p.k, y = pseudocount, fill = sparsity)) +
   geom_tile(color = &quot;white&quot;) +
   labs(title = &quot;Sparsity (relative to log1p fit)&quot;)</code></pre>
 <p><img src="figure/pseudocount.Rmd/sparsity-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sparsity-1">
+Past versions of sparsity-1.png
+</button>
+</p>
+<div id="fig-sparsity-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/sparsity-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="theory" class="section level2">
 <h2>Theory</h2>
@@ -941,8 +1513,46 @@ alpha.df &lt;- data.frame(lambda = lambdas, alpha = alphas)
 ggplot(alpha.df, aes(x = lambda, y = alpha)) + geom_line() +
   scale_x_log10()</code></pre>
 <p><img src="figure/pseudocount.Rmd/theory-1.png" width="672" style="display: block; margin: auto;" /></p>
-One could simply choose <span class="math inline">\(\alpha = 0.5\)</span>, or one chould choose different <span class="math inline">\(\alpha_{ij}\)</span>s for each count. To preserve sparsity in the latter case, one would need to assign the same pseudocount <span class="math inline">\(\alpha_0\)</span> to all zero counts and then reparametrize as <span class="math display">\[ Y_{ij} = \log \left (\frac{X_{ij}}{\alpha_0} 
-+ \frac{\alpha_{ij}}{\alpha_0} \right)\]</span> <br> <br>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-theory-1">
+Past versions of theory-1.png
+</button>
+</p>
+<div id="fig-theory-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/fd05c7326f1f9d3f4815a21df4940e96c32f513d/docs/figure/pseudocount.Rmd/theory-1.png" target="_blank">fd05c73</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-05-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>One could simply choose <span class="math inline">\(\alpha = 0.5\)</span>, or one chould choose different <span class="math inline">\(\alpha_{ij}\)</span>s for each count. To preserve sparsity in the latter case, one would need to assign the same pseudocount <span class="math inline">\(\alpha_0\)</span> to all zero counts and then reparametrize as <span class="math display">\[ Y_{ij} = \log \left (\frac{X_{ij}}{\alpha_0} 
++ \frac{\alpha_{ij}}{\alpha_0} \right)\]</span></p>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
@@ -952,7 +1562,7 @@ One could simply choose <span class="math inline">\(\alpha = 0.5\)</span>, or on
 <pre class="r"><code>sessionInfo()</code></pre>
 <pre><code>R version 3.5.3 (2019-03-11)
 Platform: x86_64-apple-darwin15.6.0 (64-bit)
-Running under: macOS Mojave 10.14.4
+Running under: macOS Mojave 10.14.6
 
 Matrix products: default
 BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
@@ -965,32 +1575,27 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] ggplot2_3.1.0  plyr_1.8.4     reshape2_1.4.3 Matrix_1.2-15 
-[5] flashier_0.1.1 testthat_2.0.1
+[1] ggplot2_3.2.0   plyr_1.8.4      reshape2_1.4.3  Matrix_1.2-15  
+[5] flashier_0.1.15
 
 loaded via a namespace (and not attached):
- [1] Rcpp_1.0.1        lattice_0.20-38   prettyunits_1.0.2
- [4] ps_1.3.0          assertthat_0.2.1  rprojroot_1.3-2  
- [7] digest_0.6.18     foreach_1.4.4     truncnorm_1.0-8  
-[10] R6_2.4.0          backports_1.1.3   evaluate_0.13    
-[13] pillar_1.3.1      rlang_0.3.1       lazyeval_0.2.2   
-[16] pscl_1.5.2        rstudioapi_0.10   ebnm_0.1-17      
-[19] whisker_0.3-2     callr_3.2.0       rmarkdown_1.12   
-[22] desc_1.2.0        labeling_0.3      devtools_2.0.2   
-[25] stringr_1.4.0     munsell_0.5.0     mixsqp_0.1-115   
-[28] compiler_3.5.3    xfun_0.6          pkgconfig_2.0.2  
-[31] pkgbuild_1.0.3    SQUAREM_2017.10-1 htmltools_0.3.6  
-[34] tidyselect_0.2.5  tibble_2.1.1      workflowr_1.2.0  
-[37] codetools_0.2-16  crayon_1.3.4      dplyr_0.8.0.1    
-[40] withr_2.1.2       MASS_7.3-51.1     grid_3.5.3       
-[43] gtable_0.3.0      git2r_0.25.2      magrittr_1.5     
-[46] scales_1.0.0      cli_1.1.0         stringi_1.4.3    
-[49] fs_1.2.7          remotes_2.0.2     doParallel_1.0.14
-[52] iterators_1.0.10  tools_3.5.3       glue_1.3.1       
-[55] purrr_0.3.2       processx_3.3.0    pkgload_1.0.2    
-[58] parallel_3.5.3    yaml_2.2.0        colorspace_1.4-1 
-[61] ashr_2.2-33       sessioninfo_1.1.1 memoise_1.1.0    
-[64] knitr_1.22        usethis_1.5.0    </code></pre>
+ [1] Rcpp_1.0.1        pillar_1.3.1      compiler_3.5.3   
+ [4] git2r_0.25.2      workflowr_1.2.0   iterators_1.0.10 
+ [7] tools_3.5.3       digest_0.6.18     tibble_2.1.1     
+[10] evaluate_0.13     gtable_0.3.0      lattice_0.20-38  
+[13] pkgconfig_2.0.2   rlang_0.3.1       foreach_1.4.4    
+[16] yaml_2.2.0        parallel_3.5.3    ebnm_0.1-24      
+[19] xfun_0.6          withr_2.1.2       dplyr_0.8.0.1    
+[22] stringr_1.4.0     knitr_1.22        fs_1.2.7         
+[25] tidyselect_0.2.5  rprojroot_1.3-2   grid_3.5.3       
+[28] glue_1.3.1        R6_2.4.0          rmarkdown_1.12   
+[31] mixsqp_0.1-119    purrr_0.3.2       ashr_2.2-38      
+[34] magrittr_1.5      whisker_0.3-2     backports_1.1.3  
+[37] scales_1.0.0      codetools_0.2-16  htmltools_0.3.6  
+[40] MASS_7.3-51.1     assertthat_0.2.1  colorspace_1.4-1 
+[43] labeling_0.3      stringi_1.4.3     lazyeval_0.2.2   
+[46] munsell_0.5.0     doParallel_1.0.14 pscl_1.5.2       
+[49] truncnorm_1.0-8   SQUAREM_2017.10-1 crayon_1.3.4     </code></pre>
 </div>
 </div>
 
