@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-01
+<strong>Last updated:</strong> 2019-09-04
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreefc78232542efa2327891106309580aa8f276b6c2targetblankfc78232a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/fc78232542efa2327891106309580aa8f276b6c2" target="_blank">fc78232</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebcfa0cc6e0c26ca217324ce775a906ec6b06b879targetblankbcfa0cca"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/bcfa0cc6e0c26ca217324ce775a906ec6b06b879" target="_blank">bcfa0cc</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreefc78232542efa2327891106309580aa8f276b6c2targetblankfc78232a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebcfa0cc6e0c26ca217324ce775a906ec6b06b879targetblankbcfa0cca" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,38 +554,28 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    code/initialization/
+    Ignored:    data/Ensembl2Reactome.txt
     Ignored:    data/droplet.rds
+    Ignored:    data/mus_pathways.rds
     Ignored:    output/backfit/
     Ignored:    output/prior_type/
+    Ignored:    output/pseudocount/
+    Ignored:    output/pseudocount_redux/
     Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
-    Untracked:  analysis/pseudocount2.Rmd
-    Untracked:  analysis/pseudocount_redux.Rmd
+    Untracked:  analysis/deleted.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/prior_type/priortype_fits.R
-    Untracked:  code/pseudocount/
-    Untracked:  code/pseudocounts.R
-    Untracked:  code/size_factors/sizefactor_fits.R
+    Untracked:  code/pseudocount_redux/
     Untracked:  code/trachea4.R
-    Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/hard_bimodal1.txt
-    Untracked:  data/hard_bimodal2.txt
-    Untracked:  data/hard_bimodal3.txt
-    Untracked:  data/mus_pathways.rds
-    Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  docs/figure/pseudocount_redux.Rmd/
-    Untracked:  output/pseudocount/
 
 Unstaged changes:
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/pseudocount.Rmd
-    Deleted:    code/prior_type/flashier_fits.R
+    Modified:   code/backfit/backfit_fits.R
     Modified:   code/sc_comparisons.R
-    Deleted:    code/size_factors/flashier_fits.R
     Modified:   code/utils.R
 
 </code></pre>
@@ -625,6 +615,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bcfa0cc6e0c26ca217324ce775a906ec6b06b879/analysis/backfit.Rmd" target="_blank">bcfa0cc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+<td>
+wflow_publish(“analysis/backfit.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/851baf81070c51d052c48571d7c2cea5be742bda/docs/backfit.html" target="_blank">851baf8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -719,8 +743,8 @@ wflow_publish(“analysis/backfit.Rmd”)
 </div>
 <div id="introduction" class="section level2">
 <h2>Introduction</h2>
-<p>Although I’ve done much to speed up backfits, they remain slow relative to greedy fits. The question, then, is whether they’re worth the wait. Here, I’ll argue that while the quantitative improvements are relatively small — one can obtain a similar increase in ELBO in a fraction of the time by greedily adding a few additional factors — the qualitative improvements can be dramatic.</p>
-<p>In this analysis, I take the best greedy fit from my previous analysis of <a href="var_type.html">variance structures</a> (the fit that “pre-scales” genes and cells) and compare it against a backfitted version of the same. The code used to produce the fits can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits.R">here</a>.</p>
+<p>Although I’ve done much to speed up backfits, they remain slow relative to greedy fits. The question, then, is whether they’re worth the wait. Here, I’ll argue that while the quantitative improvements are relatively small — one can obtain a similar increase in ELBO in a fraction of the time by greedily adding a handful of additional factors — the qualitative improvements can be dramatic.</p>
+<p>In this analysis, I take my preferred fit from a previous analysis of <a href="var_type.html">variance structures</a> (the fit that “pre-scales” cells) and compare it against a backfitted version of the same. The code used to produce the fits can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits.R">here</a>.</p>
 <pre class="r"><code>source(&quot;./code/utils.R&quot;)
 droplet &lt;- readRDS(&quot;./data/droplet.rds&quot;)
 droplet &lt;- preprocess.droplet(droplet)
@@ -731,8 +755,8 @@ progress.b &lt;- data.table::fread(&quot;./output/backfit/backfit_output.txt&quo
 </div>
 <div id="results-elbo" class="section level2">
 <h2>Results: ELBO</h2>
-<p>As a quantitative measure of how much backfitting improves the fit, I plot the ELBO attained after each of the last five greedy factors have been added and after each of the first 50 backfitting iterations (backfitting continues for a total of 121 iterations, but the ELBO remains mostly level after the first 30 or so iterations).</p>
-<p>From this perspective, backfitting offers about as much improvement as the greedy addition of 3-4 factors. However, a single backfitting iteration takes almost 30 seconds, whereas the entire greedy fit can be performed in less than two minutes.</p>
+<p>As a quantitative measure of how much backfitting improves the fit, I plot the ELBO attained after each of the last eight greedy factors have been added and after each of the first 60 backfitting iterations (backfitting continues for a total of 100 iterations, but the ELBO remains mostly level after the first 50 or so iterations).</p>
+<p>From the perspective of the ELBO, backfitting offers about as much improvement as the greedy addition of 5-6 factors. However, a single backfitting iteration takes almost 30 seconds, whereas the entire greedy fit can be performed in less than two minutes. If the prospect of an hours-long backfit is too daunting, then a partial backfit might be sufficient: most of the improvement occurs within the first ten backfitting iterations.</p>
 <pre class="r"><code>g.iter &lt;- nrow(progress.g)
 b.iter &lt;- nrow(progress.b)
 progress.g$elapsed.time &lt;- (res$greedy$elapsed.time * 1:g.iter / g.iter) / 60
@@ -745,11 +769,11 @@ progress.g &lt;- subset(progress.g, c((progress.g$Factor[1:(nrow(progress.g) - 1
 
 progress.df &lt;- rbind(progress.g, progress.b)
 
-ggplot(subset(progress.df, !(Factor %in% as.character(1:15)) &amp; Iter &lt; 50), 
+ggplot(subset(progress.df, !(Factor %in% as.character(1:12)) &amp; Iter &lt; 61), 
        aes(x = elapsed.time, y = Obj, color = Type)) +
   geom_point() +
   labs(x = &quot;elapsed time (min)&quot;, y = &quot;ELBO (unadjusted)&quot;,
-       title = &quot;Greedy factors 16-20 and first 50 backfitting iterations&quot;)</code></pre>
+       title = &quot;Greedy factors 13-20 and first 60 backfitting iterations&quot;)</code></pre>
 <p><img src="figure/backfit.Rmd/progress-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-progress-1">
@@ -802,8 +826,8 @@ Jason Willwerscheid
 </div>
 <div id="results-factor-comparisons" class="section level2">
 <h2>Results: Factor comparisons</h2>
-<p>The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 2, 6-8, 11-12, and 18 are much sparser and are more easily readable as cell-type specific factors. In particular, the unfortunate case of the goblet cells (discussed <a href="var_type.html#goblet_cells_factors">here</a>) has been cleared up.</p>
-<pre class="r"><code>plot.factors(res$greedy$fl, droplet$cell.type, kset = 1:20, title = &quot;Greedy&quot;)</code></pre>
+<p>The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6, 8, 11, 16, and 17 are much sparser and are more easily readable as cell-type specific factors. In addition, factor 2 more clearly indexes a basal-to-club gradation without ciliated cells mucking up the situation.</p>
+<pre class="r"><code>plot.factors(res$greedy, droplet$cell.type, kset = 1:20, title = &quot;Greedy&quot;)</code></pre>
 <p><img src="figure/backfit.Rmd/factors-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors-1">
@@ -853,7 +877,7 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plot.factors(res$backfit$fl, droplet$cell.type, kset = 1:20, title = &quot;Backfit&quot;)</code></pre>
+<pre class="r"><code>plot.factors(res$backfit, droplet$cell.type, kset = 1:20, title = &quot;Backfit&quot;)</code></pre>
 <p><img src="figure/backfit.Rmd/factors-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors-2">
@@ -903,7 +927,7 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<p>Factors 12 and 13 have increased in importance, while factor 5 (the <a href="var_type.html#hillock_factor">hillock factor</a>) has become less important. These changes are related: see below. Factors 16, 17, and 19 have also increased in importance (and have possibly borrowed from factor 9), but the significance of these factors is not clear to me.</p>
+<p>Factors above the dashed line in the plot below are factors that have increased in importance, while factors below the line have diminished in importance. Most interestingly, backfitting uncovers a large club-cell specific factor that is relatively unimportant in the greedy fit (factor 19).</p>
 <pre class="r"><code>pve.df &lt;- data.frame(k = 1:res$greedy$fl$n.factors, 
                      greedy = res$greedy$fl$pve, 
                      backfit = res$backfit$fl$pve)
@@ -949,214 +973,6 @@ Jason Willwerscheid
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/4b18e3eb422765fd10d6a77a1b3a759a0004a857/docs/figure/backfit.Rmd/pve-1.png" target="_blank">4b18e3e</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="results-hillock-factor" class="section level2">
-<h2>Results: Hillock factor</h2>
-<p>One of the most interesting changes concerns the “hillock factor.” As far as I can tell, the burden of representing hillock cells is transferred from a single factor (factor 5) to three separate factors (5, 12, and 13). Note, in particular, that Krt13 (a marker gene for hillock cells) has entirely disappeared from the top loadings for factor 5. Instead, the two backfitted factors that are most highly loaded on Krt13 are factors 12 and 13, which are no longer confounded with goblet-specific effects. Intriguingly, factor 12 is almost exclusively loaded on club cells, whereas factor 13 is non-sparse and includes basal and tuft cells.</p>
-<pre class="r"><code>plot.one.factor(res$greedy$fl, 5, droplet$hillock.genes, 
-                title = &quot;Factor 5 (greedy)&quot;, invert = TRUE)</code></pre>
-<p><img src="figure/backfit.Rmd/factor.comparison-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factor.comparison-1">
-Past versions of factor.comparison-1.png
-</button>
-</p>
-<div id="fig-factor.comparison-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factor.comparison-1.png" target="_blank">dbfc274</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/4b18e3eb422765fd10d6a77a1b3a759a0004a857/docs/figure/backfit.Rmd/factor.comparison-1.png" target="_blank">4b18e3e</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot.one.factor(res$backfit$fl, 5, droplet$hillock.genes, 
-                title = &quot;Factor 5 (backfit)&quot;, invert = TRUE)</code></pre>
-<p><img src="figure/backfit.Rmd/factor.comparison-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factor.comparison-2">
-Past versions of factor.comparison-2.png
-</button>
-</p>
-<div id="fig-factor.comparison-2" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factor.comparison-2.png" target="_blank">dbfc274</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/4b18e3eb422765fd10d6a77a1b3a759a0004a857/docs/figure/backfit.Rmd/factor.comparison-2.png" target="_blank">4b18e3e</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot.one.factor(res$backfit$fl, 12, droplet$hillock.genes, 
-                title = &quot;Factor 12 (backfit)&quot;, invert = TRUE)</code></pre>
-<p><img src="figure/backfit.Rmd/factor.comparison-3.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factor.comparison-3">
-Past versions of factor.comparison-3.png
-</button>
-</p>
-<div id="fig-factor.comparison-3" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factor.comparison-3.png" target="_blank">dbfc274</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/4b18e3eb422765fd10d6a77a1b3a759a0004a857/docs/figure/backfit.Rmd/factor.comparison-3.png" target="_blank">4b18e3e</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-17
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-<pre class="r"><code>plot.one.factor(res$backfit$fl, 13, droplet$hillock.genes, 
-                title = &quot;Factor 13 (backfit)&quot;, invert = FALSE)</code></pre>
-<p><img src="figure/backfit.Rmd/factor.comparison-4.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factor.comparison-4">
-Past versions of factor.comparison-4.png
-</button>
-</p>
-<div id="fig-factor.comparison-4" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/dbfc274df141aa0a9a9d52b08587ddaf66a74185/docs/figure/backfit.Rmd/factor.comparison-4.png" target="_blank">dbfc274</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2019-08-31
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/4b18e3eb422765fd10d6a77a1b3a759a0004a857/docs/figure/backfit.Rmd/factor.comparison-4.png" target="_blank">4b18e3e</a>
 </td>
 <td>
 Jason Willwerscheid
