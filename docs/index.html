@@ -343,7 +343,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-01
+<strong>Last updated:</strong> 2019-09-04
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 2 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -374,10 +374,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree0ac212708892abc7ad1b84692b6186d12df2f96atargetblank0ac2127a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/0ac212708892abc7ad1b84692b6186d12df2f96a" target="_blank">0ac2127</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeef1efc9d8698a360e4286ee3e6ae5ecda9f3a262targetblankef1efc9a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/ef1efc9d8698a360e4286ee3e6ae5ecda9f3a262" target="_blank">ef1efc9</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree0ac212708892abc7ad1b84692b6186d12df2f96atargetblank0ac2127a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeef1efc9d8698a360e4286ee3e6ae5ecda9f3a262targetblankef1efc9a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -387,33 +387,29 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    code/initialization/
+    Ignored:    data/Ensembl2Reactome.txt
     Ignored:    data/droplet.rds
+    Ignored:    data/mus_pathways.rds
     Ignored:    output/backfit/
     Ignored:    output/prior_type/
+    Ignored:    output/pseudocount/
+    Ignored:    output/pseudocount_redux/
     Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
-    Untracked:  analysis/pseudocount2.Rmd
-    Untracked:  analysis/pseudocount_redux.Rmd
+    Untracked:  analysis/deleted.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/pseudocount/
-    Untracked:  code/pseudocounts.R
+    Untracked:  code/pseudocount_redux/
     Untracked:  code/trachea4.R
-    Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/hard_bimodal1.txt
-    Untracked:  data/hard_bimodal2.txt
-    Untracked:  data/hard_bimodal3.txt
-    Untracked:  data/mus_pathways.rds
-    Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  docs/figure/pseudocount_redux.Rmd/
-    Untracked:  output/pseudocount/
 
 Unstaged changes:
-    Modified:   analysis/pseudocount.Rmd
+    Modified:   code/backfit/backfit_fits.R
     Modified:   code/sc_comparisons.R
+    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -452,6 +448,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/ef1efc9d8698a360e4286ee3e6ae5ecda9f3a262/analysis/index.Rmd" target="_blank">ef1efc9</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-04
+</td>
+<td>
+wflow_publish(“analysis/index.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/bc78ae7865e8c82a97402d696699bd37d44f15c8/docs/index.html" target="_blank">bc78ae7</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -785,7 +815,7 @@ Start workflowr project.
 <div id="metrics" class="section level2">
 <h2>Metrics</h2>
 <p><a href="intro.html">Introduction.</a></p>
-<p><a href="pvals.html">Calculating <span class="math inline">\(p\)</span>-values.</a></p>
+<p><a href="pvals.html">Calculating <span class="math inline">\(p\)</span>-values: the “implied discrete distribution.”</a></p>
 </div>
 <div id="fitting-the-droplet-based-3-scrna-seq-dataset-from-montoro-et-al." class="section level2">
 <h2>Fitting the droplet-based 3’ scRNA-seq dataset from Montoro et al.</h2>
@@ -795,16 +825,16 @@ Start workflowr project.
 <li><p><a href="backfit.html">An argument for backfitting.</a></p></li>
 <li><p><a href="prior_type.html">A comparison of different prior families.</a></p></li>
 <li><p><a href="size_factors.html">A discussion of size factors.</a></p></li>
+<li><p><a href="pseudocount_redux.html">A second look at pseudocounts.</a></p></li>
 </ol>
-<p>Forthcoming: Pseudocounts.</p>
 <p>Forthcoming: Number of factors.</p>
 </div>
 <div id="archived" class="section level2">
 <h2>Archived</h2>
-<p><a href="sc_comparisons.html">Comparing methods for fitting flash to single-cell data.</a></p>
-<p><a href="pseudocount.html">Exploring different pseudocounts.</a></p>
-<p><a href="drift_backfit.html">Investigating backfits for flash-drift fits.</a></p>
-<p><a href="poisson_p.html">On Poisson <span class="math inline">\(p\)</span>-values.</a></p>
+<p>These analyses have not necessarily been updated to use the newest version of <code>flashier</code>:</p>
+<p><a href="poisson_p.html">A brief discussion of Poisson <span class="math inline">\(p\)</span>-values.</a></p>
+<p><a href="pseudocount.html">An early exploration of pseudocounts.</a></p>
+<p><a href="drift_backfit.html">An investigation into backfitting flash-drift fits.</a></p>
 </div>
 
 
