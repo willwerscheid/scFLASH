@@ -55,7 +55,7 @@ ggplot(subset(progress.df, !(Factor %in% as.character(1:12)) & Iter < 61),
 
 ## Results: Factor comparisons
 
-The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6, 8, 11, 16, and 17 are much sparser and are more easily readable as cell-type specific factors. In addition, factor 2 more clearly indexes a basal-to-club gradation without ciliated cells mucking up the situation.
+The ELBO does not tell the whole story. Plotting the factors reveals clear improvements in the backfitted factors. Most obviously, factors 3, 6, 8, 11, 16, and 17 are much sparser and are more easily readable as cell-type specific factors. In addition, factor 2 more clearly indexes a basal-to-club trajectory without ciliated cells mucking up the situation.
 
 ```{r factors}
 plot.factors(res$greedy, droplet$cell.type, kset = 1:20, title = "Greedy")
