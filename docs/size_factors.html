@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-03
+<strong>Last updated:</strong> 2019-09-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed9d193a8e8d8403997ef2eb59e22c763ec2825fdtargetblankd9d193aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/d9d193a8e8d8403997ef2eb59e22c763ec2825fd" target="_blank">d9d193a</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree83901585dce32e5b1738b9e1df5e42f6e96e27abtargetblank8390158a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/83901585dce32e5b1738b9e1df5e42f6e96e27ab" target="_blank">8390158</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed9d193a8e8d8403997ef2eb59e22c763ec2825fdtargetblankd9d193aa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree83901585dce32e5b1738b9e1df5e42f6e96e27abtargetblank8390158a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,33 +554,28 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    code/initialization/
+    Ignored:    data/Ensembl2Reactome.txt
     Ignored:    data/droplet.rds
+    Ignored:    data/mus_pathways.rds
     Ignored:    output/backfit/
     Ignored:    output/prior_type/
+    Ignored:    output/pseudocount/
+    Ignored:    output/pseudocount_redux/
     Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
-    Untracked:  analysis/pseudocount_redux.Rmd
+    Untracked:  analysis/deleted.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/pseudocount/
-    Untracked:  code/pseudocounts.R
+    Untracked:  code/pseudocount_redux/
     Untracked:  code/trachea4.R
-    Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/hard_bimodal1.txt
-    Untracked:  data/hard_bimodal2.txt
-    Untracked:  data/hard_bimodal3.txt
-    Untracked:  data/mus_pathways.rds
-    Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  docs/figure/pseudocount_redux.Rmd/
-    Untracked:  output/pseudocount/
 
 Unstaged changes:
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/pseudocount.Rmd
-    Modified:   code/sc_comparisons.R
+    Modified:   code/size_factors/sizefactor_fits.R
+    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -619,6 +614,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/83901585dce32e5b1738b9e1df5e42f6e96e27ab/analysis/size_factors.Rmd" target="_blank">8390158</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+<td>
+wflow_publish(“analysis/size_factors.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/d2a326efdbb04fa33284fa4a8555d073d964a964/docs/size_factors.html" target="_blank">d2a326e</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -934,7 +963,7 @@ Jason Willwerscheid
 </div>
 <div id="results-log-likelihood-of-implied-distribution" class="section level2">
 <h2>Results: Log likelihood of implied distribution</h2>
-<p>Using the log likelihood of the implied discrete distribution — which, I’ve <a href="pvals.html">suggested</a>, might be more reliable than the ELBO when different data transformations are in play — the relative rankings of the methods are more in line with what I’d expect. Once again, <code>scran</code> wins out.</p>
+<p>Using the log likelihood of the implied discrete distribution — which, I’ve <a href="pvals.html">suggested</a>, might be more reliable than the ELBO when different data transformations are in play — the relative rankings of the methods are more in line with what I’d expect. Once again, <code>scran</code> wins out by a large margin.</p>
 <pre class="r"><code>llik.df &lt;- data.frame(method = method.names, 
                       llik = sapply(res, function(x) x$p.vals$llik))
 ggplot(llik.df, aes(x = method, y = llik)) + 
@@ -982,8 +1011,8 @@ Jason Willwerscheid
 </div>
 <div id="results-factors-and-cell-types" class="section level2">
 <h2>Results: Factors and cell types</h2>
-<p>Qualitatively, factors are very similar across methods. I don’t see anything worth commenting on here.</p>
-<pre class="r"><code>plot.factors(res$noscale$fl, droplet$cell.type, title = &quot;No size factors&quot;)</code></pre>
+<p>Qualitatively, factors are very similar across methods. Factor 20 looks a bit cleaner using <code>scran</code> size factors than using library size normalization. The fit that doesn’t use size factors yields an extra ciliated-specific factor for factor 20 and handles droplet cells somewhat differently.</p>
+<pre class="r"><code>plot.factors(res$scran, droplet$cell.type, 1:20, title = &quot;scran&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/plot.factors-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-1">
@@ -1033,7 +1062,9 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plot.factors(res$libsize$fl, droplet$cell.type, title = &quot;Library size normalization&quot;)</code></pre>
+<pre class="r"><code>scran.v.libsize &lt;- compare.factors(res$scran$fl, res$libsize$fl)
+plot.factors(res$libsize, droplet$cell.type, scran.v.libsize$fl2.k,
+             title = &quot;Library size normalization&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/plot.factors-2.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-2">
@@ -1083,7 +1114,9 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plot.factors(res$scran$fl, droplet$cell.type, title = &quot;scran&quot;)</code></pre>
+<pre class="r"><code>scran.v.noscale &lt;- compare.factors(res$scran$fl, res$noscale$fl)
+plot.factors(res$noscale, droplet$cell.type, scran.v.noscale$fl2.k,
+             title = &quot;No size factors&quot;)</code></pre>
 <p><img src="figure/size_factors.Rmd/plot.factors-3.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-plot.factors-3">
