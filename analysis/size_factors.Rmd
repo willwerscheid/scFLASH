@@ -92,7 +92,7 @@ ggplot(KL.df, aes(x = method, y = KL)) +
 
 ## Results: Log likelihood of implied distribution
 
-Using the log likelihood of the implied discrete distribution --- which, I've [suggested](pvals.html), might be more reliable than the ELBO when different data transformations are in play --- the relative rankings of the methods are more in line with what I'd expect. Once again, `scran` wins out.
+Using the log likelihood of the implied discrete distribution --- which, I've [suggested](pvals.html), might be more reliable than the ELBO when different data transformations are in play --- the relative rankings of the methods are more in line with what I'd expect. Once again, `scran` wins out by a large margin.
 
 ```{r llik}
 llik.df <- data.frame(method = method.names, 
@@ -105,10 +105,16 @@ ggplot(llik.df, aes(x = method, y = llik)) +
 
 ## Results: Factors and cell types
 
-Qualitatively, factors are very similar across methods. I don't see anything worth commenting on here.
+Qualitatively, factors are very similar across methods. Factor 20 looks a bit cleaner using `scran` size factors than using library size normalization. The fit that doesn't use size factors yields an extra ciliated-specific factor for factor 20 and handles droplet cells somewhat differently. 
 
 ```{r plot.factors}
-plot.factors(res$noscale$fl, droplet$cell.type, title = "No size factors")
-plot.factors(res$libsize$fl, droplet$cell.type, title = "Library size normalization")
-plot.factors(res$scran$fl, droplet$cell.type, title = "scran")
+plot.factors(res$scran, droplet$cell.type, 1:20, title = "scran")
+
+scran.v.libsize <- compare.factors(res$scran$fl, res$libsize$fl)
+plot.factors(res$libsize, droplet$cell.type, scran.v.libsize$fl2.k,
+             title = "Library size normalization")
+
+scran.v.noscale <- compare.factors(res$scran$fl, res$noscale$fl)
+plot.factors(res$noscale, droplet$cell.type, scran.v.noscale$fl2.k,
+             title = "No size factors")
 ```
