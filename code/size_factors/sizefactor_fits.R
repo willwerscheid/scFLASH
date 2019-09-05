@@ -10,7 +10,7 @@ do.fit <- function(size.factors, title, greedy.Kmax = 20) {
                               min.nzcts = 10,
                               max.libsize = 30000,
                               size.factors = size.factors,
-                              prescale = "both")))
+                              prescale = "cells")))
 
   fl.g <- flashier(processed$data, var.type = 1, greedy.Kmax = greedy.Kmax,
                    prior.family = prior.point.normal(), verbose.lvl = 1)

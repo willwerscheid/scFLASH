@@ -145,6 +145,10 @@ preprocess.droplet <- function(droplet,
   processed$goblet1.genes <- c("Tff1", "Tff2", "Muc5b", "Lman1l", "P2rx4", "Muc5ac")
   processed$goblet2.genes <- c("Dcpp1", "Dcpp2", "Dcpp3", "Lipf")
 
+  processed$all.goblet.genes <- c(processed$goblet1.genes, processed$goblet2.genes)
+  processed$all.goblet.colors <- c(rep("blue", length(processed$goblet1.genes)),
+                                   rep("red", length(processed$goblet2.genes)))
+
   processed$tuft.genes <- c("Il25", "Tslp", "Pou2f3", "Gnb3", "Gng13",
                             "Alox5ap", "Ptprc", "Spib", "Sox9")
   processed$tuft1.genes <- c("Gnb3", "Gng13", "Itpr3", "Plcb2", "Gnat3", "Ovol3",
@@ -171,15 +175,26 @@ preprocess.droplet <- function(droplet,
 
 # Plotting functions for flashier fits ------------------------------------------------
 
-plot.factors <- function(fl, cell.types, kset = NULL, max.pt.size = 2, title = NULL) {
+plot.factors <- function(res, cell.types,
+                         kset = NULL, max.pt.size = 2, title = NULL) {
   # Sort loadings according to proportion of variance explained.
   if (is.null(kset)) {
-    kset <- setdiff(order(fl$pve, decreasing = TRUE), which(fl$pve == 0))
+    kset <- setdiff(order(res$fl$pve, decreasing = TRUE), which(res$fl$pve == 0))
+  }
+
+  if (is.null(res$cell.prescaling.factors)) {
+    res$cell.prescaling.factors <- 1
   }
 
   # Re-normalize loadings so that factors are equally spread out.
-  LL <- fl$loadings.pm[[2]][, kset, drop = FALSE]
+  LL <- res$fl$loadings.pm[[2]][, kset, drop = FALSE]
+  LL <- LL * res$cell.prescaling.factors
   LL <- t(t(LL) / apply(abs(LL), 2, max))
+
+  # To make it easier to compare factors, flip them to make the largest
+  #   loadings positive.
+  flip <- 2 * (colSums(LL > 0.75) > colSums(LL < -0.75)) - 1
+  LL <- t(t(LL) * flip)
 
   # Make the size of the point depend on how many of that type there are.
   sizes <- max.pt.size / sqrt(table(cell.types) / min(table(cell.types)))
@@ -197,11 +212,11 @@ get.orig.k <- function(fl, k) {
   return(order(fl$pve, decreasing = TRUE)[k])
 }
 
-plot.one.factor <- function(fl, k, notable.genes, title = NULL,
-                            label.size = 8, top.n = 100, invert = FALSE,
-                            gene.colors = NULL) {
+plot.one.factor <- function(fl, k, notable.genes, gene.prescaling.factors = 1,
+                            title = NULL, label.size = 8, top.n = 100,
+                            invert = FALSE, gene.colors = NULL) {
   df <- data.frame(gene = rownames(fl$loadings.pm[[1]]),
-                   loading = fl$loadings.pm[[1]][, k])
+                   loading = fl$loadings.pm[[1]][, k] * gene.prescaling.factors)
   if (invert) {
     df$loading <- -df$loading
   }
