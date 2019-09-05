@@ -74,15 +74,15 @@ knitr::kable(time.df[c(1, 2, 4, 3), ],
 
 ## Results: ELBO
 
-I show the ELBO after each of the last twenty greedy factors have been added and after each of the first 75 backfitting iterations (all ELBOs remain pretty much flat afterwards). `snn.cell` denotes the semi-nonnegative fit that puts nonnegative priors on cell loadings, whereas `snn.gene` puts nonnegative priors on gene loadings.
+I show the ELBO after each of the last twenty greedy factors have been added and after each backfitting iteration. `snn.cell` denotes the semi-nonnegative fit that puts nonnegative priors on cell loadings, whereas `snn.gene` puts nonnegative priors on gene loadings.
 
 I make the following observations:
 
 * Backfitting always results in a substantial improvement, but it is crucial for the semi-nonnegative fits. In effect, backfitting improves the ELBO of the semi-nonnegative fits by nearly as much as the last twenty greedy factors combined, whereas it only improves the point-normal and scale-mixture-of-normal fits by the equivalent of about ten greedy factors.
 
-* The difference among the final ELBOs is, in a relative sense, surprisingly small. For example, the gap between the final ELBO for the point-normal fit and for the semi-nonnegative fit with a nonnegative prior on gene loadings is the equivalent of about two or three greedy factors. This suggests that, in some sense, the semi-nonnegative model is closer to biological reality (if loadings were truly point-normal, then the semi-nonnegative fits would require twice as many factors as the point-normal fits).
+* The difference among the final ELBOs is, in a relative sense, surprisingly small, and due to a late effort, the fit with nonnegative priors on cell loadings surpasses the point-normal fit. This suggests that, in some sense, the semi-nonnegative model is closer to biological reality (if loadings were truly point-normal, then the semi-nonnegative fits would require twice as many factors as the point-normal fits).
 
-* Putting a nonnegative prior on gene loadings works slightly better here than putting it on cell loadings, but it'd be hasty to generalize. Indeed, note that the relative rank of the two fits changes over the course of the greedy fit. Further investigation is called for.
+* The ELBOs of the two semi-nonnegative fits are similar, and the relative rank of the two fits changes several times over the course of the fits. I suspect that whether one chooses to put the nonnegative priors on genes or cells is largely a matter of preference.
 
 
 ```{r pn.v.ash.elbo}
@@ -97,36 +97,33 @@ res$snn.cell$output$row <- 1:nrow(res$snn.cell$output)
 res$snn.gene$output$row <- 1:nrow(res$snn.gene$output)
 
 elbo.df <- rbind(res$pn$output, res$ash$output, res$snn.cell$output, res$snn.gene$output)
-ggplot(subset(elbo.df, !(Factor %in% as.character(1:10)) & Iter < 75), 
-       aes(x = row, y = Obj, color = Type, shape = Fit)) +
+ggplot(subset(elbo.df, !(Factor %in% as.character(1:10))), 
+       aes(x = row, y = Obj, color = Fit, shape = Type)) +
   geom_point() +
   labs(x = NULL, y = "ELBO (unadjusted)",
-       title = "Greedy factors 11-30 and first 75 backfitting iterations") +
+       title = "Greedy factors 11-30 and all backfitting iterations") +
   theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
 ```
 
 ## Results: Point-normal priors vs. scale mixtures of normals
 
-I plot the point-normal factors in order of proportion of variance explained, and I line up the scale-mixture-of-normal factors so that similar factors are shown one on top of the other. Results are nearly identical.
+I line up the point-normal and scale-mixture-of-normal factors so that similar factors are shown one on top of the other. Results are similar, but there are intriguing differences in some of the later factors. The scale-mixture-of-normal fit has an additional ciliated-specific factor that looks especially promising.
 
 ```{r pn.v.ash.factors}
 pn.v.ash  <- compare.factors(res$pn$fl, res$ash$fl)
-pn.order  <- match(order(res$pn$fl$pve, decreasing = TRUE), pn.v.ash$fl1.k)
-ash.order <- match(order(res$pn$fl$pve, decreasing = TRUE), pn.v.ash$fl2.k)
-plot.factors(res$pn$fl, droplet$cell.type, pn.order[1:15],
+plot.factors(res$pn, droplet$cell.type, 1:15,
              title = "Point-normal priors (factors 1-15)")
-plot.factors(res$ash$fl, droplet$cell.type, ash.order[1:15],
+plot.factors(res$ash, droplet$cell.type, pn.v.ash$fl2.k[1:15],
              title = "Scale mixtures of normals (factors 1-15)")
-plot.factors(res$pn$fl, droplet$cell.type, pn.order[16:30],
+plot.factors(res$pn, droplet$cell.type, 16:30,
              title = "Point-normal priors (factors 16-30)")
-plot.factors(res$ash$fl, droplet$cell.type, ash.order[16:30],
+plot.factors(res$ash, droplet$cell.type, pn.v.ash$fl2.k[16:30],
              title = "Scale mixtures of normals (factors 16-30)")
 ```
 
 ## Results: Semi-nonnegative factorizations
 
-For ease of comparison, I only consider the semi-nonnegative fit that puts nonnegative priors on gene loadings. As above, I line up similar factors. I denote a semi-nonnegative factor as "similar" to a point-normal factor if the gene loadings are strongly correlated ($r \ge 0.7$) with either the positive or the negative component of the point-normal gene loadings. Thus there can be duplicates: a single semi-nonnonegative tuft factor is strongly correlated with two point-normal factors (factors 6 and 21). Further, there are two distinct goblet factors for each fit, but each is highly correlated with both of the goblet factors from the other fit.
-
+For ease of comparison, I only consider the semi-nonnegative fit that puts nonnegative priors on gene loadings. As above, I line up similar factors. I denote a semi-nonnegative factor as "similar" to a point-normal factor if the gene loadings are strongly correlated ($r \ge 0.7$) with either the positive or the negative component of the point-normal gene loadings. Thus a single point-normal factor can be similar to more than one semi-nonnegative factor (and vice versa).
 
 ```{r snn.matched}
 cor.thresh <- 0.7
@@ -147,53 +144,51 @@ snn.matched <- unlist(lapply(pn.matched, function(x) which(is.cor[, x])))
 # Duplicate factors where need be.
 pn.matched <- rep(1:res$pn$fl$n.factors, times = apply(is.cor, 2, sum))
 
-plot.factors(res$pn$fl, droplet$cell.type,
+plot.factors(res$pn, droplet$cell.type,
              pn.matched, title = "Point-normal (matched factors)")
-plot.factors(res$snn.gene$fl, droplet$cell.type,
+plot.factors(res$snn.gene, droplet$cell.type,
              snn.matched, title = "Semi-nonnegative (matched factors)")
 ```
 
-Next I plot the remaining "unmatched" factors. I'm not especially interested in trying to  tease out the nuances in basal, club, and hillock factors that make up the majority of these factors. Worthy of note are:
-
-* Point-normal factor 8, which promises to identify a subpopulation of ciliated cells that is not represented by the semi-nonnegative fit. However, since the point-normal fit can, in theory, accommodate twice as many gene sets as the semi-nonnegative fit, it's not terribly surprising that it yields at least one additional factor of interest. 
-
-* The tuft factor (semi-nonnegative factor 10), which is not so much an additional factor as compensation for the fact that a single semi-nonnegative tuft factor does the work of two point-normal factors: see below. 
+The remaining factors do not have counterparts. 
 
 ```{r snn.unmatched}
 snn.unmatched <- setdiff(1:res$snn.gene$fl$n.factors, snn.matched)
 pn.unmatched <- setdiff(1:res$pn$fl$n.factors, pn.matched)
 
-plot.factors(res$pn$fl, droplet$cell.type,
+plot.factors(res$pn, droplet$cell.type,
              pn.unmatched, title = "Point-normal (unmatched factors)")
-plot.factors(res$snn.gene$fl, droplet$cell.type,
+plot.factors(res$snn.gene, droplet$cell.type,
              snn.unmatched, title = "Semi-nonnegative (unmatched factors)")
 ```
 
-## Results: Tuft factors
+## Results: Goblet factors
 
-Counting unnmatched semi-nonnegative factor 10, there are a total of two semi-nonnegative tuft factors, which is the same number of tuft factors as there are in the point-normal fit. And indeed, both fits similarly separate out tuft-1 and tuft-2 populations. The most obvious difference is that the point-normal fit gives us one factor (6) that identifies tuft cells and another factor (21) that discriminates between tuft-1 cells (positive loadings) and tuft-2 cells (negative loadings). In contrast, the semi-nonnegative fit gives us a factor that identifies tuft cells and a factor that further delimits tuft-1 cells; to get the tuft-2 gene set, one would need to "subtract" the tuft-1 loadings from the generic tuft loadings. So, although I claimed above that semi-nonnegative fits ought to be more interpretable, the point-normal fit is in fact easier to interpret here.
+Both the point-normal fit and the fit with nonnegative priors on genes yield two goblet factors. The point-normal fit gives us one factor (11) that identifies goblet cells and another factor (16) that discriminates between goblet-1 cells (positive loadings) and goblet-2 cells (negative loadings). In contrast, the semi-nonnegative fit gives us a factor that identifies goblet cells and a factor that further delimits goblet-2 cells; to get the goblet-1 gene set, one would need to "subtract" the goblet-2 loadings from the generic goblet loadings. So, although I claimed above that semi-nonnegative fits ought to be more interpretable, the point-normal fit is in fact easier to interpret here.
 
-The relevant gene sets are plotted below. Genes that Montoro et al. identify as more highly expressed in tuft-1 cells are in blue, while genes that express more highly in tuft-2 cells are in red.
+The relevant gene sets are plotted below. Genes that Montoro et al. identify as more highly expressed in goblet-1 cells are in blue, while genes that express more highly in goblet-2 cells are in red.
 
-```{r tuft}
-plot.one.factor(res$pn$fl, pn.matched[6], droplet$all.tuft.genes, 
-                title = "Point-normal, Factor 6", 
-                invert = FALSE, gene.colors = droplet$all.tuft.colors)
-plot.one.factor(res$pn$fl, pn.matched[21], droplet$all.tuft.genes, 
-                title = "Point-normal, Factor 21 (positive component)", 
-                invert = FALSE, gene.colors = droplet$all.tuft.colors)
-plot.one.factor(res$pn$fl, pn.matched[21], droplet$all.tuft.genes, 
-                title = "Point-normal, Factor 21 (negative component)", 
-                invert = TRUE, gene.colors = droplet$all.tuft.colors)
+```{r goblet}
+plot.one.factor(res$pn$fl, pn.matched[11], droplet$all.goblet.genes, 
+                title = "Point-normal, Factor 11", 
+                invert = TRUE, gene.colors = droplet$all.goblet.colors)
+plot.one.factor(res$pn$fl, pn.matched[16], droplet$all.goblet.genes, 
+                title = "Point-normal, Factor 16 (positive component)", 
+                invert = FALSE, gene.colors = droplet$all.goblet.colors)
+plot.one.factor(res$pn$fl, pn.matched[16], droplet$all.goblet.genes, 
+                title = "Point-normal, Factor 16 (negative component)", 
+                invert = TRUE, gene.colors = droplet$all.goblet.colors)
 
-plot.one.factor(res$snn.gene$fl, snn.matched[6], droplet$all.tuft.genes, 
-                title = "Semi-nonnegative, Factor 6", 
-                invert = FALSE, gene.colors = droplet$all.tuft.colors)
-plot.one.factor(res$snn.gene$fl, snn.unmatched[10], droplet$all.tuft.genes, 
-                title = "Semi-nonnegative, Unmatched factor 10", 
-                invert = FALSE, gene.colors = droplet$all.tuft.colors)
+plot.one.factor(res$snn.gene$fl, snn.matched[11], droplet$all.goblet.genes, 
+                title = "Semi-nonnegative, Factor 11",
+                gene.colors = droplet$all.goblet.colors)
+plot.one.factor(res$snn.gene$fl, snn.matched[16], droplet$all.goblet.genes, 
+                title = "Semi-nonnegative, Factor 16",
+                gene.colors = droplet$all.goblet.colors)
 ```
 
 ## Some conclusions
 
-Even though they might be more in line with biological reality, I don't think the semi-nonnegative fits are worth the trouble, at least with this dataset. They're slow to fit and I'm not sure that they're actually any more interpretable. If other datasets confirm that scale mixtures of normals can be fit nearly as quickly as point-normal priors, then I think that scale mixtures of normals might be the way to go.
+Each of these prior families has value. For a quick and dirty fit, one might consider using point-normal priors and performing a small number of backfitting iterations ($\approx 10$). For a more refined fit, scale-mixture-of-normal priors are guaranteed to produce a better fit than point-normal priors and are nearly as fast. 
+
+The semi-nonnegative fits are slow to fit and, as the goblet factors example shows, they're not guaranteed to be any more interpretable than the point-normal or scale-mixture-of-normal fits; still, I find them to be both philosophically and aesthetically appealing.
