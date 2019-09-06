@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-03
+<strong>Last updated:</strong> 2019-09-05
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef120ec4dd88860ca4839014c275c1a1f7b2b2a52targetblankf120ec4a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/f120ec4dd88860ca4839014c275c1a1f7b2b2a52" target="_blank">f120ec4</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree26e002e640c47e75ddb73e3d62294ed0bdf4e0d5targetblank26e002ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/26e002e640c47e75ddb73e3d62294ed0bdf4e0d5" target="_blank">26e002e</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef120ec4dd88860ca4839014c275c1a1f7b2b2a52targetblankf120ec4a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree26e002e640c47e75ddb73e3d62294ed0bdf4e0d5targetblank26e002ea" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -554,31 +554,24 @@ Ignored files:
     Ignored:    .DS_Store
     Ignored:    .Rhistory
     Ignored:    .Rproj.user/
+    Ignored:    code/initialization/
+    Ignored:    data/Ensembl2Reactome.txt
     Ignored:    data/droplet.rds
+    Ignored:    data/mus_pathways.rds
     Ignored:    output/backfit/
     Ignored:    output/prior_type/
+    Ignored:    output/pseudocount/
+    Ignored:    output/pseudocount_redux/
     Ignored:    output/size_factors/
     Ignored:    output/var_type/
 
 Untracked files:
     Untracked:  analysis/NBapprox.Rmd
+    Untracked:  analysis/deleted.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/pseudocount/
-    Untracked:  code/pseudocounts.R
+    Untracked:  code/pseudocount_redux/
     Untracked:  code/trachea4.R
-    Untracked:  data/Ensembl2Reactome.txt
-    Untracked:  data/hard_bimodal1.txt
-    Untracked:  data/hard_bimodal2.txt
-    Untracked:  data/hard_bimodal3.txt
-    Untracked:  data/mus_pathways.rds
-    Untracked:  docs/figure/pseudocount2.Rmd/
-    Untracked:  output/pseudocount/
-
-Unstaged changes:
-    Modified:   analysis/index.Rmd
-    Modified:   analysis/pseudocount.Rmd
-    Modified:   code/sc_comparisons.R
 
 </code></pre>
 <p>
@@ -617,6 +610,23 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/pseudocount_redux.html" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -679,38 +689,371 @@ res &lt;- readRDS(&quot;./output/pseudocount/pseudocount_fits.rds&quot;)</code><
 <div id="pseudocount-0.01" class="section level3">
 <h3>Pseudocount = 0.01</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-1">
+Past versions of p.vals-1.png
+</button>
+</p>
+<div id="fig-p.vals-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-1.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-0.0625" class="section level3">
 <h3>Pseudocount = 0.0625</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-2">
+Past versions of p.vals-2.png
+</button>
+</p>
+<div id="fig-p.vals-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-2.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-0.25" class="section level3">
 <h3>Pseudocount = 0.25</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-3">
+Past versions of p.vals-3.png
+</button>
+</p>
+<div id="fig-p.vals-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-3.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-0.5" class="section level3">
 <h3>Pseudocount = 0.5</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-4">
+Past versions of p.vals-4.png
+</button>
+</p>
+<div id="fig-p.vals-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-4.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-1" class="section level3">
 <h3>Pseudocount = 1</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-5">
+Past versions of p.vals-5.png
+</button>
+</p>
+<div id="fig-p.vals-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-5.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-2" class="section level3">
 <h3>Pseudocount = 2</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-6.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-6">
+Past versions of p.vals-6.png
+</button>
+</p>
+<div id="fig-p.vals-6" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-6.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-4" class="section level3">
 <h3>Pseudocount = 4</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-7.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-7">
+Past versions of p.vals-7.png
+</button>
+</p>
+<div id="fig-p.vals-7" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-7.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-16" class="section level3">
 <h3>Pseudocount = 16</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-8.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-8">
+Past versions of p.vals-8.png
+</button>
+</p>
+<div id="fig-p.vals-8" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-8.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="pseudocount-100" class="section level3">
 <h3>Pseudocount = 100</h3>
 <p><img src="figure/pseudocount_redux.Rmd/p.vals-9.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-p.vals-9">
+Past versions of p.vals-9.png
+</button>
+</p>
+<div id="fig-p.vals-9" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-9.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="results-elbo" class="section level2">
@@ -726,6 +1069,43 @@ ggplot(elbo.df, aes(x = pseudocount, y = elbo)) +
   scale_x_continuous(trans = &quot;log2&quot;) +
   labs(y = &quot;ELBO&quot;)</code></pre>
 <p><img src="figure/pseudocount_redux.Rmd/elbo-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-elbo-1">
+Past versions of elbo-1.png
+</button>
+</p>
+<div id="fig-elbo-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/elbo-1.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-log-likelihood-of-implied-distribution" class="section level2">
 <h2>Results: Log likelihood of implied distribution</h2>
@@ -736,7 +1116,45 @@ ggplot(llik.df, aes(x = pseudocount, y = llik)) +
   geom_point() +
   scale_x_continuous(trans = &quot;log2&quot;) +
   labs(y = &quot;log likelihood (implied model)&quot;)</code></pre>
-<img src="figure/pseudocount_redux.Rmd/llik-1.png" width="672" style="display: block; margin: auto;" /> <br> <br>
+<p><img src="figure/pseudocount_redux.Rmd/llik-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-llik-1">
+Past versions of llik-1.png
+</button>
+</p>
+<div id="fig-llik-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/llik-1.png" target="_blank">9f3dff5</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
