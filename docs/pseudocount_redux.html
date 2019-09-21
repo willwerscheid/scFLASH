@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-05
+<strong>Last updated:</strong> 2019-09-21
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree26e002e640c47e75ddb73e3d62294ed0bdf4e0d5targetblank26e002ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/26e002e640c47e75ddb73e3d62294ed0bdf4e0d5" target="_blank">26e002e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5f88c0d006a2fbc5a5c925ef44c0d29307da7ba5targetblank5f88c0da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/5f88c0d006a2fbc5a5c925ef44c0d29307da7ba5" target="_blank">5f88c0d</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree26e002e640c47e75ddb73e3d62294ed0bdf4e0d5targetblank26e002ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree5f88c0d006a2fbc5a5c925ef44c0d29307da7ba5targetblank5f88c0da" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -559,6 +559,7 @@ Ignored files:
     Ignored:    data/droplet.rds
     Ignored:    data/mus_pathways.rds
     Ignored:    output/backfit/
+    Ignored:    output/lowrank/
     Ignored:    output/prior_type/
     Ignored:    output/pseudocount/
     Ignored:    output/pseudocount_redux/
@@ -570,8 +571,10 @@ Untracked files:
     Untracked:  analysis/deleted.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
-    Untracked:  code/pseudocount_redux/
     Untracked:  code/trachea4.R
+
+Unstaged changes:
+    Modified:   analysis/index.Rmd
 
 </code></pre>
 <p>
@@ -610,6 +613,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/5f88c0d006a2fbc5a5c925ef44c0d29307da7ba5/analysis/pseudocount_redux.Rmd" target="_blank">5f88c0d</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-21
+</td>
+<td>
+wflow_publish(“analysis/pseudocount_redux.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/de985b0dd7377f93367d739f5bf3857421332f1f/docs/pseudocount_redux.html" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -655,7 +692,7 @@ wflow_publish(“analysis/pseudocount_redux.Rmd”)
 <h2>Introduction</h2>
 <p>In the previous analysis, I argued that it’s best to use a more sophisticated approach to calculating size factors (such as <code>scran</code>). It remains to choose a pseudocount. That is, letting <span class="math inline">\(X\)</span> be the matrix of scaled counts, I consider the family of transformations <span class="math display">\[ Y_{ij} = \log \left( X_{ij} + \alpha \right), \]</span> which is, up to a constant, equivalent to the family of sparsity-preserving transformations <span class="math display">\[ Y_{ij} = \log \left( \frac{X_{ij}}{\alpha} + 1 \right). \]</span></p>
 <p>Typical choices of <span class="math inline">\(\alpha\)</span> include 0.5 and 1. Aaron Lun has <a href="https://www.biorxiv.org/content/10.1101/404962v1">argued</a> that a somewhat larger pseudocount should be used. Specifically, he proposes setting <span class="math display">\[ \alpha = \min \left\{1, 1/s_\min - 1 / s_\max \right\}, \]</span> where <span class="math inline">\(s_\min\)</span> and <span class="math inline">\(s_\max\)</span> are the smallest and largest size factors. Using the <code>scran</code> size factors from the previous analysis, this would yield <span class="math inline">\(\alpha = 3.14\)</span> .</p>
-<p>Here I consider a broader range of <span class="math inline">\(\alpha\)</span>, including pseudocounts that are much smaller (<span class="math inline">\(\alpha = 1/100\)</span>) and larger (<span class="math inline">\(\alpha = 100\)</span>) than are probably reasonable.</p>
+<p>Here I consider a broader range of <span class="math inline">\(\alpha\)</span>, including pseudocounts that are much smaller (<span class="math inline">\(\alpha = 1/100\)</span>) and larger (<span class="math inline">\(\alpha = 100\)</span>) than are probably reasonable. Each fit was produced by adding 20 “greedy” factors to the Montoro et al. droplet dataset and backfitting. The code can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/pseudocount_redux/pseudocount_fits.R">here</a>.</p>
 <pre class="r"><code>source(&quot;./code/utils.R&quot;)
 droplet &lt;- readRDS(&quot;./data/droplet.rds&quot;)
 droplet &lt;- preprocess.droplet(droplet)
@@ -713,6 +750,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-1.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-1.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -752,6 +800,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-2.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-2.png" target="_blank">9f3dff5</a>
@@ -795,6 +854,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-3.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-3.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -834,6 +904,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-4.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-4.png" target="_blank">9f3dff5</a>
@@ -877,6 +958,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-5.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-5.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -916,6 +1008,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-6.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-6.png" target="_blank">9f3dff5</a>
@@ -959,6 +1062,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-7.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-7.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -998,6 +1112,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-8.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-8.png" target="_blank">9f3dff5</a>
@@ -1041,6 +1166,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/p.vals-9.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/p.vals-9.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -1059,9 +1195,9 @@ Jason Willwerscheid
 <div id="results-elbo" class="section level2">
 <h2>Results: ELBO</h2>
 <p>The ELBO is a terrible metric here. Indeed, as I’ve already observed, the ELBO is monotonically decreasing as a function of the pseudocount.</p>
-<p>To see why this is the case, imagine fitting a simple rank-one model with a constant variance structure. The data log likelihood (that is, the part of the ELBO that ignores priors) is <span class="math display">\[ -\frac{np}{2} \log(2 \pi \sigma^2) - \frac{1}{2 \sigma^2} \sum_{i, j} \mathbb{E} (Y_{ij} - \hat{Y}_{ij})^2. \]</span> Recall that <span class="math inline">\(\sigma^2\)</span> is estimated (via ML) as the mean expected squared residual, so that the data log likelihood can be written <span class="math display">\[ -\frac{np}{2} \log(2 \pi \sigma^2) - \frac{np}{2} = -np \log \sigma + C.\]</span> Meanwhile, the change-of-variables adjustment to the ELBO is <span class="math display">\[ np \log (1 / \lambda) - \sum_{i, j} Y_{ij}. \]</span></p>
-<p>Now take <span class="math inline">\(\lambda \to 0\)</span>. Zero entries in <span class="math inline">\(X\)</span> are always zero in the transformed matrix <span class="math inline">\(Y\)</span>, and nonzero entries are approximately <span class="math inline">\(\log X_{ij} - \log \lambda \approx -\log \lambda\)</span>, so <span class="math display">\[ \sum_{i, j} Y_{ij} \approx snp \log (1 / \lambda), \]</span> where <span class="math inline">\(s\)</span> is the sparsity of <span class="math inline">\(X\)</span> (that is, the proportion of entries that are nonzero). Next, since the rank-one fit will yield a <span class="math inline">\(\sigma^2\)</span> that is approximately equal to <span class="math inline">\(\text{Var}(Y)\)</span>, which (in the limit) is <span class="math inline">\((\log (1 / \lambda))^2 s(1 - s)\)</span>, the data log likelihood is approximately <span class="math display">\[ -np \log (\sqrt{s} \log (1 / \lambda)) + C = -np \log \log (1 / \lambda) + C. \]</span></p>
-<p>Thus, for <span class="math inline">\(\lambda\)</span> near zero, the adjusted log likelihood is approximately <span class="math display">\[ (1 + s)np \log (1 / \lambda) - np \log \log (1 / \lambda) + C, \]</span> which blows up as <span class="math inline">\(\lambda \to 0\)</span>.</p>
+<p>To see why this is the case, imagine fitting a simple rank-one model with a constant variance structure. The data log likelihood (that is, the part of the ELBO that ignores priors) is <span class="math display">\[ -\frac{np}{2} \log(2 \pi \sigma^2) - \frac{1}{2 \sigma^2} \sum_{i, j} \mathbb{E} (Y_{ij} - \hat{Y}_{ij})^2. \]</span> Recall that <span class="math inline">\(\sigma^2\)</span> is estimated (via ML) as the mean expected squared residual, so that the data log likelihood can be written <span class="math display">\[ -\frac{np}{2} \log(2 \pi \sigma^2) - \frac{np}{2} = -np \log \sigma + C.\]</span> Meanwhile, the change-of-variables adjustment to the ELBO is <span class="math display">\[ np \log (1 / \alpha) - \sum_{i, j} Y_{ij}. \]</span></p>
+<p>Now take <span class="math inline">\(\alpha \to 0\)</span>. Zero entries in <span class="math inline">\(X\)</span> are always zero in the transformed matrix <span class="math inline">\(Y\)</span>, and nonzero entries are approximately <span class="math inline">\(\log X_{ij} - \log \alpha \approx -\log \alpha\)</span>, so <span class="math display">\[ \sum_{i, j} Y_{ij} \approx snp \log (1 / \alpha), \]</span> where <span class="math inline">\(s\)</span> is the sparsity of <span class="math inline">\(X\)</span> (that is, the proportion of entries that are nonzero). Next, since the rank-one fit will yield a <span class="math inline">\(\sigma^2\)</span> that is approximately equal to <span class="math inline">\(\text{Var}(Y)\)</span>, which (in the limit) is <span class="math inline">\((\log (1 / \alpha))^2 s(1 - s)\)</span>, the data log likelihood is approximately <span class="math display">\[ -np \log (\sqrt{s} \log (1 / \alpha)) + C = -np \log \log (1 / \alpha) + C. \]</span></p>
+<p>Thus, for <span class="math inline">\(\alpha\)</span> near zero, the adjusted log likelihood is approximately <span class="math display">\[ (1 + s)np \log (1 / \alpha) - np \log \log (1 / \alpha) + C, \]</span> which blows up as <span class="math inline">\(\alpha \to 0\)</span>.</p>
 <pre class="r"><code>elbo.df &lt;- data.frame(pseudocount = as.numeric(names(res)),
                       elbo = sapply(res, function(x) x$fl$elbo + x$elbo.adj))
 ggplot(elbo.df, aes(x = pseudocount, y = elbo)) +
@@ -1091,6 +1227,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/elbo-1.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/elbo-1.png" target="_blank">9f3dff5</a>
@@ -1141,6 +1288,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/de985b0dd7377f93367d739f5bf3857421332f1f/docs/figure/pseudocount_redux.Rmd/llik-1.png" target="_blank">de985b0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-05
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/9f3dff50c4f4b5f45ac327f0ab5e245fc99f7d03/docs/figure/pseudocount_redux.Rmd/llik-1.png" target="_blank">9f3dff5</a>
 </td>
 <td>
@@ -1177,7 +1335,7 @@ attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
 
 other attached packages:
-[1] flashier_0.1.15 ggplot2_3.2.0   Matrix_1.2-15  
+[1] flashier_0.1.17 ggplot2_3.2.0   Matrix_1.2-15  
 
 loaded via a namespace (and not attached):
  [1] Rcpp_1.0.1        compiler_3.5.3    pillar_1.3.1     
