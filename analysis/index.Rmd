@@ -27,12 +27,14 @@ output:
 
 1. [A second look at pseudocounts.](pseudocount_redux.html)
 
-Forthcoming: Number of factors.
+1. [An attempt to use a low-rank representation of the data rather than the full data.](lowrank.html)
+
+Forthcoming: A detailed look at a 50-factor fit.
 
 
 ## Archived
 
-These analyses have not necessarily been updated to use the newest version of `flashier`:
+These analyses have not necessarily been updated to use the newest version of `flashier`.
 
 [A brief discussion of Poisson $p$-values.](poisson_p.html)
 
