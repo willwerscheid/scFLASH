@@ -1,0 +1,46 @@
+---
+title: "Low-rank data representations"
+author: "Jason Willwerscheid"
+date: "9/21/2019"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+If backfitting is performed, then fitting time will not be linear in the number of factors. Indeed, fitting 50 factors using scale-mixture-of-normal priors took me around 12 hours, while 30 factors took only 1.5 hours to converge at the same tolerance.
+
+In an attempt to speed up the fitting process, I fit 50 factors using a low-rank representation of the data (a rank-100 SVD-like object obtained via `rsvd`) rather than the full data. The fitting time was indeed reduced (to around four hours), but the factors obtained were far inferior to the factors obtained using the full data (see below).
+
+The failed experiment is instructive: in essence, it demonstrates that the top 50 `flashier` factors contain much different information from the information contained in the top 100 SVD factors. To give the low-rank strategy any chance of success, many more SVD factors would be needed --- but this would defeat the point of using a low-rank data representation. 
+
+Note, for example, that the cost of multiplying a $\left( U \in \mathbb{R}^{n \times k}, V \in \mathbb{R}^{p \times k} \right)$ low-rank representation against a $n-$ or $p-$vector is $k(n + p)$, while the cost of using the full data is $snp$ (where $s$ is the data sparsity). Thus, to have a chance of obtaining any speedup at all, it's necessary that 
+$$ k < s \min(n, p) $$
+In practice, though, $k$ needs to be much smaller than this to produce a noticeable speedup. Indeed, the speedup obtained here (4 hours vs. 12 hours) was almost entirely due to the fact that fewer backfitting iterations were needed (160 vs. 413). 
+
+## Factors
+
+The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/lowrank/lowrank_fits.R).
+
+```{r res}
+source("./code/utils.R")
+droplet <- readRDS("./data/droplet.rds")
+droplet <- preprocess.droplet(droplet)
+
+full.res <- list(fl = readRDS("./output/lowrank/full_fit50.rds"))
+lr.res <- list(fl = readRDS("./output/lowrank/lowrank_fit50.rds"))
+```
+
+```{r plot1}
+source("./code/utils.R")
+plot.factors(full.res, droplet$cell.type, 1:25, title = "Full data, factors 1-25")
+plot.factors(full.res, droplet$cell.type, 26:50, title = "Full data, factors 26-50")
+plot.factors(lr.res, droplet$cell.type, 1:25, title = "Low-rank data, factors 1-25")
+plot.factors(lr.res, droplet$cell.type, 26:50, title = "Low-rank data, factors 26-50")
+```
+
