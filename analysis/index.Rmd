@@ -29,7 +29,7 @@ output:
 
 1. [An attempt to use a low-rank representation of the data rather than the full data.](lowrank.html)
 
-Forthcoming: A detailed look at a 50-factor fit.
+1. [A detailed look at a 30-factor fit.](final_montoro.html)
 
 
 ## Archived
