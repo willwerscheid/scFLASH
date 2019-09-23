@@ -176,7 +176,8 @@ preprocess.droplet <- function(droplet,
 # Plotting functions for flashier fits ------------------------------------------------
 
 plot.factors <- function(res, cell.types,
-                         kset = NULL, max.pt.size = 2, title = NULL) {
+                         kset = NULL, max.pt.size = 2, title = NULL,
+                         nonnegative = FALSE) {
   # Sort loadings according to proportion of variance explained.
   if (is.null(kset)) {
     kset <- setdiff(order(res$fl$pve, decreasing = TRUE), which(res$fl$pve == 0))
@@ -199,13 +200,19 @@ plot.factors <- function(res, cell.types,
   # Make the size of the point depend on how many of that type there are.
   sizes <- max.pt.size / sqrt(table(cell.types) / min(table(cell.types)))
 
+  if (nonnegative) {
+    ylims <- c(-0.05, 1.05)
+  } else {
+    ylims <- c(-1.05, 1.05)
+  }
+
   df <- reshape2::melt(LL, value.name = "loading")
   df$cell.type <- rep(as.factor(cell.types), length(kset))
   ggplot(df, aes(x = Var2, y = loading, color = cell.type)) +
     geom_jitter(position = position_jitter(0.45),
                 size = rep(sizes[cell.types], length(kset))) +
     labs(title = title, x = NULL) +
-    lims(y = c(-1.05, 1.05))
+    lims(y = ylims)
 }
 
 get.orig.k <- function(fl, k) {
@@ -214,7 +221,7 @@ get.orig.k <- function(fl, k) {
 
 plot.one.factor <- function(fl, k, notable.genes, gene.prescaling.factors = 1,
                             title = NULL, label.size = 8, top.n = 100,
-                            invert = FALSE, gene.colors = NULL) {
+                            invert = FALSE, gene.colors = NULL, label.top.n = 0) {
   df <- data.frame(gene = rownames(fl$loadings.pm[[1]]),
                    loading = fl$loadings.pm[[1]][, k] * gene.prescaling.factors)
   if (invert) {
@@ -223,13 +230,21 @@ plot.one.factor <- function(fl, k, notable.genes, gene.prescaling.factors = 1,
   df <- df[order(df$loading, decreasing = TRUE), ]
   df <- df[1:top.n, ]
   df$order <- 1:nrow(df)
+  which.labs <- which(df$gene %in% notable.genes)
+  if (label.top.n > 0) {
+    which.labs <- union(1:label.top.n, which.labs)
+  }
+  brks <- df$order[which.labs]
+  lbls <- df$gene[which.labs]
+
   plt <- ggplot(df, aes(x = order, y = loading)) +
     geom_point() +
-    scale_x_continuous(breaks = df$order[which(df$gene %in% notable.genes)],
-                       labels = df$gene[which(df$gene %in% notable.genes)]) +
+    scale_x_continuous(breaks = brks,
+                       labels = lbls) +
     labs(x = NULL, title = title) +
     lims(y = c(0, NA)) +
     theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5, size = label.size))
+
   for (i in 1:length(notable.genes)) {
     gene <- notable.genes[i]
     which.gene <- which(df$gene == gene)
@@ -244,6 +259,7 @@ plot.one.factor <- function(fl, k, notable.genes, gene.prescaling.factors = 1,
                      y = 0, yend = df$loading[which.gene], color = the.color)
     }
   }
+
   plot(plt)
 }
 
