@@ -1,5 +1,3 @@
 # scFLASH
 
-A [workflowr][] project.
-
-[workflowr]: https://github.com/jdblischak/workflowr
+Applying `flashier` to single-cell RNA sequencing datasets.
