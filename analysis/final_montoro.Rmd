@@ -86,11 +86,11 @@ plot.one.factor(res$fl, 30, NULL,
                 top.n = top.n, label.top.n = label.top.n)
 ```
 
-A third ciliated factor (Factor 10) doesn't cluster with the other two, and indexes yet another ciliated-specific gene set.
+A third ciliated factor (Factor 21) doesn't cluster with the other two, and indexes yet another ciliated-specific gene set.
 
 ```{r ciliated2}
 plot.one.factor(res$fl, 10, NULL,
-                title = "Factor 10 (ciliated)",
+                title = "Factor 21 (ciliated)",
                 top.n = top.n, label.top.n = label.top.n)
 ```
 
@@ -136,6 +136,6 @@ plot.one.factor(res$fl, 12, NULL,
                 top.n = top.n, label.top.n = label.top.n)
 plot.one.factor(res$fl, 6, droplet$all.tuft.genes, 
                 title = "Factor 6 (tuft)", gene.colors = droplet$all.tuft.colors,
-                top.n = 100, label.top.n = 4)
+                top.n = 100, label.top.n = 2)
 ```
 
