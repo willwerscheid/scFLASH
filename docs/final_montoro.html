@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2019-09-23
+<strong>Last updated:</strong> 2019-09-24
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree903d88e4b5c36fcda1f78a270989b56ba163881atargetblank903d88ea"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/903d88e4b5c36fcda1f78a270989b56ba163881a" target="_blank">903d88e</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreedda8512c01306ca1cadf123f5abda8389d5ddff4targetblankdda8512a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/dda8512c01306ca1cadf123f5abda8389d5ddff4" target="_blank">dda8512</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree903d88e4b5c36fcda1f78a270989b56ba163881atargetblank903d88ea" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreedda8512c01306ca1cadf123f5abda8389d5ddff4targetblankdda8512a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -572,10 +572,6 @@ Untracked files:
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/missing_data.R
     Untracked:  code/trachea4.R
-    Untracked:  docs/figure/deleted.Rmd/
-
-Unstaged changes:
-    Modified:   code/utils.R
 
 </code></pre>
 <p>
@@ -614,6 +610,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/dda8512c01306ca1cadf123f5abda8389d5ddff4/analysis/final_montoro.Rmd" target="_blank">dda8512</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-24
+</td>
+<td>
+wflow_publish(“analysis/final_montoro.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/final_montoro.html" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -660,12 +690,123 @@ res &lt;- readRDS(&quot;./output/final_montoro/final_fit.rds&quot;)</code></pre>
 <p>I first plot the factors in the order they were added.</p>
 <pre class="r"><code>plot.factors(res, droplet$cell.type, 1:res$fl$n.factors, nonnegative = TRUE)</code></pre>
 <p><img src="figure/final_montoro.Rmd/factors-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors-1">
+Past versions of factors-1.png
+</button>
+</p>
+<div id="fig-factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/factors-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>A heatmap of the correlation matrix <span class="math inline">\(F^T F\)</span> (where <span class="math inline">\(F\)</span> is the matrix of <span class="math inline">\(\ell_2\)</span>-normalized cell loadings) can usefully orient a discussion of the results.</p>
 <pre class="r"><code>heat &lt;- heatmap(crossprod(res$fl$loadings.pm[[2]]))</code></pre>
 <p><img src="figure/final_montoro.Rmd/heatmap-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-heatmap-1">
+Past versions of heatmap-1.png
+</button>
+</p>
+<div id="fig-heatmap-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/heatmap-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>I re-order the factors to match the order given in the heatmap. The first branch of the dendrogram separates a large mass of club and basal cells from more specialized cell types. From left to right, there are easily identifiable clusters of goblet cells, ciliated cells, hillock cells, a small subset of basal cells, more ciliated cells, ionocytes, neuroendocrine cells, and tuft cells. Among the mass of club and basal cells, one can distinguish a lone factor that’s primarily loaded on genes that code for ribosomal proteins (Factor 16), four factors loaded on club cells, six factors loaded on basal cells, and six factors that are a wintry mix of cell types.</p>
 <pre class="r"><code>plot.factors(res, droplet$cell.type, heat$rowInd, nonnegative = TRUE)</code></pre>
 <p><img src="figure/final_montoro.Rmd/factors2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors2-1">
+Past versions of factors2-1.png
+</button>
+</p>
+<div id="fig-factors2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/factors2-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="goblet-factors" class="section level2">
 <h2>Goblet factors</h2>
@@ -676,14 +817,125 @@ plot.one.factor(res$fl, 13, droplet$all.goblet.genes,
                 title = &quot;Factor 13 (goblet)&quot;, gene.colors = droplet$all.goblet.colors,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/goblet-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-1">
+Past versions of goblet-1.png
+</button>
+</p>
+<div id="fig-goblet-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/goblet-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 25,droplet$all.goblet.genes,
                 title = &quot;Factor 25 (goblet)&quot;, gene.colors = droplet$all.goblet.colors,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/goblet-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-2">
+Past versions of goblet-2.png
+</button>
+</p>
+<div id="fig-goblet-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/goblet-2.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 27, droplet$all.goblet.genes,
                 title = &quot;Factor 27 (goblet)&quot;, gene.colors = droplet$all.goblet.colors,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/goblet-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-goblet-3">
+Past versions of goblet-3.png
+</button>
+</p>
+<div id="fig-goblet-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/goblet-3.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ciliated-factors" class="section level2">
 <h2>Ciliated factors</h2>
@@ -692,15 +944,126 @@ plot.one.factor(res$fl, 13, droplet$all.goblet.genes,
                 title = &quot;Factor 2 (ciliated)&quot;,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/ciliated-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ciliated-1">
+Past versions of ciliated-1.png
+</button>
+</p>
+<div id="fig-ciliated-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/ciliated-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 30, NULL,
                 title = &quot;Factor 30 (ciliated)&quot;,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/ciliated-2.png" width="672" style="display: block; margin: auto;" /></p>
-<p>A third ciliated factor (Factor 10) doesn’t cluster with the other two, and indexes yet another ciliated-specific gene set.</p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ciliated-2">
+Past versions of ciliated-2.png
+</button>
+</p>
+<div id="fig-ciliated-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/ciliated-2.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>A third ciliated factor (Factor 21) doesn’t cluster with the other two, and indexes yet another ciliated-specific gene set.</p>
 <pre class="r"><code>plot.one.factor(res$fl, 10, NULL,
-                title = &quot;Factor 10 (ciliated)&quot;,
+                title = &quot;Factor 21 (ciliated)&quot;,
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/ciliated2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-ciliated2-1">
+Past versions of ciliated2-1.png
+</button>
+</p>
+<div id="fig-ciliated2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/ciliated2-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="hillock-factors" class="section level2">
 <h2>Hillock factors</h2>
@@ -709,14 +1072,125 @@ plot.one.factor(res$fl, 13, droplet$all.goblet.genes,
                 title = &quot;Factor 8 (club-hillock)&quot;, 
                 top.n = top.n, label.top.n = 10)</code></pre>
 <p><img src="figure/final_montoro.Rmd/hillock-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-1">
+Past versions of hillock-1.png
+</button>
+</p>
+<div id="fig-hillock-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/hillock-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 26, droplet$hillock.genes, 
                 title = &quot;Factor 26 (club-hillock)&quot;, 
                 top.n = 60, label.top.n = 10)</code></pre>
 <p><img src="figure/final_montoro.Rmd/hillock-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-2">
+Past versions of hillock-2.png
+</button>
+</p>
+<div id="fig-hillock-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/hillock-2.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 14, droplet$hillock.genes, 
                 title = &quot;Factor 14 (basal-hillock)&quot;, 
                 top.n = top.n, label.top.n = 10)</code></pre>
 <p><img src="figure/final_montoro.Rmd/hillock-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-hillock-3">
+Past versions of hillock-3.png
+</button>
+</p>
+<div id="fig-hillock-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/hillock-3.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="sparse-basal-factors" class="section level2">
 <h2>Sparse basal factors</h2>
@@ -725,10 +1199,84 @@ plot.one.factor(res$fl, 13, droplet$all.goblet.genes,
                 title = &quot;Factor 10 (basal)&quot;, 
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/sp.basal-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sp.basal-1">
+Past versions of sp.basal-1.png
+</button>
+</p>
+<div id="fig-sp.basal-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/sp.basal-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 11, NULL,
                 title = &quot;Factor 11 (basal)&quot;, 
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/sp.basal-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sp.basal-2">
+Past versions of sp.basal-2.png
+</button>
+</p>
+<div id="fig-sp.basal-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/sp.basal-2.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="ionocytes-neuroendocrine-cells-tuft-cells" class="section level2">
 <h2>Ionocytes, neuroendocrine cells, tuft cells</h2>
@@ -737,14 +1285,125 @@ plot.one.factor(res$fl, 13, droplet$all.goblet.genes,
                 title = &quot;Factor 20 (ionocytes)&quot;, 
                 top.n = 70, label.top.n = 9)</code></pre>
 <p><img src="figure/final_montoro.Rmd/tuft-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-1">
+Past versions of tuft-1.png
+</button>
+</p>
+<div id="fig-tuft-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/tuft-1.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 12, NULL, 
                 title = &quot;Factor 12 (neuroendocrine)&quot;, 
                 top.n = top.n, label.top.n = label.top.n)</code></pre>
 <p><img src="figure/final_montoro.Rmd/tuft-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-2">
+Past versions of tuft-2.png
+</button>
+</p>
+<div id="fig-tuft-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/tuft-2.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>plot.one.factor(res$fl, 6, droplet$all.tuft.genes, 
                 title = &quot;Factor 6 (tuft)&quot;, gene.colors = droplet$all.tuft.colors,
-                top.n = 100, label.top.n = 4)</code></pre>
+                top.n = 100, label.top.n = 2)</code></pre>
 <p><img src="figure/final_montoro.Rmd/tuft-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-tuft-3">
+Past versions of tuft-3.png
+</button>
+</p>
+<div id="fig-tuft-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09a584bd6a5033ccd7ac6e604445579f8816451b/docs/figure/final_montoro.Rmd/tuft-3.png" target="_blank">09a584b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2019-09-23
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
