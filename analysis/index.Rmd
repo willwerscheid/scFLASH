@@ -16,19 +16,13 @@ output:
 ## Fitting the droplet-based 3' scRNA-seq dataset from Montoro et al.
 
 1. [A preliminary look at the data.](droplet.html)
-
 1. [A comparison of different variance structures.](var_type.html)
-
 1. [An argument for backfitting.](backfit.html)
-
 1. [A comparison of different prior families.](prior_type.html)
-
 1. [A discussion of size factors.](size_factors.html)
-
 1. [A second look at pseudocounts.](pseudocount_redux.html)
-
+    + [Addendum: a simple explanation for the failure of change-of-variables adjustments.](elbo_problems.html)
 1. [An attempt to use a low-rank representation of the data rather than the full data.](lowrank.html)
-
 1. [A detailed look at a 30-factor fit.](final_montoro.html)
 
 
