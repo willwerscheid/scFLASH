@@ -29,6 +29,6 @@ $$ - \sum_{i, j} \log(X_{ij} + \alpha / k) + \sum_{i, j} \log(X_{ij} + \alpha)
 \approx \sum_{\{i, j: X_{ij} = 0\}} \log k = snp \log k, $$
 where $s$ is the sparsity of $X$ (i.e., the proportion of counts that are nonzero).
 
-Thus the ELBO adjustment increases logarithmically as the (non-logged) pseudocount goes to $-\infty$. In other words, even though the ELBO actually increases logarithmically as the logged pseudocount goes to $-\infty$, it is adjusted as if it were increasing linearly, which drives the adjusted ELBO to $\infty$.
+Thus the ELBO adjustment increases logarithmically as the (non-logged) pseudocount goes to zero. In other words, even though the ELBO actually increases logarithmically as the logged pseudocount goes to $-\infty$, it is adjusted as if it were increasing linearly, which drives the adjusted ELBO to $\infty$.
 
 There is, of course, a fundamental problem with using a change-of-variables adjustment with binary data: since the tranformation only really transforms two values, the derivative of the transformation is not defined. My argument shows, I think, that this problem can confound attempts to use transformations on sparse data as well. (I hesitate to generalize to discrete data, because it might be possible to obtain good results by requiring transformations to be smooth and monotonic.)
