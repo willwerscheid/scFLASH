@@ -11,7 +11,8 @@ plot.category <- function(category, title) {
   df <- data.frame(category)
   ggplot(df, aes(x = category)) +
     geom_bar() +
-    labs(x = NULL, title = title)
+    labs(x = NULL, title = title) +
+    theme(axis.text.x = element_text(angle = 90, hjust = 1))
 }
 
 plot.libsize <- function(data, bins = 50) {
