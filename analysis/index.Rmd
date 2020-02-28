@@ -26,6 +26,11 @@ output:
 1. [A detailed look at a 30-factor fit.](final_montoro.html)
 
 
+## Fitting the 3k PBMC dataset from Zheng et al.
+
+1. [An introduction to the dataset.](pbmc.html)
+
+
 ## Archived
 
 These analyses have not necessarily been updated to use the newest version of `flashier`.
