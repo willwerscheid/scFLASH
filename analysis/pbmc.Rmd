@@ -1,0 +1,76 @@
+---
+title: "PBMC 3k dataset"
+author: "Jason Willwerscheid"
+date: "2/28/2020"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+```{r read.data}
+suppressMessages(library(SingleCellExperiment))
+suppressMessages(library(Matrix))
+suppressMessages(library(tidyverse))
+
+load("data/10x/Sce_Dataset2.RData")
+load("data/10x/Assigned_Cell_Types_Dataset2.RData")
+
+pbmc <- Matrix(counts(sce))
+# Remove genes with all zero counts.
+pbmc <- pbmc[rowSums(pbmc) > 0, ]
+
+source("./code/utils.R")
+```
+
+To compare EBMF with the 18 methods discussed in [Sun et al.](https://genomebiology.biomedcentral.com/articles/10.1186/s13059-019-1898-6) (2019), I plan to run `flashier` on their PBMC 3k dataset. (Of the datasets they consider, this is the UMI-based dataset that benefits from the most detailed analysis). 
+
+The dataset was introduced by [Zheng et al.](https://www.nature.com/articles/ncomms14049) (2017) and subsequently analyzed in [Freytag et al.](https://f1000research.com/articles/7-1297/v2) (2018). It can be obtained as Dataset 2 [here](https://github.com/bahlolab/cluster_benchmark_data/tree/master/silverstandard). Cell types can be inferred by running the code provided in the latter paper's [companion repository](https://github.com/SaskiaFreytag/cluster_benchmarking_code/blob/master/silverstandard/labelling/Assigning_lables_dataset2.R).
+
+The dataset includes counts for 24,565 genes (after removing genes for which all counts are zero) and 3,205 cells. Only 4.9% of all counts are nonzero. The data takes up 46 MB when loaded into memory as a sparse `Matrix` object.
+
+Freytag et al. assign each cell to one of 11 cell types:
+
+```{r cell.labels}
+cell.type <- assigned_cell_types@listData$Assigned_CellType
+#levels(cell.type) <- sapply(levels(cell.type), str_trunc, 10)
+plot.category(cell.type, title = "Number of cells per cell type")
+```
+
+Library size is distributed as follows.
+
+```{r cells}
+plot.libsize(pbmc)
+```
+
+There are three extreme outliers, all of which are variations on the CD4+ theme. Since I want to compare results to those given in Sun et. al, I won't remove them.
+
+```{r cell.outliers}
+table(cell.type[which(colSums(pbmc) > 20000)])
+```
+
+Mean expression is distributed as follows.
+
+```{r genes}
+plot.meanexp(pbmc)
+```
+
+There is one outlying gene. Its expression is unimodally distributed.
+
+```{r gene.outliers}
+high.exp <- names(which(rowMeans(pbmc) > 200))
+for (gene in high.exp) {
+  plot(plot.gene(pbmc, gene))
+}
+```
+
+## Preprocessing
+
+I remove all genes with nonzero counts in fewer than ten of the 3205 cells. This leaves a total of 9804 genes.
+
+Next, I normalize and transform the data. My default approach is to use library-size normalization followed by a `log1p` transformation. Other approaches will be explored in subsequent analyses.
