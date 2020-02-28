@@ -9,9 +9,11 @@ analysis/*png
 analysis/*html
 analysis/*_cache
 analysis/site_libs
+data/10x
 data/droplet.rds
 data/Ensembl2Reactome.txt
 data/mus_pathways.rds
+data-raw/10x_assigned_cell_types.R
 output/pseudocount
 output/var_type
 output/backfit
