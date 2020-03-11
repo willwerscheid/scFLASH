@@ -1,0 +1,76 @@
+---
+title: "Variance Regularization: Part One"
+author: "Jason Willwerscheid"
+date: "3/10/2020"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Although I prefer a gene-wise variance structure, it can cause problems for backfits. When the low-rank EBMF structure very closely approximates the observed expression for a particular gene, then the estimated residual variance for that gene can blow up to infinity. This typically happens with very sparsely expressed genes, so removing genes with zero counts in a large majority of cells mitigates the problem. I don't want to remove too many genes, however, since sparsely expressed genes can provide important information about rare cell types (e.g., Cftr and ionocytes).
+
+Up until now, I've dealt with this problem is a very ad hoc manner: I set the minimum gene-wise residual variance obtained from the greedy fit as the minimum for all residual variances estimated during the backfit. Here I explore a less ad-hoc approach in which I put a prior on the gene-wise precisions:
+
+$$ 1 / \sigma_j^2 \sim \text{Exponential}(\lambda) $$
+
+The $\sigma_j$s can then be estimated by solving an empirical Bayes Poisson means (EBPM) problem. The `ebpm` package is not yet able to solve this particular EBPM problem, so in this analysis I'll fix $\lambda$ and explore results for various choices. (I attempted to use `exponential_mixture` and `point_gamma` prior families, but they did a very poor job at regularizing the variance estimates.)
+
+All fits "pre-scale" cells, add 20 factors greedily using point-normal priors, and then backfit. The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits.R).
+
+```{r load.res}
+suppressMessages(library(tidyverse))
+suppressMessages(library(Matrix))
+
+source("./code/utils.R")
+pbmc <- readRDS("./data/10x/pbmc.rds")
+pbmc <- preprocess.pbmc(pbmc)
+
+res <- readRDS("./output/var_reg/varreg_fits.rds")
+```
+
+## Results: ELBO
+
+As the scale of the prior increases, less shrinkage will be applied, so that estimates will be closer to the MLE estimates and a larger ELBO will result. Interestingly, the same is not true for the likelihood of the implied discrete distribution, which peaks somewhere around $\lambda = 100$ or $\lambda = 1000$.
+
+This order of magnitude for $\lambda$ makes intuitive sense. I've retained genes that have nonzero counts in at least 10 of the 3206 cells. If we regard the true marginal distribution for gene $j$ as $\text{Poisson}(\nu)$, then (using the ML estimate for $\nu$) its residual variance will be at least $10 / 3206$. (One can also show that if the true distribution is a mixture $\pi_1 \text{Poisson}(\nu_1) + \pi_2 \text{Poisson}(\nu_2)$, then the variance is bounded below by $\mu(1 - \mu)$, where $\mu$ is the mean of the distribution: $\mu = \pi_1 \nu_1 + \pi_2 \nu_2$. Plugging in $\hat{\mu} = 10/3206$ gives an upper bound of 321.6 for gene-wise precisions.)
+
+```{r progress}
+prior.scale <- 10^(0:5)
+elbo.df <- tibble(scale = prior.scale,
+                  elbo = sapply(res, function(x) x$fl$elbo),
+                  llik = sapply(res, function(x) x$p.vals$llik))
+
+ggplot(elbo.df, aes(x = scale, y = elbo)) +
+  geom_point() +
+  scale_x_log10() +
+  labs(x = "Scale of prior",
+       y = NULL,
+       title = "ELBO")
+
+ggplot(elbo.df, aes(x = scale, y = llik)) +
+  geom_point() +
+  scale_x_log10() +
+  labs(x = "Scale of prior",
+       y = NULL,
+       title = "Likelihood of implied discrete distribution")
+```
+
+## Results: Factor comparisons
+
+Plotted factors look fairly similar for all choices of $\lambda$, especially for more reasonable choices ($\lambda > 100$). 
+
+```{r factors}
+plot.factors(res$scale1, pbmc$cell.type, kset = order(res$scale1$fl$pve, decreasing = TRUE),
+             title = "Scale = 1")
+plot.factors(res$scale100, pbmc$cell.type, kset = order(res$scale100$fl$pve, decreasing = TRUE), 
+             title = "Scale = 100")
+plot.factors(res$scale10000, pbmc$cell.type, kset = order(res$scale10000$fl$pve, decreasing = TRUE),
+             title = "Scale = 10000")
+```
+
