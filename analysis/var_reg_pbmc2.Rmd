@@ -23,11 +23,24 @@ As in the previous analysis, all fits add 20 factors greedily using point-normal
 
 The "true" distribution of gene $j$ can be modeled as
 $$ X_{ij} \sim \text{Poisson}(s_i \lambda_{ij}), $$
-where $s_i$ is the size factor for cell $i$ and $\lambda_{ij}$ depends on, for example, cell type. The scaled entry $Y_{ij} = X_{ij} / s_i$ then has variance $\lambda_{ij} / s_i$. By the law of total variance, $Y_j$ marginally has variance
-$$ \text{Var}(Y_j) \ge \mathbb{E}_i(\text{Var}(Y_{ij})) = \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i} \approx \frac{1}{n} \sum_i Y_{ij} $$
+where $s_i$ is the size factor for cell $i$ and $\lambda_{ij}$ depends on, for example, cell type. Using a Taylor approximation, the transformed entry $Y_{ij} = \log(X_{ij} / s_i + 1)$ can be written
+$$ Y_{ij} \approx \log(\lambda_{ij} + 1) 
++ \frac{1}{s_i(\lambda_{ij} + 1)}(X_{ij} - s_i \lambda_{ij})
+- \frac{1}{2s_i^2(\lambda_{ij} + 1)^2}(X_{ij} - s_i \lambda_{ij})^2 $$
+so that
+$$ \mathbb{E}Y_{ij} \approx \log(\lambda_{ij} + 1) 
+- \frac{\lambda_{ij}}{2s_i(\lambda_{ij} + 1)^2}$$
+and
+$$ \text{Var}(Y_{ij}) \approx \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2}$$
+
+The law of total variance gives a simple lower bound:
+$$ \text{Var}(Y_j) \ge \mathbb{E}_i(\text{Var}(Y_{ij})) 
+\approx \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2} $$
+Plugging in the estimator $\hat{\lambda}_{ij} = X_{ij} / s_i$:
+$$ \text{Var}(Y_j) \ge \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} $$
 
 Thus a reasonable lower bound for the residual variance estimates is
-$$ \min_j \frac{1}{n} \sum_i Y_{ij} $$
+$$ \min_j \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} $$
 
 ## Prior family
 
@@ -35,15 +48,15 @@ I'll use the family of gamma priors, since they have the advantage of being fast
 
 ## Results: Variance Estimates
 
-The regularization step doesn't accomplish very much. Variance estimates are almost identical with and without it (the solid lines indicate the threshold):
+The regularization step doesn't seem to be hugely important. Variance estimates are very similar with and without it (the solid lines indicate the threshold):
 
 ```{r res1}
 suppressMessages(library(tidyverse))
 suppressMessages(library(Matrix))
 
 source("./code/utils.R")
-pbmc <- readRDS("./data/10x/pbmc.rds")
-pbmc <- preprocess.pbmc(pbmc)
+orig.data <- readRDS("./data/10x/pbmc.rds")
+pbmc <- preprocess.pbmc(orig.data)
 
 res <- readRDS("./output/var_reg/varreg_fits2.rds")
 
@@ -56,14 +69,15 @@ ggplot(var_df, aes(x = thresholded, y = regularized)) +
   scale_y_log10() +
   geom_abline(slope = 1, linetype = "dashed") +
   ggtitle("Variance Estimates") +
+  labs(x = "Without regularization", y = "With regularization") +
   geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
   geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)
 ```
 
-The regularized fit is slower and does worse with respect to both the ELBO (as expected) and the log likelihood of the implied discrete distribution (this is probably also to be expected).
+The regularized fit is slower, but it does a bit better with respect to both the ELBO (surprisingly!) and the log likelihood of the implied discrete distribution.
 
 ```{r res2}
-res_df <- tibble(Fit = c("Thresholded", "Regularized"),
+res_df <- tibble(Fit = c("Without Regularization", "With Regularization"),
                  ELBO = sapply(res, function(x) x$fl$elbo),
                  Discrete.Llik = sapply(res, function(x) x$p.vals$llik),
                  Elapsed.Time = sapply(res, function(x) x$elapsed.time))
@@ -72,106 +86,53 @@ knitr::kable(res_df, digits = 0)
 
 ## Results: Gene-wise thresholding
 
-The argument I made above can in fact be applied gene by gene: that is, I can impose a gene-wise threshold rather than a single threshold for all genes. This argument rests on somewhat shakier ground, since I now need to use $p$ plug-in estimators $$ \sum_i \hat{\lambda}_{ij} / s_i = \sum_i Y_{ij} $$
+The argument I made above can in fact be applied gene by gene. That is, I can impose a gene-wise threshold rather than a single threshold for all genes: 
+$$ \text{Var}(Y_j) \ge \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} $$
 
-As it turns out, most estimates are very near their theoretical minimums. I'm not sure why this is the case. The code used to produce these fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits3.R).
+Indeed, I could go a bit further and estimate the sampling variance directly rather than calculating a rough lower bound:
+$$ \text{Var}(Y_j) = \mathbb{E}_i(\text{Var}(Y_{ij})) + \text{Var}_i(\mathbb{E} Y_{ij})
+\approx \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2} 
++ \text{Var}_i \left( \log(\lambda_{ij} + 1) 
+- \frac{\lambda_{ij}}{2s_i(\lambda_{ij} + 1)^2} \right) $$
+The problem, however, is that if the "true" rate $\lambda_{ij}$ is the same for all $i$ (and, for the sake of argument, let all $s_i$ be identical), then $\text{Var}_i(\mathbb{E} Y_{ij})$ should be zero. If, however, the plug-in estimators $\hat{\lambda}_{ij} = X_{ij} / s_i$ are used, then $\text{Var}_i(\mathbb{E} Y_{ij})$ will be estimated as positive and the residual variance estimate for gene $j$ risks being too large. For this reason, I think that the best one can do is to use the rough lower bound and then let `flash` estimate the residual variance.
 
-```{r res3}
-res2 <- readRDS("./output/var_reg/varreg_fits3.rds")
+Note, however, that all but one `flash` estimate is already greater than this lower bound (for this reason, I won't bother to re-fit):
 
-var_df <- tibble(single.thresh = res$unreg$fl$residuals.sd^2,
-                 genewise.thresh = res2$unreg$fl$residuals.sd^2,
-                 theoretical.min = 1 / res2$unreg$fl$flash.fit$given.tau)
+```{r gw.lb}
+tmp.mat <- t(t(orig.data[-pbmc$dropped.genes, ] / (exp(pbmc$data))^2) / pbmc$size.factors^2)
+var.lower.bd <- apply(tmp.mat, 1, mean)
+var.est <- var.lower.bd + apply(pbmc$data - 0.5 * tmp.mat, 1, var)
 
-ggplot(var_df, aes(x = theoretical.min, y = genewise.thresh)) + 
+var_df <- tibble(flash.estimate = res$reg$fl$residuals.sd^2,
+                 var.lower.bd = var.lower.bd,
+                 var.est = var.est)
+
+ggplot(var_df, aes(x = var.lower.bd, y = flash.estimate)) + 
   geom_point(size = 1) +
   scale_x_log10() + 
   scale_y_log10() +
-  geom_abline(slope = 1, linetype = "dashed") +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)
+  geom_abline(slope = 1, linetype = "dashed")
 ```
 
-As a result, the gene-wise thresholding approach produces very different estimates. As I've previously argued, library-size normalization artificially reduces the variance of the most highly expressed genes (whence the parabola-like shape below):
+In contrast, all of the `flash` estimates are lesser than the direct sampling variance estimate obtained using plug-in estimators, which strongly suggests that this approach would be inappropriate:
 
-```{r res4}
-ggplot(var_df, aes(x = single.thresh, y = genewise.thresh)) + 
+```{r var.est}
+ggplot(var_df, aes(x = var.est, y = flash.estimate)) + 
   geom_point(size = 1) +
   scale_x_log10() + 
   scale_y_log10() +
-  geom_abline(slope = 1, linetype = "dashed") +
-  ggtitle("Variance Estimates") +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)
-```
-
-```{r res5}
-res_df <- res_df %>%
-  bind_rows(tibble(Fit = c("Gene-wise Thresh", "Gene-wise Reg"),
-                   ELBO = sapply(res2, function(x) x$fl$elbo),
-                   Discrete.Llik = sapply(res2, function(x) x$p.vals$llik),
-                   Elapsed.Time = sapply(res2, function(x) x$elapsed.time)))
-knitr::kable(res_df, digits = 0)
-```
-
-## Results: Fixed variance estimates
-
-Since most estimates are so close to their lower bounds, it might make sense to directly estimate the residual variances and then fix them rather than lower bounding them. I again use the law of total variance:
-
-$$ \text{Var}(Y_j) = \mathbb{E}_i(\text{Var}(Y_{ij})) + \text{Var}_i(\mathbb{E}(Y_{ij})) = \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i} + \text{Var}_i \frac{\lambda_{ij}}{s_i} \approx \frac{1}{n} \sum_i Y_{ij} + \text{Var}_i (Y_{ij}) $$
-
-```{r res6}
-res3 <- readRDS("./output/var_reg/varreg_fits4.rds")
-
-var_df <- tibble(fixed.estimates = res3$fl$residuals.sd^2,
-                 lower.bd.estimates = res2$unreg$fl$residuals.sd^2)
-
-ggplot(var_df, aes(x = lower.bd.estimates, y = fixed.estimates)) + 
-  geom_point(size = 1) +
-  scale_x_log10() + 
-  scale_y_log10() +
-  geom_abline(slope = 1, linetype = "dashed") +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)
-```
-
-```{r res7}
-res_df <- res_df %>%
-  bind_rows(tibble(Fit = "Fixed Estimates",
-                   ELBO = res3$fl$elbo,
-                   Discrete.Llik = res3$p.vals$llik,
-                   Elapsed.Time = res3$elapsed.time))
-knitr::kable(res_df, digits = 0)
+  geom_abline(slope = 1, linetype = "dashed")
 ```
 
 ## Results: Factor comparisons
 
-The more restrictive methods end up producing cleaner sets of factors: when fixed estimates are used, `flash` even terminates early, stopping after 9 factors have been added. The question, then, is whether the less restrictive methods yield additional information that's biologically useful: do single threshold factors 5, 7, and 10, for example, better describe the CD4+/CD45RO+ axis than gene-wise threshold factor 6? or is factor 3 enough to describe this axis, as the fixed estimates results suggest? are three factors (6, 13, and 20) really needed to describe the rare CD34+ cell type?
+Factor plots are nearly identical with and without regularization. I like regularization on principle, but I'm not sure that it actually makes much of a difference.
 
 ```{r factors}
+set.seed(666)
 plot.factors(res$unreg, pbmc$cell.type, kset = order(res$unreg$fl$pve, decreasing = TRUE),
-             title = "Single threshold")
-plot.factors(res2$unreg, pbmc$cell.type, kset = order(res2$unreg$fl$pve, decreasing = TRUE), 
-             title = "Gene-wise threshold")
-plot.factors(res3, pbmc$cell.type, kset = order(res3$fl$pve, decreasing = TRUE), 
-             title = "Fixed estimates")
-```
-
-## Results: PVE
-
-```{r pve}
-pve_df <- tibble(method = "single.thresh",
-                 pve = sort(res$unreg$fl$pve, decreasing = TRUE),
-                 k = 1:length(res$unreg$fl$pve)) %>%
-  bind_rows(tibble(method = "genewise.thresh",
-                 pve = sort(res2$unreg$fl$pve, decreasing = TRUE),
-                 k = 1:length(res2$unreg$fl$pve))) %>%
-  bind_rows(tibble(method = "fixed.estimates",
-                 pve = sort(res3$fl$pve, decreasing = TRUE),
-                 k = 1:length(res3$fl$pve)))
-
-ggplot(pve_df, aes(x = k, y = pve, col = method)) +
-  geom_point() +
-  geom_line() +
-  scale_y_log10()
+             title = "Without regularization")
+set.seed(666)
+plot.factors(res$reg, pbmc$cell.type, kset = order(res$reg$fl$pve, decreasing = TRUE), 
+             title = "With regularization")
 ```
