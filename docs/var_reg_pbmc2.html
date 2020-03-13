@@ -462,7 +462,7 @@ div.section {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2020-03-12
+<strong>Last updated:</strong> 2020-03-13
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 6 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef8991bae11cdda37b952bbd88bdaa65918beff50targetblankf8991baa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/f8991bae11cdda37b952bbd88bdaa65918beff50" target="_blank">f8991ba</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree06088525d6669f477b00ad7dcaa69e2989ead920targetblank0608852a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/06088525d6669f477b00ad7dcaa69e2989ead920" target="_blank">0608852</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreef8991bae11cdda37b952bbd88bdaa65918beff50targetblankf8991baa" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree06088525d6669f477b00ad7dcaa69e2989ead920targetblank0608852a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -629,6 +629,40 @@ Message
 Rmd
 </td>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/06088525d6669f477b00ad7dcaa69e2989ead920/analysis/var_reg_pbmc2.Rmd" target="_blank">0608852</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+<td>
+wflow_publish(“analysis/var_reg_pbmc2.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/var_reg_pbmc2.html" target="_blank">73c62dd</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-12
+</td>
+<td>
+Build site.
+</td>
+</tr>
+<tr>
+<td>
+Rmd
+</td>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/f8991bae11cdda37b952bbd88bdaa65918beff50/analysis/var_reg_pbmc2.Rmd" target="_blank">f8991ba</a>
 </td>
 <td>
@@ -656,8 +690,13 @@ wflow_publish(“./analysis/var_reg_pbmc2.Rmd”)
 </div>
 <div id="residual-variance-threshold" class="section level2">
 <h2>Residual variance threshold</h2>
-<p>The “true” distribution of gene <span class="math inline">\(j\)</span> can be modeled as <span class="math display">\[ X_{ij} \sim \text{Poisson}(s_i \lambda_{ij}), \]</span> where <span class="math inline">\(s_i\)</span> is the size factor for cell <span class="math inline">\(i\)</span> and <span class="math inline">\(\lambda_{ij}\)</span> depends on, for example, cell type. The scaled entry <span class="math inline">\(Y_{ij} = X_{ij} / s_i\)</span> then has variance <span class="math inline">\(\lambda_{ij} / s_i\)</span>. By the law of total variance, <span class="math inline">\(Y_j\)</span> marginally has variance <span class="math display">\[ \text{Var}(Y_j) \ge \mathbb{E}_i(\text{Var}(Y_{ij})) = \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i} \approx \frac{1}{n} \sum_i Y_{ij} \]</span></p>
-<p>Thus a reasonable lower bound for the residual variance estimates is <span class="math display">\[ \min_j \frac{1}{n} \sum_i Y_{ij} \]</span></p>
+<p>The “true” distribution of gene <span class="math inline">\(j\)</span> can be modeled as <span class="math display">\[ X_{ij} \sim \text{Poisson}(s_i \lambda_{ij}), \]</span> where <span class="math inline">\(s_i\)</span> is the size factor for cell <span class="math inline">\(i\)</span> and <span class="math inline">\(\lambda_{ij}\)</span> depends on, for example, cell type. Using a Taylor approximation, the transformed entry <span class="math inline">\(Y_{ij} = \log(X_{ij} / s_i + 1)\)</span> can be written <span class="math display">\[ Y_{ij} \approx \log(\lambda_{ij} + 1) 
++ \frac{1}{s_i(\lambda_{ij} + 1)}(X_{ij} - s_i \lambda_{ij})
+- \frac{1}{2s_i^2(\lambda_{ij} + 1)^2}(X_{ij} - s_i \lambda_{ij})^2 \]</span> so that <span class="math display">\[ \mathbb{E}Y_{ij} \approx \log(\lambda_{ij} + 1) 
+- \frac{\lambda_{ij}}{2s_i(\lambda_{ij} + 1)^2}\]</span> and <span class="math display">\[ \text{Var}(Y_{ij}) \approx \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2}\]</span></p>
+<p>The law of total variance gives a simple lower bound: <span class="math display">\[ \text{Var}(Y_j) \ge \mathbb{E}_i(\text{Var}(Y_{ij})) 
+\approx \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2} \]</span> Plugging in the estimator <span class="math inline">\(\hat{\lambda}_{ij} = X_{ij} / s_i\)</span>: <span class="math display">\[ \text{Var}(Y_j) \ge \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} \]</span></p>
+<p>Thus a reasonable lower bound for the residual variance estimates is <span class="math display">\[ \min_j \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} \]</span></p>
 </div>
 <div id="prior-family" class="section level2">
 <h2>Prior family</h2>
@@ -665,13 +704,13 @@ wflow_publish(“./analysis/var_reg_pbmc2.Rmd”)
 </div>
 <div id="results-variance-estimates" class="section level2">
 <h2>Results: Variance Estimates</h2>
-<p>The regularization step doesn’t accomplish very much. Variance estimates are almost identical with and without it (the solid lines indicate the threshold):</p>
+<p>The regularization step doesn’t seem to be hugely important. Variance estimates are very similar with and without it (the solid lines indicate the threshold):</p>
 <pre class="r"><code>suppressMessages(library(tidyverse))
 suppressMessages(library(Matrix))
 
 source(&quot;./code/utils.R&quot;)
-pbmc &lt;- readRDS(&quot;./data/10x/pbmc.rds&quot;)
-pbmc &lt;- preprocess.pbmc(pbmc)
+orig.data &lt;- readRDS(&quot;./data/10x/pbmc.rds&quot;)
+pbmc &lt;- preprocess.pbmc(orig.data)
 
 res &lt;- readRDS(&quot;./output/var_reg/varreg_fits2.rds&quot;)
 
@@ -684,11 +723,49 @@ ggplot(var_df, aes(x = thresholded, y = regularized)) +
   scale_y_log10() +
   geom_abline(slope = 1, linetype = &quot;dashed&quot;) +
   ggtitle(&quot;Variance Estimates&quot;) +
+  labs(x = &quot;Without regularization&quot;, y = &quot;With regularization&quot;) +
   geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
   geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)</code></pre>
 <p><img src="figure/var_reg_pbmc2.Rmd/res1-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>The regularized fit is slower and does worse with respect to both the ELBO (as expected) and the log likelihood of the implied discrete distribution (this is probably also to be expected).</p>
-<pre class="r"><code>res_df &lt;- tibble(Fit = c(&quot;Thresholded&quot;, &quot;Regularized&quot;),
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-res1-1">
+Past versions of res1-1.png
+</button>
+</p>
+<div id="fig-res1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/res1-1.png" target="_blank">73c62dd</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>The regularized fit is slower, but it does a bit better with respect to both the ELBO (surprisingly!) and the log likelihood of the implied discrete distribution.</p>
+<pre class="r"><code>res_df &lt;- tibble(Fit = c(&quot;Without Regularization&quot;, &quot;With Regularization&quot;),
                  ELBO = sapply(res, function(x) x$fl$elbo),
                  Discrete.Llik = sapply(res, function(x) x$p.vals$llik),
                  Elapsed.Time = sapply(res, function(x) x$elapsed.time))
@@ -704,187 +781,136 @@ knitr::kable(res_df, digits = 0)</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">Thresholded</td>
-<td align="right">32318946</td>
-<td align="right">-12497737</td>
-<td align="right">854</td>
+<td align="left">Without Regularization</td>
+<td align="right">32325446</td>
+<td align="right">-12497124</td>
+<td align="right">740</td>
 </tr>
 <tr class="even">
-<td align="left">Regularized</td>
-<td align="right">32318983</td>
-<td align="right">-12497566</td>
-<td align="right">1097</td>
+<td align="left">With Regularization</td>
+<td align="right">32326656</td>
+<td align="right">-12496881</td>
+<td align="right">1190</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="results-gene-wise-thresholding" class="section level2">
 <h2>Results: Gene-wise thresholding</h2>
-<p>The argument I made above can in fact be applied gene by gene: that is, I can impose a gene-wise threshold rather than a single threshold for all genes. This argument rests on somewhat shakier ground, since I now need to use <span class="math inline">\(p\)</span> plug-in estimators <span class="math display">\[ \sum_i \hat{\lambda}_{ij} / s_i = \sum_i Y_{ij} \]</span></p>
-<p>As it turns out, most estimates are very near their theoretical minimums. I’m not sure why this is the case. The code used to produce these fits can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits3.R">here</a>.</p>
-<pre class="r"><code>res2 &lt;- readRDS(&quot;./output/var_reg/varreg_fits3.rds&quot;)
+<p>The argument I made above can in fact be applied gene by gene. That is, I can impose a gene-wise threshold rather than a single threshold for all genes: <span class="math display">\[ \text{Var}(Y_j) \ge \frac{1}{n} \sum_i \frac{X_{ij}}{s_i^2(\exp(Y_{ij}))^2} \]</span></p>
+<p>Indeed, I could go a bit further and estimate the sampling variance directly rather than calculating a rough lower bound: <span class="math display">\[ \text{Var}(Y_j) = \mathbb{E}_i(\text{Var}(Y_{ij})) + \text{Var}_i(\mathbb{E} Y_{ij})
+\approx \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i(\lambda_{ij} + 1)^2} 
++ \text{Var}_i \left( \log(\lambda_{ij} + 1) 
+- \frac{\lambda_{ij}}{2s_i(\lambda_{ij} + 1)^2} \right) \]</span> The problem, however, is that if the “true” rate <span class="math inline">\(\lambda_{ij}\)</span> is the same for all <span class="math inline">\(i\)</span> (and, for the sake of argument, let all <span class="math inline">\(s_i\)</span> be identical), then <span class="math inline">\(\text{Var}_i(\mathbb{E} Y_{ij})\)</span> should be zero. If, however, the plug-in estimators <span class="math inline">\(\hat{\lambda}_{ij} = X_{ij} / s_i\)</span> are used, then <span class="math inline">\(\text{Var}_i(\mathbb{E} Y_{ij})\)</span> will be estimated as positive and the residual variance estimate for gene <span class="math inline">\(j\)</span> risks being too large. For this reason, I think that the best one can do is to use the rough lower bound and then let <code>flash</code> estimate the residual variance.</p>
+<p>Note, however, that all but one <code>flash</code> estimate is already greater than this lower bound (for this reason, I won’t bother to re-fit):</p>
+<pre class="r"><code>tmp.mat &lt;- t(t(orig.data[-pbmc$dropped.genes, ] / (exp(pbmc$data))^2) / pbmc$size.factors^2)
+var.lower.bd &lt;- apply(tmp.mat, 1, mean)
+var.est &lt;- var.lower.bd + apply(pbmc$data - 0.5 * tmp.mat, 1, var)
 
-var_df &lt;- tibble(single.thresh = res$unreg$fl$residuals.sd^2,
-                 genewise.thresh = res2$unreg$fl$residuals.sd^2,
-                 theoretical.min = 1 / res2$unreg$fl$flash.fit$given.tau)
+var_df &lt;- tibble(flash.estimate = res$reg$fl$residuals.sd^2,
+                 var.lower.bd = var.lower.bd,
+                 var.est = var.est)
 
-ggplot(var_df, aes(x = theoretical.min, y = genewise.thresh)) + 
+ggplot(var_df, aes(x = var.lower.bd, y = flash.estimate)) + 
   geom_point(size = 1) +
   scale_x_log10() + 
   scale_y_log10() +
-  geom_abline(slope = 1, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)</code></pre>
-<p><img src="figure/var_reg_pbmc2.Rmd/res3-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>As a result, the gene-wise thresholding approach produces very different estimates. As I’ve previously argued, library-size normalization artificially reduces the variance of the most highly expressed genes (whence the parabola-like shape below):</p>
-<pre class="r"><code>ggplot(var_df, aes(x = single.thresh, y = genewise.thresh)) + 
+  geom_abline(slope = 1, linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="figure/var_reg_pbmc2.Rmd/gw.lb-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>In contrast, all of the <code>flash</code> estimates are lesser than the direct sampling variance estimate obtained using plug-in estimators, which strongly suggests that this approach would be inappropriate:</p>
+<pre class="r"><code>ggplot(var_df, aes(x = var.est, y = flash.estimate)) + 
   geom_point(size = 1) +
   scale_x_log10() + 
   scale_y_log10() +
-  geom_abline(slope = 1, linetype = &quot;dashed&quot;) +
-  ggtitle(&quot;Variance Estimates&quot;) +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)</code></pre>
-<p><img src="figure/var_reg_pbmc2.Rmd/res4-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>res_df &lt;- res_df %&gt;%
-  bind_rows(tibble(Fit = c(&quot;Gene-wise Thresh&quot;, &quot;Gene-wise Reg&quot;),
-                   ELBO = sapply(res2, function(x) x$fl$elbo),
-                   Discrete.Llik = sapply(res2, function(x) x$p.vals$llik),
-                   Elapsed.Time = sapply(res2, function(x) x$elapsed.time)))
-knitr::kable(res_df, digits = 0)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Fit</th>
-<th align="right">ELBO</th>
-<th align="right">Discrete.Llik</th>
-<th align="right">Elapsed.Time</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Thresholded</td>
-<td align="right">32318946</td>
-<td align="right">-12497737</td>
-<td align="right">854</td>
-</tr>
-<tr class="even">
-<td align="left">Regularized</td>
-<td align="right">32318983</td>
-<td align="right">-12497566</td>
-<td align="right">1097</td>
-</tr>
-<tr class="odd">
-<td align="left">Gene-wise Thresh</td>
-<td align="right">30172984</td>
-<td align="right">-14036180</td>
-<td align="right">425</td>
-</tr>
-<tr class="even">
-<td align="left">Gene-wise Reg</td>
-<td align="right">30172894</td>
-<td align="right">-14036181</td>
-<td align="right">866</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="results-fixed-variance-estimates" class="section level2">
-<h2>Results: Fixed variance estimates</h2>
-<p>Since most estimates are so close to their lower bounds, it might make sense to directly estimate the residual variances and then fix them rather than lower bounding them. I again use the law of total variance:</p>
-<p><span class="math display">\[ \text{Var}(Y_j) = \mathbb{E}_i(\text{Var}(Y_{ij})) + \text{Var}_i(\mathbb{E}(Y_{ij})) = \frac{1}{n} \sum_{i} \frac{\lambda_{ij}}{s_i} + \text{Var}_i \frac{\lambda_{ij}}{s_i} \approx \frac{1}{n} \sum_i Y_{ij} + \text{Var}_i (Y_{ij}) \]</span></p>
-<pre class="r"><code>res3 &lt;- readRDS(&quot;./output/var_reg/varreg_fits4.rds&quot;)
-
-var_df &lt;- tibble(fixed.estimates = res3$fl$residuals.sd^2,
-                 lower.bd.estimates = res2$unreg$fl$residuals.sd^2)
-
-ggplot(var_df, aes(x = lower.bd.estimates, y = fixed.estimates)) + 
-  geom_point(size = 1) +
-  scale_x_log10() + 
-  scale_y_log10() +
-  geom_abline(slope = 1, linetype = &quot;dashed&quot;) +
-  geom_vline(xintercept = 1 / res$unreg$fl$flash.fit$given.tau) +
-  geom_hline(yintercept = 1 / res$unreg$fl$flash.fit$given.tau)</code></pre>
-<p><img src="figure/var_reg_pbmc2.Rmd/res6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>res_df &lt;- res_df %&gt;%
-  bind_rows(tibble(Fit = &quot;Fixed Estimates&quot;,
-                   ELBO = res3$fl$elbo,
-                   Discrete.Llik = res3$p.vals$llik,
-                   Elapsed.Time = res3$elapsed.time))
-knitr::kable(res_df, digits = 0)</code></pre>
-<table>
-<thead>
-<tr class="header">
-<th align="left">Fit</th>
-<th align="right">ELBO</th>
-<th align="right">Discrete.Llik</th>
-<th align="right">Elapsed.Time</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">Thresholded</td>
-<td align="right">32318946</td>
-<td align="right">-12497737</td>
-<td align="right">854</td>
-</tr>
-<tr class="even">
-<td align="left">Regularized</td>
-<td align="right">32318983</td>
-<td align="right">-12497566</td>
-<td align="right">1097</td>
-</tr>
-<tr class="odd">
-<td align="left">Gene-wise Thresh</td>
-<td align="right">30172984</td>
-<td align="right">-14036180</td>
-<td align="right">425</td>
-</tr>
-<tr class="even">
-<td align="left">Gene-wise Reg</td>
-<td align="right">30172894</td>
-<td align="right">-14036181</td>
-<td align="right">866</td>
-</tr>
-<tr class="odd">
-<td align="left">Fixed Estimates</td>
-<td align="right">24331805</td>
-<td align="right">-15065854</td>
-<td align="right">162</td>
-</tr>
-</tbody>
-</table>
+  geom_abline(slope = 1, linetype = &quot;dashed&quot;)</code></pre>
+<p><img src="figure/var_reg_pbmc2.Rmd/var.est-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="results-factor-comparisons" class="section level2">
 <h2>Results: Factor comparisons</h2>
-<p>The more restrictive methods end up producing cleaner sets of factors: when fixed estimates are used, <code>flash</code> even terminates early, stopping after 9 factors have been added. The question, then, is whether the less restrictive methods yield additional information that’s biologically useful: do single threshold factors 5, 7, and 10, for example, better describe the CD4+/CD45RO+ axis than gene-wise threshold factor 6? or is factor 3 enough to describe this axis, as the fixed estimates results suggest? are three factors (6, 13, and 20) really needed to describe the rare CD34+ cell type?</p>
-<pre class="r"><code>plot.factors(res$unreg, pbmc$cell.type, kset = order(res$unreg$fl$pve, decreasing = TRUE),
-             title = &quot;Single threshold&quot;)</code></pre>
+<p>Factor plots are nearly identical with and without regularization. I like regularization on principle, but I’m not sure that it actually makes much of a difference.</p>
+<pre class="r"><code>set.seed(666)
+plot.factors(res$unreg, pbmc$cell.type, kset = order(res$unreg$fl$pve, decreasing = TRUE),
+             title = &quot;Without regularization&quot;)</code></pre>
 <p><img src="figure/var_reg_pbmc2.Rmd/factors-1.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res2$unreg, pbmc$cell.type, kset = order(res2$unreg$fl$pve, decreasing = TRUE), 
-             title = &quot;Gene-wise threshold&quot;)</code></pre>
-<p><img src="figure/var_reg_pbmc2.Rmd/factors-2.png" width="672" style="display: block; margin: auto;" /></p>
-<pre class="r"><code>plot.factors(res3, pbmc$cell.type, kset = order(res3$fl$pve, decreasing = TRUE), 
-             title = &quot;Fixed estimates&quot;)</code></pre>
-<p><img src="figure/var_reg_pbmc2.Rmd/factors-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors-1">
+Past versions of factors-1.png
+</button>
+</p>
+<div id="fig-factors-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/factors-1.png" target="_blank">73c62dd</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-12
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="results-pve" class="section level2">
-<h2>Results: PVE</h2>
-<pre class="r"><code>pve_df &lt;- tibble(method = &quot;single.thresh&quot;,
-                 pve = sort(res$unreg$fl$pve, decreasing = TRUE),
-                 k = 1:length(res$unreg$fl$pve)) %&gt;%
-  bind_rows(tibble(method = &quot;genewise.thresh&quot;,
-                 pve = sort(res2$unreg$fl$pve, decreasing = TRUE),
-                 k = 1:length(res2$unreg$fl$pve))) %&gt;%
-  bind_rows(tibble(method = &quot;fixed.estimates&quot;,
-                 pve = sort(res3$fl$pve, decreasing = TRUE),
-                 k = 1:length(res3$fl$pve)))
-
-ggplot(pve_df, aes(x = k, y = pve, col = method)) +
-  geom_point() +
-  geom_line() +
-  scale_y_log10()</code></pre>
-<img src="figure/var_reg_pbmc2.Rmd/pve-1.png" width="672" style="display: block; margin: auto;" /> <br> <br>
+</div>
+<pre class="r"><code>set.seed(666)
+plot.factors(res$reg, pbmc$cell.type, kset = order(res$reg$fl$pve, decreasing = TRUE), 
+             title = &quot;With regularization&quot;)</code></pre>
+<p><img src="figure/var_reg_pbmc2.Rmd/factors-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-factors-2">
+Past versions of factors-2.png
+</button>
+</p>
+<div id="fig-factors-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/factors-2.png" target="_blank">73c62dd</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-12
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<br> <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
 <span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
