@@ -103,8 +103,8 @@ preprocess <- function(data,
 
   # Additional scaling to approximate a Kronecker variance structure.
   if (prescale != "none") {
-    fl.kron <- flashier(data, var.type = c(1, 2), greedy.Kmax = 1,
-                        final.nullchk = FALSE, verbose.lvl = 0)
+    fl.kron <- flash(data, var.type = c(1, 2), greedy.Kmax = 1,
+                     verbose.lvl = 0)
     gene.sds <- fl.kron$residuals.sd[[1]]
     cell.sds <- fl.kron$residuals.sd[[2]]
     if (prescale %in% c("genes", "both")) {
@@ -173,6 +173,17 @@ preprocess.droplet <- function(droplet,
   return(processed)
 }
 
+preprocess.pbmc <- function(pbmc,
+                            min.nzcts = 10,
+                            max.libsize = Inf,
+                            size.factors = NULL) {
+  processed <- preprocess(pbmc, min.nzcts, max.libsize, size.factors)
+
+  cell.type <- sapply(strsplit(colnames(processed$data), "_"), `[`, 2)
+  processed$cell.type <- as.factor(cell.type)
+
+  return(processed)
+}
 
 # Plotting functions for flashier fits ------------------------------------------------
 
@@ -559,7 +570,7 @@ est.baseline.pve <- function(data, n.trials, q = 0.9, seeds = 1:n.trials, ...) {
     set.seed(seeds[i])
     cat("Seed:", seeds[i], "\n")
     rand.data <- t(Matrix(apply(data, 1, FUN = sample)))
-    fl <- flashier(rand.data, greedy.Kmax = 2, verbose.lvl = 0, ...)
+    fl <- flash(rand.data, greedy.Kmax = 2, verbose.lvl = 0, ...)
     if (length(fl$pve) > 1) {
       pve[i] <- fl$pve[2]
     } else {
