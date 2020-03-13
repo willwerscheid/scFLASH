@@ -541,10 +541,10 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree06088525d6669f477b00ad7dcaa69e2989ead920targetblank0608852a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/06088525d6669f477b00ad7dcaa69e2989ead920" target="_blank">0608852</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebd7168ff87a4352e3b64a52c07332e54bc86a61etargetblankbd7168fa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/bd7168ff87a4352e3b64a52c07332e54bc86a61e" target="_blank">bd7168f</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree06088525d6669f477b00ad7dcaa69e2989ead920targetblank0608852a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreebd7168ff87a4352e3b64a52c07332e54bc86a61etargetblankbd7168fa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility. The version displayed above was the version of the Git repository at the time these results were generated. <br><br> Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -568,6 +568,7 @@ Ignored files:
     Ignored:    output/pseudocount/
     Ignored:    output/pseudocount_redux/
     Ignored:    output/size_factors/
+    Ignored:    output/var_reg/
     Ignored:    output/var_type/
 
 Untracked files:
@@ -577,14 +578,10 @@ Untracked files:
     Untracked:  code/missing_data.R
     Untracked:  code/pulseseq/
     Untracked:  code/trachea4.R
-    Untracked:  code/var_reg/
-    Untracked:  fl_tmp.rds
     Untracked:  output/alt_montoro/
     Untracked:  output/pulseseq_fit.rds
-    Untracked:  output/var_reg/
 
 Unstaged changes:
-    Modified:   code/utils.R
     Modified:   data-raw/pbmc.R
 
 </code></pre>
@@ -624,6 +621,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bd7168ff87a4352e3b64a52c07332e54bc86a61e/analysis/var_reg_pbmc2.Rmd" target="_blank">bd7168f</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+<td>
+wflow_publish(“analysis/var_reg_pbmc2.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/var_reg_pbmc2.html" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -686,7 +717,7 @@ wflow_publish(“./analysis/var_reg_pbmc2.Rmd”)
 <h2>Introduction</h2>
 <p>In a <a href="var_reg_pbmc.html">previous analysis</a>, I put a prior on the residual variance parameters to prevent them from going to zero during the backfit (in the past, I had just been thresholding them). I fixed the prior rather than estimating it using empirical Bayes: as it turns out, the latter is simply not effective (I tried a range of prior families, including exponential and gamma priors).</p>
 <p>Here, I combine the two approaches. I reason about Poisson mixtures to set a minimum threshold and then, after thresholding, I use empirical Bayes to shrink the variance estimates towards their mean.</p>
-<p>As in the previous analysis, all fits add 20 factors greedily using point-normal priors and then backfit. Here, however, I don’t “pre-scale” cells (that is, I scale using library size normalization, but I don’t do any additional scaling based on cell-wise variance estimates). The code used to produce the fits can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits2.R">here</a>.</p>
+<p>As in the previous analysis, all fits add 20 factors greedily using point-normal priors and then backfit. Here, however, I don’t “pre-scale” cells (that is, I scale using library size normalization, but I don’t do any additional scaling based on cell-wise variance estimates). The code used to produce the fits can be viewed <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/var_reg/varreg_fits2.R">here</a>.</p>
 </div>
 <div id="residual-variance-threshold" class="section level2">
 <h2>Residual variance threshold</h2>
@@ -749,6 +780,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/figure/var_reg_pbmc2.Rmd/res1-1.png" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/res1-1.png" target="_blank">73c62dd</a>
@@ -817,6 +859,43 @@ ggplot(var_df, aes(x = var.lower.bd, y = flash.estimate)) +
   scale_y_log10() +
   geom_abline(slope = 1, linetype = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/var_reg_pbmc2.Rmd/gw.lb-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-gw.lb-1">
+Past versions of gw.lb-1.png
+</button>
+</p>
+<div id="fig-gw.lb-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/figure/var_reg_pbmc2.Rmd/gw.lb-1.png" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>In contrast, all of the <code>flash</code> estimates are lesser than the direct sampling variance estimate obtained using plug-in estimators, which strongly suggests that this approach would be inappropriate:</p>
 <pre class="r"><code>ggplot(var_df, aes(x = var.est, y = flash.estimate)) + 
   geom_point(size = 1) +
@@ -824,6 +903,43 @@ ggplot(var_df, aes(x = var.lower.bd, y = flash.estimate)) +
   scale_y_log10() +
   geom_abline(slope = 1, linetype = &quot;dashed&quot;)</code></pre>
 <p><img src="figure/var_reg_pbmc2.Rmd/var.est-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-var.est-1">
+Past versions of var.est-1.png
+</button>
+</p>
+<div id="fig-var.est-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/figure/var_reg_pbmc2.Rmd/var.est-1.png" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="results-factor-comparisons" class="section level2">
 <h2>Results: Factor comparisons</h2>
@@ -854,6 +970,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/figure/var_reg_pbmc2.Rmd/factors-1.png" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/factors-1.png" target="_blank">73c62dd</a>
@@ -895,6 +1022,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/22ca2b2a29d2ca4398c9432dce974c64d1cca9ec/docs/figure/var_reg_pbmc2.Rmd/factors-2.png" target="_blank">22ca2b2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2020-03-13
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/73c62dd72915f2c77186f5e2b5381eb611e9001f/docs/figure/var_reg_pbmc2.Rmd/factors-2.png" target="_blank">73c62dd</a>
