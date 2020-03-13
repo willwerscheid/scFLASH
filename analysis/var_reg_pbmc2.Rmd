@@ -17,7 +17,7 @@ In a [previous analysis](var_reg_pbmc.html), I put a prior on the residual varia
 
 Here, I combine the two approaches. I reason about Poisson mixtures to set a minimum threshold and then, after thresholding, I use empirical Bayes to shrink the variance estimates towards their mean.
 
-As in the previous analysis, all fits add 20 factors greedily using point-normal priors and then backfit. Here, however, I don't "pre-scale" cells (that is, I scale using library size normalization, but I don't do any additional scaling based on cell-wise variance estimates). The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/backfit/backfit_fits2.R).
+As in the previous analysis, all fits add 20 factors greedily using point-normal priors and then backfit. Here, however, I don't "pre-scale" cells (that is, I scale using library size normalization, but I don't do any additional scaling based on cell-wise variance estimates). The code used to produce the fits can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/var_reg/varreg_fits2.R).
 
 ## Residual variance threshold
 
