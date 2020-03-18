@@ -31,6 +31,7 @@ output:
 1. [An introduction to the dataset.](pbmc.html)
 2. [Variance regularization: part one.](var_reg_pbmc.html)
 3. [Variance regularization: part two.](var_reg_pbmc2.html)
+4. [Prior families.](prior_type_pbmc.html)
 
 
 ## Archived
