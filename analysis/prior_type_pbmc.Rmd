@@ -1,0 +1,135 @@
+---
+title: "Prior families"
+author: "Jason Willwerscheid"
+date: "3/18/2020"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+I redo my [previous analysis of prior families](prior_type.html) using the PBMC 3k dataset. Fits were produced by adding 20 "greedy" factors and backfitting. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/prior_type/priortype_fits_pbmc.R).
+
+```{r load.res}
+source("./code/utils.R")
+pbmc <- readRDS("./data/10x/pbmc.rds")
+pbmc <- preprocess.pbmc(pbmc)
+res <- readRDS("./output/prior_type/priortype_fits_pbmc.rds")
+```
+
+## Results: Fitting time
+
+```{r fit.time}
+format.t <- function(t) {
+  return(sapply(t, function(x) {
+    hrs <- floor(x / 3600)
+    min <- floor((x - 3600 * hrs) / 60)
+    sec <- floor(x - 3600 * hrs - 60 * min)
+    if (hrs > 0) {
+      return(sprintf("%02.fh%02.fm%02.fs", hrs, min, sec))
+    } else if (min > 0) {
+      return(sprintf("%02.fm%02.fs", min, sec))
+    } else {
+      return(sprintf("%02.fs", sec))
+    }
+  }))
+}
+
+t.greedy <- sapply(lapply(res, `[[`, "t"), `[[`, "greedy")
+t.backfit <- sapply(lapply(res, `[[`, "t"), `[[`, "backfit")
+niter.backfit <- sapply(lapply(res, `[[`, "output"), function(x) x$Iter[nrow(x)])
+t.periter.b <- t.backfit / niter.backfit
+time.df <- data.frame(format.t(t.greedy), format.t(t.backfit),
+                      niter.backfit, format.t(t.periter.b))
+rownames(time.df) <- c("Point-normal", "Scale mixture of normals",
+                       "Semi-nonnegative (NN cells)", "Semi-nonnegative (NN genes)")
+knitr::kable(time.df[c(1, 2, 4, 3), ],
+             col.names = c("Greedy time", "Backfit time",
+                           "Backfit iter", "Backfit time per iter"),
+             digits = 2,
+             align = "r")
+```
+
+## Results: ELBO
+
+I show the ELBO after each of the last ten greedy factors have been added and after each backfitting iteration. `snn.cell` denotes the semi-nonnegative fit that puts nonnegative priors on cell loadings, whereas `snn.gene` puts nonnegative priors on gene loadings.
+
+Results here are surprising: the `snn.gene` fit easily achieves the highest ELBO, and both semi-nonnegative fits outperform the point-normal fit. 
+
+```{r pn.v.ash.elbo}
+res$pn$output$Fit <- "pn"
+res$ash$output$Fit <- "ash"
+res$snn.cell$output$Fit <- "snn.cell"
+res$snn.gene$output$Fit <- "snn.gene"
+
+res$pn$output$row <- 1:nrow(res$pn$output)
+res$ash$output$row <- 1:nrow(res$ash$output)
+res$snn.cell$output$row <- 1:nrow(res$snn.cell$output)
+res$snn.gene$output$row <- 1:nrow(res$snn.gene$output)
+
+elbo.df <- rbind(res$pn$output, res$ash$output, res$snn.cell$output, res$snn.gene$output)
+ggplot(subset(elbo.df, !(Factor %in% as.character(1:10))), 
+       aes(x = row, y = Obj, color = Fit, shape = Type)) +
+  geom_point() +
+  labs(x = NULL, y = "ELBO (unadjusted)",
+       title = "Greedy factors 11-20 and all backfitting iterations") +
+  theme(axis.text.x = element_blank(), axis.ticks.x = element_blank())
+```
+
+## Results: Point-normal priors vs. scale mixtures of normals
+
+I line up the point-normal and scale-mixture-of-normal factors so that similar factors are shown one on top of the other. Although many factors appear similar, the scale-mixture-of-normal fit looks much better to me: factor 6 does a better job at separating out dendritic cells, while factor 14 contains potentially useful information about CD19+ B cells.
+
+```{r pn.v.ash.factors}
+pn.v.ash <- compare.factors(res$pn$fl, res$ash$fl)
+plot.factors(res$pn, pbmc$cell.type, order(res$pn$fl$pve, decreasing = TRUE), 
+             title = "Point-normal priors")
+plot.factors(res$ash, pbmc$cell.type, pn.v.ash$fl2.k[order(res$pn$fl$pve, decreasing = TRUE)],
+             title = "Scale mixtures of normals")
+```
+
+## Results: Semi-nonnegative factorizations
+
+For ease of comparison, I only consider the semi-nonnegative fit that puts nonnegative priors on gene loadings. As above, I line up similar factors. I denote a semi-nonnegative factor as "similar" to a point-normal factor if the gene loadings are strongly correlated ($r \ge 0.7$) with either the positive or the negative component of the point-normal gene loadings. 
+
+```{r snn.matched}
+cor.thresh <- 0.7
+
+pn.pos <- pmax(res$ash$fl$loadings.pm[[2]], 0)
+pn.pos <- t(t(pn.pos) / apply(pn.pos, 2, function(x) sqrt(sum(x^2))))
+pos.cor <- crossprod(res$snn.gene$fl$loadings.pm[[2]], pn.pos)
+
+pn.neg <- -pmin(res$ash$fl$loadings.pm[[2]], 0)
+pn.neg <- t(t(pn.neg) / apply(pn.neg, 2, function(x) sqrt(sum(x^2))))
+pn.neg[, 1] <- 0
+neg.cor <- crossprod(res$snn.gene$fl$loadings.pm[[2]], pn.neg)
+
+is.cor <- (pmax(pos.cor, neg.cor) > cor.thresh)
+
+pn.matched <- which(apply(is.cor, 2, any))
+snn.matched <- unlist(lapply(pn.matched, function(x) which(is.cor[, x])))
+# Duplicate factors where need be.
+pn.matched <- rep(1:res$ash$fl$n.factors, times = apply(is.cor, 2, sum))
+
+plot.factors(res$ash, pbmc$cell.type,
+             pn.matched, title = "Point-normal (matched factors)")
+plot.factors(res$snn.gene, pbmc$cell.type,
+             snn.matched, title = "Semi-nonnegative (matched factors)")
+```
+
+The remaining factors do not have counterparts. 
+
+```{r snn.unmatched}
+snn.unmatched <- setdiff(1:res$snn.gene$fl$n.factors, snn.matched)
+pn.unmatched <- setdiff(1:res$ash$fl$n.factors, pn.matched)
+
+plot.factors(res$ash, pbmc$cell.type,
+             pn.unmatched, title = "Point-normal (unmatched factors)")
+plot.factors(res$snn.gene, pbmc$cell.type,
+             snn.unmatched, title = "Semi-nonnegative (unmatched factors)")
+```
