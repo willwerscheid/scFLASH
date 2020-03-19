@@ -29,9 +29,10 @@ output:
 ## Fitting the 3k PBMC dataset from Zheng et al.
 
 1. [An introduction to the dataset.](pbmc.html)
-2. [Variance regularization: part one.](var_reg_pbmc.html)
-3. [Variance regularization: part two.](var_reg_pbmc2.html)
-4. [Prior families.](prior_type_pbmc.html)
+1. [Variance regularization: part one.](var_reg_pbmc.html)
+1. [Variance regularization: part two.](var_reg_pbmc2.html)
+1. [Prior families.](prior_type_pbmc.html)
+1. [Size factors.](size_factors_pbmc.html)
 
 
 ## Archived
