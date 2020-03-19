@@ -33,6 +33,7 @@ output:
 1. [Variance regularization: part two.](var_reg_pbmc2.html)
 1. [Prior families.](prior_type_pbmc.html)
 1. [Size factors.](size_factors_pbmc.html)
+1. [Pseudocounts.](pseudocount_redux_pbmc.html)
 
 
 ## Archived
