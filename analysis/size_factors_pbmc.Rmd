@@ -1,0 +1,82 @@
+---
+title: "Size factors"
+author: "Jason Willwerscheid"
+date: "3/18/2020"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+I redo my [previous analysis of size factors](prior_type.html) using the PBMC 3k dataset. Fits were produced by adding 20 "greedy" factors and backfitting. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/size_factors/sizefactors_fits_pbmc.R).
+```{r load.res}
+source("./code/utils.R")
+pbmc <- readRDS("./data/10x/pbmc.rds")
+pbmc <- preprocess.pbmc(pbmc)
+res <- readRDS("./output/size_factors/sizefactor_fits_pbmc.rds")
+```
+
+## Results: scran size factors
+
+```{r sf}
+sf.df <- data.frame(libsize = res$libsize$size.factors, scran = res$scran$size.factors)
+ggplot(sf.df, aes(x = libsize, y = scran)) +
+  geom_point(size = 0.2) +
+  geom_abline(slope = 1) + 
+  labs(x = "library size normalization", y = "scran")
+```
+
+## Results: ELBO
+
+```{r elbo}
+method.names <- c("No size factors", 
+                  "Library size normalization",
+                  "scran size factors")
+elbo.df <- data.frame(method = method.names,
+                      elbo = sapply(res, function(x) x$fl$elbo + x$elbo.adj))
+ggplot(elbo.df, aes(x = method, y = elbo)) + 
+  geom_point() +
+  scale_x_discrete(limits = method.names) +
+  labs(x = NULL, y = "ELBO")
+```
+
+## Results: Distribution of p-values
+
+```{r KL}
+KL.df <- data.frame(method = method.names, 
+                    KL = sapply(res, function(x) x$p.vals$KL.divergence))
+ggplot(KL.df, aes(x = method, y = KL)) +
+  geom_bar(stat = "identity") +
+  scale_x_discrete(limits = method.names) +
+  labs(x = NULL, y = "KL divergence relative to uniform")
+```
+
+## Results: Log likelihood of implied distribution
+
+```{r llik}
+llik.df <- data.frame(method = method.names, 
+                      llik = sapply(res, function(x) x$p.vals$llik))
+ggplot(llik.df, aes(x = method, y = llik)) + 
+  geom_point() +
+  scale_x_discrete(limits = method.names) +
+  labs(x = NULL, y = "Log likelihood of implied distribution")
+```
+
+## Results: Factors and cell types
+
+```{r plot.factors}
+plot.factors(res$scran, pbmc$cell.type, 1:20, title = "scran")
+
+scran.v.libsize <- compare.factors(res$scran$fl, res$libsize$fl)
+plot.factors(res$libsize, pbmc$cell.type, scran.v.libsize$fl2.k,
+             title = "Library size normalization")
+
+scran.v.noscale <- compare.factors(res$scran$fl, res$noscale$fl)
+plot.factors(res$noscale, pbmc$cell.type, scran.v.noscale$fl2.k,
+             title = "No size factors")
+```
