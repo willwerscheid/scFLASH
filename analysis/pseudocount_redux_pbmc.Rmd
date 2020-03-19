@@ -1,0 +1,60 @@
+---
+title: "Pseudocounts"
+author: "Jason Willwerscheid"
+date: "3/19/2020"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+I redo my [previous analysis of pseudocounts](pseudocount_redux.html) using the PBMC 3k dataset. Fits were produced by adding 20 "greedy" factors and backfitting. The code can be viewed [here](https://github.com/willwerscheid/scFLASH/blob/master/code/pseudocount_redux/pseudocount_redux_pbmc.R).
+
+```{r load.res}
+source("./code/utils.R")
+pbmc <- readRDS("./data/10x/pbmc.rds")
+pbmc <- preprocess.pbmc(pbmc)
+res <- readRDS("./output/pseudocount/pseudocount_fits_pbmc.rds")
+```
+
+## Results: ELBO
+
+As expected, the ELBO is monotonically decreasing as a function of the pseudocount.
+
+```{r elbo}
+elbo.df <- data.frame(pseudocount = as.numeric(names(res)),
+                      elbo = sapply(res, function(x) x$fl$elbo + x$elbo.adj))
+ggplot(elbo.df, aes(x = pseudocount, y = elbo)) +
+  geom_point() +
+  scale_x_continuous(trans = "log2") +
+  labs(y = "ELBO")
+```
+
+## Results: Log likelihood of implied distribution
+
+An in the previous analysis, $\alpha = 0.5$ does best.
+
+```{r llik}
+llik.df <- data.frame(pseudocount = as.numeric(names(res)),
+                      llik = sapply(res, function(x) x$p.vals$llik))
+ggplot(llik.df, aes(x = pseudocount, y = llik)) +
+  geom_point() +
+  scale_x_continuous(trans = "log2") +
+  labs(y = "log likelihood (implied model)")
+```
+
+## Results: p-values
+
+```{r p.vals, results = "asis"}
+for (pc in names(res)) {
+  cat("\n### Pseudocount = ", pc, "\n")
+  plot(plot.p.vals(res[[pc]][["p.vals"]]))
+  cat("\n")
+}
+```
+
