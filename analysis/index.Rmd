@@ -35,6 +35,9 @@ output:
 1. [Size factors.](size_factors_pbmc.html)
 1. [Pseudocounts.](pseudocount_redux_pbmc.html)
 
+## Other
+
+1. [Deng et al.](deng.html)
 
 ## Archived
 
