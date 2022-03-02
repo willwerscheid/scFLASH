@@ -1,0 +1,192 @@
+---
+title: "Deng et al. dataset"
+author: "Jason Willwerscheid"
+date: "3/2/2022"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+```{r read.data}
+library(tidyverse)
+library(flashier)
+library(ggrepel)
+library(singleCellRNASeqMouseDeng2014)
+
+counts <- exprs(Deng2014MouseESC)
+meta_data <- pData(Deng2014MouseESC)
+gene_names <- rownames(counts)
+
+preprocess <- function(dat, min.nzcts = 10) {
+  size.factors <- colSums(dat)
+  size.factors <- size.factors / mean(size.factors)
+  gene_cts <- rowSums(dat > 0)
+  dat <- dat[gene_cts >= min.nzcts, ]
+
+  lunpc <- max(1 / min(size.factors) - 1 / max(size.factors), 1)
+  fl.dat <- log1p(t(t(dat) / size.factors) / lunpc)
+
+  return(list(
+    dat = dat,
+    fl.dat = fl.dat,
+    size.factors = size.factors,
+    excluded.genes = gene_cts < min.nzcts)
+  )
+}
+Deng <- preprocess(counts)
+```
+
+The dataset, from [Deng et al.](https://www.science.org/doi/10.1126/science.1245316), is made available by `kkdey`'s `R` package `singleCellRNASeqMouseDeng2014`, which I installed using command `remotes::install_github("kkdey/singleCellRNASeqMouseDeng2014")`.
+
+After removing genes with nonzero counts in fewer than 10 cells, there remain counts for 17176 genes and 259 cells. Each cell has been labelled as one of 10 cell types (or rather, one of 10 embryonic stages ranging from zygote to late blastocyte).
+
+I fit 25 semi-nonnegative EBMF factors using `flashier`:
+
+```{r fl.plot}
+fl <- readRDS("./data/deng_fl.rds")
+
+tib <- as_tibble(ldf(fl, type = "I")$F) %>%
+  mutate(Cell.type = meta_data$cell_type) %>%
+  mutate(Cell.type = fct_relevel(Cell.type, c(
+    "zy",
+    "early2cell", "mid2cell", "late2cell",
+    "4cell", "8cell", "16cell",
+    "earlyblast", "midblast", "lateblast"
+  )))
+tib <- tib %>%
+  pivot_longer(
+    -Cell.type,
+    names_to = "Factor",
+    values_to = "Loading",
+    values_drop_na = TRUE
+  ) %>%
+  mutate(Factor = as.numeric(str_remove_all(Factor, "V")))
+
+# Make the size of the point depend on how many of that type there are.
+celltype.tib <- tib %>%
+  filter(Factor == tib$Factor[1]) %>%
+  group_by(Cell.type) %>%
+  summarize(n = n())
+celltype.tib <- celltype.tib %>%
+  mutate(Pt.size = 2 / sqrt(n / min(n)))
+tib <- tib %>%
+  left_join(celltype.tib %>% select(Cell.type, Pt.size), by = "Cell.type")
+
+tib <- tib %>%
+  mutate(Cell.type.lvl = as.numeric(Cell.type))
+
+plt <- ggplot(tib, aes(x = Factor, y = Loading, color = Cell.type)) +
+  geom_jitter(position = position_jitter(width = 0.4, height = 0),
+              size = tib$Pt.size) +
+  scale_x_continuous(breaks = seq(from = 2, to = max(tib$Factor), by = 2)) +
+  #scale_color_brewer(palette = "Set3") +
+  labs(x = "factor index", y = "factor loading", color = "Cell Type") +
+  theme_minimal()
+plt
+```
+
+Many of these factors seem to primarily capture noise in individual cells (8, 12 through 16, 18, etc.). I show volcano plots for the more interesting factors, which I've arranged in rough ontogenetic order. I label the top 30 genes by (absolute) z-score (defined as posterior mean / posterior SD) as well as the top 30 by (absolute) posterior mean.
+
+```{r volcano.code}
+do.volcano.plot <- function(fl, k) {
+  tib <- tibble(
+    pm = fl$L.pm[, k],
+    z = abs(fl$L.pm[, k]) / pmax(sqrt(.Machine$double.eps), fl$L.psd[, k]),
+    exprmean = log10(rowMeans(Deng$dat)),
+    SYMBOL = rownames(fl$L.pm)
+  ) %>%
+    mutate(SYMBOL = ifelse(
+      z > sort(z, decreasing = TRUE)[31] |
+        abs(pm) > sort(abs(pm), decreasing = TRUE)[31], SYMBOL, ""))
+
+  plt <- ggplot(tib, aes(x = pm, y = z, color = exprmean, label = SYMBOL)) +
+    geom_point() +
+    scale_color_gradient2(low = "deepskyblue", mid = "gold", high = "orangered",
+                          na.value = "gainsboro",
+                          midpoint = mean(range(tib$exprmean))) +
+    scale_y_sqrt() +
+    geom_text_repel(color = "darkgray",size = 2.25, fontface = "italic",
+                    segment.color = "darkgray", segment.size = 0.25,
+                    min.segment.length = 0, na.rm = TRUE) +
+    theme_minimal() +
+    labs(
+      x = "Factor Loading (posterior mean)",
+      y = "|z-score|",
+      color = "Mean Expression (log10)"
+    ) +
+    theme(legend.position = "bottom")
+
+  return(plt)
+}
+```
+
+### Factor 5: zygote to early 2-cell
+```{r vp5}
+do.volcano.plot(fl, 5)
+```
+
+### Factor 2: zygote to late 2-cell
+```{r vp2}
+do.volcano.plot(fl, 2)
+```
+
+### Factor 6: mid to late 2-cell
+```{r vp6}
+do.volcano.plot(fl, 6)
+```
+
+### Factor 9: late 2-cell to 4-cell
+```{r vp9}
+do.volcano.plot(fl, 9)
+```
+
+### Factor 4: late 2-cell to 16-cell
+```{r vp4}
+do.volcano.plot(fl, 4)
+```
+
+### Factor 11: 16-cell to late blastocyte
+```{r vp11}
+do.volcano.plot(fl, 11)
+```
+
+### Factor 17: 16-cell to late blastocyte
+```{r vp17}
+do.volcano.plot(fl, 17)
+```
+
+### Factor 20: early blastocyte
+```{r vp20}
+do.volcano.plot(fl, 20)
+```
+
+### Factor 3: early to late blastocyte
+```{r vp3}
+do.volcano.plot(fl, 3)
+```
+
+### Factor 7: early to late blastocyte
+```{r vp7}
+do.volcano.plot(fl, 7)
+```
+
+### Factor 22: mid blastocyte
+```{r vp22}
+do.volcano.plot(fl, 22)
+```
+
+### Factor 10: mid to late blastocyte
+```{r vp10}
+do.volcano.plot(fl, 10)
+```
+
+### Factor 19: late blastocyte
+```{r vp19}
+do.volcano.plot(fl, 19)
+```
