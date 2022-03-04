@@ -392,7 +392,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-03
+<strong>Last updated:</strong> 2022-03-04
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6928fd711f8b68ab73a5d909b53aa3b0fd96461btargetblank6928fd7a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/6928fd711f8b68ab73a5d909b53aa3b0fd96461b" target="_blank">6928fd7</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a6903b18b15b40e614fe8bff45f0309a3800a0atargetblank2a6903ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/2a6903b18b15b40e614fe8bff45f0309a3800a0a" target="_blank">2a6903b</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6928fd711f8b68ab73a5d909b53aa3b0fd96461btargetblank6928fd7a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a6903b18b15b40e614fe8bff45f0309a3800a0atargetblank2a6903ba" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/6928fd711f8b68ab73a5d909b53aa3b0fd96461b" target="_blank">6928fd7</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/2a6903b18b15b40e614fe8bff45f0309a3800a0a" target="_blank">2a6903b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -579,6 +579,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/2a6903b18b15b40e614fe8bff45f0309a3800a0a/analysis/deng.Rmd" target="_blank">2a6903b</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+<td>
+wflow_publish(“./analysis/deng.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/deng.html" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -690,6 +724,7 @@ library(singleCellRNASeqMouseDeng2014)
 #&gt;     Vignettes contain introductory material; view with
 #&gt;     &#39;browseVignettes()&#39;. To cite Bioconductor, see
 #&gt;     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
+library(Rtsne)
 
 counts &lt;- exprs(Deng2014MouseESC)
 meta_data &lt;- pData(Deng2014MouseESC)
@@ -723,7 +758,6 @@ Deng &lt;- preprocess(counts)</code></pre>
   cell_type &lt;- meta_data$cell_type
   
   tib &lt;- as_tibble(FF) %&gt;%
-    mutate(Cell.idx = row_number()) %&gt;%
     mutate(Cell.type = cell_type) %&gt;%
     mutate(Cell.type = fct_relevel(Cell.type, c(
       &quot;zy&quot;,
@@ -731,6 +765,23 @@ Deng &lt;- preprocess(counts)</code></pre>
       &quot;4cell&quot;, &quot;8cell&quot;, &quot;16cell&quot;,
       &quot;earlyblast&quot;, &quot;midblast&quot;, &quot;lateblast&quot;
     )))
+  
+  tsne_res &lt;- Rtsne(
+    as.matrix(tib %&gt;% select(-`1`, -Cell.type)),
+    dims = 1,
+    perplexity = pmax(1, floor((nrow(tib) - 1) / 3) - 1),
+    pca = FALSE,
+    normalize = FALSE,
+    theta = 0.1,
+    check_duplicates = FALSE,
+    verbose = FALSE
+  )$Y[, 1]
+  tib &lt;- tib %&gt;%
+    mutate(tsne_res = unlist(tsne_res)) %&gt;%
+    arrange(Cell.type, tsne_res) %&gt;%
+    mutate(Cell.idx = row_number()) %&gt;%
+    select(-tsne_res)
+  
   tib &lt;- tib %&gt;%
     pivot_longer(
       -c(Cell.idx, Cell.type),
@@ -741,35 +792,149 @@ Deng &lt;- preprocess(counts)</code></pre>
     mutate(Factor = as.numeric(Factor))
   
   cell_type_breaks &lt;- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  ggplot(tib, aes(x = Factor, y = -Cell.idx, col = Loading)) +
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
     geom_tile() +
-    scale_color_gradient(low = &quot;black&quot;, high = &quot;red&quot;) +
+    scale_fill_gradient(low = &quot;white&quot;, high = &quot;red&quot;) +
     labs(y = &quot;&quot;) +
     scale_y_continuous(breaks = -cell_type_breaks,
-                       labels = levels(tib$Cell.type))
+                       minor_breaks = NULL,
+                       labels = levels(tib$Cell.type)) +
+    theme_minimal() +
+    geom_hline(yintercept = -cell_type_breaks, size = 0.1)
 }</code></pre>
 <div id="factor-fit" class="section level3">
 <h3>6-factor fit</h3>
 <pre class="r"><code>fl6 &lt;- readRDS(&quot;./output/deng/deng_fl6.rds&quot;)
 do.heatmap(fl6)</code></pre>
 <p><img src="figure/deng.Rmd/fl6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl6-1">
+Past versions of fl6-1.png
+</button>
+</p>
+<div id="fig-fl6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl6-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factor-fit-1" class="section level3">
 <h3>10-factor fit</h3>
 <pre class="r"><code>fl10 &lt;- readRDS(&quot;./output/deng/deng_fl10.rds&quot;)
 do.heatmap(fl10)</code></pre>
 <p><img src="figure/deng.Rmd/fl10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl10-1">
+Past versions of fl10-1.png
+</button>
+</p>
+<div id="fig-fl10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl10-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factor-fit-2" class="section level3">
 <h3>25-factor fit</h3>
 <pre class="r"><code>fl25 &lt;- readRDS(&quot;./output/deng/deng_fl25.rds&quot;)
 do.heatmap(fl25)</code></pre>
 <p><img src="figure/deng.Rmd/fl25-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl25-1">
+Past versions of fl25-1.png
+</button>
+</p>
+<div id="fig-fl25-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl25-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 </div>
 <div id="top-genes" class="section level2">
 <h2>Top genes</h2>
-<p>Many of the factors in the 25-factor fit seem to primarily capture noise in individual cells. I show volcano plots for the more interesting factors, which I’ve arranged in rough ontogenetic order. I label the top 20 genes by (absolute) z-score (defined as posterior mean / posterior SD) as well as the top 20 by (absolute) posterior mean.</p>
+<p>Many of the factors in the 25-factor fit seem to primarily capture noise in individual cells. I show volcano plots for the more interesting factors, which I’ve grouped (major factors 2-4; “sub-factors” 5-10; and then interestingly localized minor factors 11 and 16) and arranged in rough ontogenetic order. I label the top 20 genes by (absolute) z-score (defined as posterior mean / posterior SD) as well as the top 20 by (absolute) posterior mean.</p>
 <pre class="r"><code>do.volcano.plot &lt;- function(fl, k) {
   k &lt;- order(fl$pve, decreasing = TRUE)[k]
   tib &lt;- tibble(
@@ -801,50 +966,8 @@ do.heatmap(fl25)</code></pre>
 
   return(plt)
 }</code></pre>
-<div id="factor-10-zygote-to-early-2-cell" class="section level3">
-<h3>Factor 10: zygote to early 2-cell</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 10)</code></pre>
-<p><img src="figure/deng.Rmd/vp10-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp10-1">
-Past versions of vp10-1.png
-</button>
-</p>
-<div id="fig-vp10-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp10-1.png" target="_blank">f7e7249</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-02
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="factor-2-zygote-to-mid-2-cell" class="section level3">
-<h3>Factor 2: zygote to mid 2-cell</h3>
+<div id="factor-2-zygote-to-4-cell" class="section level3">
+<h3>Factor 2: zygote to 4-cell</h3>
 <p>Overlaps with the blue cluster in <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599#sec008">Dey et al.</a>:</p>
 <pre class="r"><code>do.volcano.plot(fl25, 2)</code></pre>
 <p><img src="figure/deng.Rmd/vp2-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -872,6 +995,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp2-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp2-1.png" target="_blank">f7e7249</a>
 </td>
 <td>
@@ -886,56 +1020,8 @@ Jason Willwerscheid
 </div>
 </div>
 </div>
-<div id="factor-8-mid-to-late-2-cell" class="section level3">
-<h3>Factor 8: mid to late 2-cell</h3>
-<p>Overlaps with the magenta cluster in Dey et al.:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 8)</code></pre>
-<p><img src="figure/deng.Rmd/vp8-1.png" width="672" style="display: block; margin: auto;" /></p>
-</div>
-<div id="factor-9-late-2-cell-to-4-cell" class="section level3">
-<h3>Factor 9: late 2-cell to 4-cell</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 9)</code></pre>
-<p><img src="figure/deng.Rmd/vp9-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp9-1">
-Past versions of vp9-1.png
-</button>
-</p>
-<div id="fig-vp9-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp9-1.png" target="_blank">f7e7249</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-02
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="factor-3-late-2-cell-to-16-cell" class="section level3">
-<h3>Factor 3: late 2-cell to 16-cell</h3>
+<div id="factor-3-mid-2-cell-to-16-cell" class="section level3">
+<h3>Factor 3: mid 2-cell to 16-cell</h3>
 <p>Some overlap with the yellow cluster in Dey et al.:</p>
 <pre class="r"><code>do.volcano.plot(fl25, 3)</code></pre>
 <p><img src="figure/deng.Rmd/vp3-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -963,50 +1049,18 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp3-1.png" target="_blank">f7e7249</a>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp3-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
 Jason Willwerscheid
 </td>
 <td>
-2022-03-02
+2022-03-03
 </td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="factor-6-16-cell-to-late-blastocyte" class="section level3">
-<h3>Factor 6: 16-cell to late blastocyte</h3>
-<p>Overlaps with the green cluster in Dey et al., but also the orange to some extent:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 6)</code></pre>
-<p><img src="figure/deng.Rmd/vp6-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp6-1">
-Past versions of vp6-1.png
-</button>
-</p>
-<div id="fig-vp6-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
 <tr>
 <td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp6-1.png" target="_blank">f7e7249</a>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp3-1.png" target="_blank">f7e7249</a>
 </td>
 <td>
 Jason Willwerscheid
@@ -1049,6 +1103,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp4-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp4-1.png" target="_blank">f7e7249</a>
 </td>
 <td>
@@ -1063,13 +1128,211 @@ Jason Willwerscheid
 </div>
 </div>
 </div>
-<div id="factor-16-early-blastocyte" class="section level3">
-<h3>Factor 16: early blastocyte</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 16)</code></pre>
-<p><img src="figure/deng.Rmd/vp16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<div id="factor-10-zygote-to-early-2-cell" class="section level3">
+<h3>Factor 10: zygote to early 2-cell</h3>
+<pre class="r"><code>do.volcano.plot(fl25, 10)</code></pre>
+<p><img src="figure/deng.Rmd/vp10-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp10-1">
+Past versions of vp10-1.png
+</button>
+</p>
+<div id="fig-vp10-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp10-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp10-1.png" target="_blank">f7e7249</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-02
+</td>
+</tr>
+</tbody>
+</table>
 </div>
-<div id="factor-5-early-to-mid-blastocyte" class="section level3">
-<h3>Factor 5: early to mid blastocyte</h3>
+</div>
+</div>
+<div id="factor-8-mid-to-late-2-cell" class="section level3">
+<h3>Factor 8: mid to late 2-cell</h3>
+<p>Overlaps with the magenta cluster in Dey et al.:</p>
+<pre class="r"><code>do.volcano.plot(fl25, 8)</code></pre>
+<p><img src="figure/deng.Rmd/vp8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp8-1">
+Past versions of vp8-1.png
+</button>
+</p>
+<div id="fig-vp8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp8-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="factor-9-late-2-cell-to-4-cell" class="section level3">
+<h3>Factor 9: late 2-cell to 4-cell</h3>
+<pre class="r"><code>do.volcano.plot(fl25, 9)</code></pre>
+<p><img src="figure/deng.Rmd/vp9-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp9-1">
+Past versions of vp9-1.png
+</button>
+</p>
+<div id="fig-vp9-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp9-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp9-1.png" target="_blank">f7e7249</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="factor-6-16-cell-to-late-blastocyte" class="section level3">
+<h3>Factor 6: 16-cell to late blastocyte</h3>
+<p>Overlaps with the green cluster in Dey et al., but also the orange to some extent:</p>
+<pre class="r"><code>do.volcano.plot(fl25, 6)</code></pre>
+<p><img src="figure/deng.Rmd/vp6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp6-1">
+Past versions of vp6-1.png
+</button>
+</p>
+<div id="fig-vp6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp6-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp6-1.png" target="_blank">f7e7249</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="factor-5-early-to-late-blastocyte" class="section level3">
+<h3>Factor 5: early to late blastocyte</h3>
 <p>Overlaps with the purple cluster in Dey et al.:</p>
 <pre class="r"><code>do.volcano.plot(fl25, 5)</code></pre>
 <p><img src="figure/deng.Rmd/vp5-1.png" width="672" style="display: block; margin: auto;" /></p>
@@ -1097,49 +1360,18 @@ Date
 <tbody>
 <tr>
 <td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp5-1.png" target="_blank">f7e7249</a>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp5-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
 Jason Willwerscheid
 </td>
 <td>
-2022-03-02
+2022-03-03
 </td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-</div>
-<div id="factor-11-mid-blastocyte" class="section level3">
-<h3>Factor 11: mid blastocyte</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 11)</code></pre>
-<p><img src="figure/deng.Rmd/vp11-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp11-1">
-Past versions of vp11-1.png
-</button>
-</p>
-<div id="fig-vp11-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
 <tr>
 <td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp11-1.png" target="_blank">f7e7249</a>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp5-1.png" target="_blank">f7e7249</a>
 </td>
 <td>
 Jason Willwerscheid
@@ -1181,7 +1413,113 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp7-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp7-1.png" target="_blank">f7e7249</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-02
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="factor-16-early-blastocyte" class="section level3">
+<h3>Factor 16: early blastocyte</h3>
+<pre class="r"><code>do.volcano.plot(fl25, 16)</code></pre>
+<p><img src="figure/deng.Rmd/vp16-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp16-1">
+Past versions of vp16-1.png
+</button>
+</p>
+<div id="fig-vp16-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp16-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div id="factor-11-mid-blastocyte" class="section level3">
+<h3>Factor 11: mid blastocyte</h3>
+<pre class="r"><code>do.volcano.plot(fl25, 11)</code></pre>
+<p><img src="figure/deng.Rmd/vp11-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp11-1">
+Past versions of vp11-1.png
+</button>
+</p>
+<div id="fig-vp11-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp11-1.png" target="_blank">a9459a1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-03
+</td>
+</tr>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f7e7249a9d4b7ce9098723b24cfcd935f89bbb32/docs/figure/deng.Rmd/vp11-1.png" target="_blank">f7e7249</a>
 </td>
 <td>
 Jason Willwerscheid
@@ -1218,14 +1556,15 @@ Jason Willwerscheid
 #&gt; [8] base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] singleCellRNASeqMouseDeng2014_0.99.0 Biobase_2.42.0                      
-#&gt;  [3] BiocGenerics_0.28.0                  ggrepel_0.8.2                       
-#&gt;  [5] flashier_0.2.27                      magrittr_2.0.2                      
-#&gt;  [7] forcats_0.5.1                        stringr_1.4.0                       
-#&gt;  [9] dplyr_1.0.8                          purrr_0.3.4                         
-#&gt; [11] readr_2.0.0                          tidyr_1.1.4                         
-#&gt; [13] tibble_3.1.6                         ggplot2_3.3.5                       
-#&gt; [15] tidyverse_1.3.1                      workflowr_1.6.2                     
+#&gt;  [1] Rtsne_0.15                           singleCellRNASeqMouseDeng2014_0.99.0
+#&gt;  [3] Biobase_2.42.0                       BiocGenerics_0.28.0                 
+#&gt;  [5] ggrepel_0.8.2                        flashier_0.2.27                     
+#&gt;  [7] magrittr_2.0.2                       forcats_0.5.1                       
+#&gt;  [9] stringr_1.4.0                        dplyr_1.0.8                         
+#&gt; [11] purrr_0.3.4                          readr_2.0.0                         
+#&gt; [13] tidyr_1.1.4                          tibble_3.1.6                        
+#&gt; [15] ggplot2_3.3.5                        tidyverse_1.3.1                     
+#&gt; [17] workflowr_1.6.2                     
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
 #&gt;  [1] fs_1.5.0          lubridate_1.7.10  httr_1.4.2        rprojroot_2.0.2  
