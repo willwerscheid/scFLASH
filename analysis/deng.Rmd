@@ -46,55 +46,72 @@ The dataset, from [Deng et al.](https://www.science.org/doi/10.1126/science.1245
 
 After removing genes with nonzero counts in fewer than 10 cells, there remain counts for 17176 genes and 259 cells. Each cell has been labelled as one of 10 cell types (or rather, one of 10 embryonic stages ranging from zygote to late blastocyte).
 
-I fit 25 semi-nonnegative EBMF factors using `flashier`:
+I fit 6, 10, and 25 semi-nonnegative EBMF factors using `flashier`. Code is [here](https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R). In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained.
 
 ```{r fl.plot}
-fl <- readRDS("./data/deng_fl.rds")
-
-tib <- as_tibble(ldf(fl, type = "I")$F) %>%
-  mutate(Cell.type = meta_data$cell_type) %>%
-  mutate(Cell.type = fct_relevel(Cell.type, c(
-    "zy",
-    "early2cell", "mid2cell", "late2cell",
-    "4cell", "8cell", "16cell",
-    "earlyblast", "midblast", "lateblast"
-  )))
-tib <- tib %>%
-  pivot_longer(
-    -Cell.type,
-    names_to = "Factor",
-    values_to = "Loading",
-    values_drop_na = TRUE
-  ) %>%
-  mutate(Factor = as.numeric(str_remove_all(Factor, "V")))
-
-# Make the size of the point depend on how many of that type there are.
-celltype.tib <- tib %>%
-  filter(Factor == tib$Factor[1]) %>%
-  group_by(Cell.type) %>%
-  summarize(n = n())
-celltype.tib <- celltype.tib %>%
-  mutate(Pt.size = 2 / sqrt(n / min(n)))
-tib <- tib %>%
-  left_join(celltype.tib %>% select(Cell.type, Pt.size), by = "Cell.type")
-
-tib <- tib %>%
-  mutate(Cell.type.lvl = as.numeric(Cell.type))
-
-plt <- ggplot(tib, aes(x = Factor, y = Loading, color = Cell.type)) +
-  geom_jitter(position = position_jitter(width = 0.4, height = 0),
-              size = tib$Pt.size) +
-  scale_x_continuous(breaks = seq(from = 2, to = max(tib$Factor), by = 2)) +
-  #scale_color_brewer(palette = "Set3") +
-  labs(x = "factor index", y = "factor loading", color = "Cell Type") +
-  theme_minimal()
-plt
+do.heatmap <- function(fl) {
+  FF <- ldf(fl, type = "I")$F
+  FF <- FF[, order(fl$pve, decreasing = TRUE)]
+  colnames(FF) <- 1:ncol(FF) 
+  
+  cell_type <- meta_data$cell_type
+  
+  tib <- as_tibble(FF) %>%
+    mutate(Cell.idx = row_number()) %>%
+    mutate(Cell.type = cell_type) %>%
+    mutate(Cell.type = fct_relevel(Cell.type, c(
+      "zy",
+      "early2cell", "mid2cell", "late2cell",
+      "4cell", "8cell", "16cell",
+      "earlyblast", "midblast", "lateblast"
+    )))
+  tib <- tib %>%
+    pivot_longer(
+      -c(Cell.idx, Cell.type),
+      names_to = "Factor",
+      values_to = "Loading",
+      values_drop_na = TRUE
+    ) %>%
+    mutate(Factor = as.numeric(Factor))
+  
+  cell_type_breaks <- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, col = Loading)) +
+    geom_tile() +
+    scale_color_gradient(low = "black", high = "red") +
+    labs(y = "") +
+    scale_y_continuous(breaks = -cell_type_breaks,
+                       labels = levels(tib$Cell.type))
+}
 ```
 
-Many of these factors seem to primarily capture noise in individual cells (8, 12 through 16, 18, etc.). I show volcano plots for the more interesting factors, which I've arranged in rough ontogenetic order. I label the top 30 genes by (absolute) z-score (defined as posterior mean / posterior SD) as well as the top 30 by (absolute) posterior mean.
+### 6-factor fit
+
+```{r fl6}
+fl6 <- readRDS("./output/deng/deng_fl6.rds")
+do.heatmap(fl6)
+```
+
+### 10-factor fit
+
+```{r fl10}
+fl10 <- readRDS("./output/deng/deng_fl10.rds")
+do.heatmap(fl10)
+```
+
+### 25-factor fit
+
+```{r fl25}
+fl25 <- readRDS("./output/deng/deng_fl25.rds")
+do.heatmap(fl25)
+```
+
+## Top genes
+
+Many of the factors in the 25-factor fit seem to primarily capture noise in individual cells. I show volcano plots for the more interesting factors, which I've arranged in rough ontogenetic order. I label the top 20 genes by (absolute) z-score (defined as posterior mean / posterior SD) as well as the top 20 by (absolute) posterior mean.
 
 ```{r volcano.code}
 do.volcano.plot <- function(fl, k) {
+  k <- order(fl$pve, decreasing = TRUE)[k]
   tib <- tibble(
     pm = fl$L.pm[, k],
     z = abs(fl$L.pm[, k]) / pmax(sqrt(.Machine$double.eps), fl$L.psd[, k]),
@@ -102,8 +119,8 @@ do.volcano.plot <- function(fl, k) {
     SYMBOL = rownames(fl$L.pm)
   ) %>%
     mutate(SYMBOL = ifelse(
-      z > sort(z, decreasing = TRUE)[31] |
-        abs(pm) > sort(abs(pm), decreasing = TRUE)[31], SYMBOL, ""))
+      z > sort(z, decreasing = TRUE)[21] |
+        abs(pm) > sort(abs(pm), decreasing = TRUE)[21], SYMBOL, ""))
 
   plt <- ggplot(tib, aes(x = pm, y = z, color = exprmean, label = SYMBOL)) +
     geom_point() +
@@ -126,67 +143,65 @@ do.volcano.plot <- function(fl, k) {
 }
 ```
 
-### Factor 5: zygote to early 2-cell
-```{r vp5}
-do.volcano.plot(fl, 5)
+### Factor 10: zygote to early 2-cell
+```{r vp10}
+do.volcano.plot(fl25, 10)
 ```
 
-### Factor 2: zygote to late 2-cell
+### Factor 2: zygote to mid 2-cell
+
+Overlaps with the blue cluster in [Dey et al.](https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599#sec008):
 ```{r vp2}
-do.volcano.plot(fl, 2)
+do.volcano.plot(fl25, 2)
 ```
 
-### Factor 6: mid to late 2-cell
-```{r vp6}
-do.volcano.plot(fl, 6)
+### Factor 8: mid to late 2-cell
+
+Overlaps with the magenta cluster in Dey et al.:
+```{r vp8}
+do.volcano.plot(fl25, 8)
 ```
 
 ### Factor 9: late 2-cell to 4-cell
 ```{r vp9}
-do.volcano.plot(fl, 9)
+do.volcano.plot(fl25, 9)
 ```
 
-### Factor 4: late 2-cell to 16-cell
-```{r vp4}
-do.volcano.plot(fl, 4)
-```
-
-### Factor 11: 16-cell to late blastocyte
-```{r vp11}
-do.volcano.plot(fl, 11)
-```
-
-### Factor 17: 16-cell to late blastocyte
-```{r vp17}
-do.volcano.plot(fl, 17)
-```
-
-### Factor 20: early blastocyte
-```{r vp20}
-do.volcano.plot(fl, 20)
-```
-
-### Factor 3: early to late blastocyte
+### Factor 3: late 2-cell to 16-cell
+Some overlap with the yellow cluster in Dey et al.:
 ```{r vp3}
-do.volcano.plot(fl, 3)
+do.volcano.plot(fl25, 3)
 ```
 
-### Factor 7: early to late blastocyte
+### Factor 6: 16-cell to late blastocyte
+Overlaps with the green cluster in Dey et al., but also the orange to some extent:
+```{r vp6}
+do.volcano.plot(fl25, 6)
+```
+
+### Factor 4: early to late blastocyte
+Overlaps with the orange cluster in Dey et al.:
+```{r vp4}
+do.volcano.plot(fl25, 4)
+```
+
+### Factor 16: early blastocyte
+```{r vp16}
+do.volcano.plot(fl25, 16)
+```
+
+### Factor 5: early to mid blastocyte
+Overlaps with the purple cluster in Dey et al.:
+```{r vp5}
+do.volcano.plot(fl25, 5)
+```
+
+### Factor 11: mid blastocyte
+```{r vp11}
+do.volcano.plot(fl25, 11)
+```
+
+### Factor 7: late blastocyte
 ```{r vp7}
-do.volcano.plot(fl, 7)
-```
-
-### Factor 22: mid blastocyte
-```{r vp22}
-do.volcano.plot(fl, 22)
-```
-
-### Factor 10: mid to late blastocyte
-```{r vp10}
-do.volcano.plot(fl, 10)
-```
-
-### Factor 19: late blastocyte
-```{r vp19}
-do.volcano.plot(fl, 19)
+do.volcano.plot(fl25, 7)
 ```
