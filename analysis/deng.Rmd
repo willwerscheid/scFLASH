@@ -19,6 +19,7 @@ library(flashier)
 library(ggrepel)
 library(singleCellRNASeqMouseDeng2014)
 library(Rtsne)
+library(fastTopics)
 
 counts <- exprs(Deng2014MouseESC)
 meta_data <- pData(Deng2014MouseESC)
@@ -47,10 +48,10 @@ The dataset, from [Deng et al.](https://www.science.org/doi/10.1126/science.1245
 
 After removing genes with nonzero counts in fewer than 10 cells, there remain counts for 17176 genes and 259 cells. Each cell has been labelled as one of 10 cell types (or rather, one of 10 embryonic stages ranging from zygote to late blastocyte).
 
-I fit 6, 10, and 25 semi-nonnegative EBMF factors using `flashier`. Code is [here](https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R). In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained.
+I fit 6, 10, and 25 semi-nonnegative EBMF factors using `flashier`. Code is [here](https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R). In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained. I also show stacked bar plots for purposes of comparison with STRUCTURE plots.
 
 ```{r fl.plot}
-do.heatmap <- function(fl) {
+do.plots <- function(fl, fct_order) {
   FF <- ldf(fl, type = "I")$F
   FF <- FF[, order(fl$pve, decreasing = TRUE)]
   colnames(FF) <- 1:ncol(FF) 
@@ -92,7 +93,7 @@ do.heatmap <- function(fl) {
     mutate(Factor = as.numeric(Factor))
   
   cell_type_breaks <- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+  heatmap <- ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
     geom_tile() +
     scale_fill_gradient(low = "white", high = "red") +
     labs(y = "") +
@@ -101,6 +102,23 @@ do.heatmap <- function(fl) {
                        labels = levels(tib$Cell.type)) +
     theme_minimal() +
     geom_hline(yintercept = -cell_type_breaks, size = 0.1)
+  
+  tib <- tib %>%
+    filter(Factor %in% fct_order) %>%
+    mutate(Factor = factor(Factor, levels = fct_order))
+  stkbar <- ggplot(tib, aes(x = Cell.idx, y = Loading, fill = Factor, color = Factor)) +
+    geom_bar(position = "stack", stat = "identity") +
+    scale_fill_brewer(palette = "Set3") +
+    scale_color_brewer(palette = "Set3") +
+    theme_minimal() +
+    labs(x = "", y = "") +
+    scale_x_continuous(breaks = cell_type_breaks,
+                       minor_breaks = NULL,
+                       labels = levels(tib$Cell.type)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          axis.text.y = element_blank())
+  
+  return(list(heatmap = heatmap, stkbar = stkbar))
 }
 ```
 
@@ -108,21 +126,27 @@ do.heatmap <- function(fl) {
 
 ```{r fl6}
 fl6 <- readRDS("./output/deng/deng_fl6.rds")
-do.heatmap(fl6)
+plt6 <- do.plots(fl6, rev(c(6, 4, 2, 3, 5)))
+plt6$heatmap
+plt6$stkbar
 ```
 
 ### 10-factor fit
 
 ```{r fl10}
 fl10 <- readRDS("./output/deng/deng_fl10.rds")
-do.heatmap(fl10)
+plt10 <- do.plots(fl10, rev(c(6, 4, 5, 3, 2, 7, 9, 8)))
+plt10$heatmap
+plt10$stkbar
 ```
 
 ### 25-factor fit
 
 ```{r fl25}
 fl25 <- readRDS("./output/deng/deng_fl25.rds")
-do.heatmap(fl25)
+plt25 <- do.plots(fl25, rev(c(13, 11, 5, 4, 7, 3, 2, 10, 9, 8, 16)))
+plt25$heatmap
+plt25$stkbar
 ```
 
 ## Top genes
