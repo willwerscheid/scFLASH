@@ -392,7 +392,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-04
+<strong>Last updated:</strong> 2022-03-06
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a6903b18b15b40e614fe8bff45f0309a3800a0atargetblank2a6903ba"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/2a6903b18b15b40e614fe8bff45f0309a3800a0a" target="_blank">2a6903b</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree09e9cc23b724722cb18a5e6600a55e401295871btargetblank09e9cc2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/09e9cc23b724722cb18a5e6600a55e401295871b" target="_blank">09e9cc2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a6903b18b15b40e614fe8bff45f0309a3800a0atargetblank2a6903ba" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree09e9cc23b724722cb18a5e6600a55e401295871btargetblank09e9cc2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/2a6903b18b15b40e614fe8bff45f0309a3800a0a" target="_blank">2a6903b</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/09e9cc23b724722cb18a5e6600a55e401295871b" target="_blank">09e9cc2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -579,6 +579,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/09e9cc23b724722cb18a5e6600a55e401295871b/analysis/deng.Rmd" target="_blank">09e9cc2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+<td>
+wflow_publish(“analysis/deng.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/deng.html" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -677,7 +711,7 @@ wflow_publish(“analysis/deng.Rmd”)
 #&gt; ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
 #&gt; ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
 #&gt; ✓ tibble  3.1.6     ✓ dplyr   1.0.8
-#&gt; ✓ tidyr   1.1.4     ✓ stringr 1.4.0
+#&gt; ✓ tidyr   1.2.0     ✓ stringr 1.4.0
 #&gt; ✓ readr   2.0.0     ✓ forcats 0.5.1
 #&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 #&gt; x dplyr::filter() masks stats::filter()
@@ -725,6 +759,7 @@ library(singleCellRNASeqMouseDeng2014)
 #&gt;     &#39;browseVignettes()&#39;. To cite Bioconductor, see
 #&gt;     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
 library(Rtsne)
+library(fastTopics)
 
 counts &lt;- exprs(Deng2014MouseESC)
 meta_data &lt;- pData(Deng2014MouseESC)
@@ -749,8 +784,8 @@ preprocess &lt;- function(dat, min.nzcts = 10) {
 Deng &lt;- preprocess(counts)</code></pre>
 <p>The dataset, from <a href="https://www.science.org/doi/10.1126/science.1245316">Deng et al.</a>, is made available by <code>kkdey</code>’s <code>R</code> package <code>singleCellRNASeqMouseDeng2014</code>, which I installed using command <code>remotes::install_github(&quot;kkdey/singleCellRNASeqMouseDeng2014&quot;)</code>.</p>
 <p>After removing genes with nonzero counts in fewer than 10 cells, there remain counts for 17176 genes and 259 cells. Each cell has been labelled as one of 10 cell types (or rather, one of 10 embryonic stages ranging from zygote to late blastocyte).</p>
-<p>I fit 6, 10, and 25 semi-nonnegative EBMF factors using <code>flashier</code>. Code is <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R">here</a>. In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained.</p>
-<pre class="r"><code>do.heatmap &lt;- function(fl) {
+<p>I fit 6, 10, and 25 semi-nonnegative EBMF factors using <code>flashier</code>. Code is <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R">here</a>. In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained. I also show stacked bar plots for purposes of comparison with STRUCTURE plots.</p>
+<pre class="r"><code>do.plots &lt;- function(fl, fct_order) {
   FF &lt;- ldf(fl, type = &quot;I&quot;)$F
   FF &lt;- FF[, order(fl$pve, decreasing = TRUE)]
   colnames(FF) &lt;- 1:ncol(FF) 
@@ -792,7 +827,7 @@ Deng &lt;- preprocess(counts)</code></pre>
     mutate(Factor = as.numeric(Factor))
   
   cell_type_breaks &lt;- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+  heatmap &lt;- ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
     geom_tile() +
     scale_fill_gradient(low = &quot;white&quot;, high = &quot;red&quot;) +
     labs(y = &quot;&quot;) +
@@ -801,11 +836,29 @@ Deng &lt;- preprocess(counts)</code></pre>
                        labels = levels(tib$Cell.type)) +
     theme_minimal() +
     geom_hline(yintercept = -cell_type_breaks, size = 0.1)
+  
+  tib &lt;- tib %&gt;%
+    filter(Factor %in% fct_order) %&gt;%
+    mutate(Factor = factor(Factor, levels = fct_order))
+  stkbar &lt;- ggplot(tib, aes(x = Cell.idx, y = Loading, fill = Factor, color = Factor)) +
+    geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;) +
+    scale_fill_brewer(palette = &quot;Set3&quot;) +
+    scale_color_brewer(palette = &quot;Set3&quot;) +
+    theme_minimal() +
+    labs(x = &quot;&quot;, y = &quot;&quot;) +
+    scale_x_continuous(breaks = cell_type_breaks,
+                       minor_breaks = NULL,
+                       labels = levels(tib$Cell.type)) +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
+          axis.text.y = element_blank())
+  
+  return(list(heatmap = heatmap, stkbar = stkbar))
 }</code></pre>
 <div id="factor-fit" class="section level3">
 <h3>6-factor fit</h3>
 <pre class="r"><code>fl6 &lt;- readRDS(&quot;./output/deng/deng_fl6.rds&quot;)
-do.heatmap(fl6)</code></pre>
+plt6 &lt;- do.plots(fl6, rev(c(6, 4, 2, 3, 5)))
+plt6$heatmap</code></pre>
 <p><img src="figure/deng.Rmd/fl6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl6-1">
@@ -831,6 +884,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/fl6-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl6-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -844,11 +908,14 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
+<pre class="r"><code>plt6$stkbar</code></pre>
+<p><img src="figure/deng.Rmd/fl6-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="factor-fit-1" class="section level3">
 <h3>10-factor fit</h3>
 <pre class="r"><code>fl10 &lt;- readRDS(&quot;./output/deng/deng_fl10.rds&quot;)
-do.heatmap(fl10)</code></pre>
+plt10 &lt;- do.plots(fl10, rev(c(6, 4, 5, 3, 2, 7, 9, 8)))
+plt10$heatmap</code></pre>
 <p><img src="figure/deng.Rmd/fl10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl10-1">
@@ -874,6 +941,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/fl10-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl10-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -887,11 +965,14 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
+<pre class="r"><code>plt10$stkbar</code></pre>
+<p><img src="figure/deng.Rmd/fl10-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 <div id="factor-fit-2" class="section level3">
 <h3>25-factor fit</h3>
 <pre class="r"><code>fl25 &lt;- readRDS(&quot;./output/deng/deng_fl25.rds&quot;)
-do.heatmap(fl25)</code></pre>
+plt25 &lt;- do.plots(fl25, rev(c(13, 11, 5, 4, 7, 3, 2, 10, 9, 8, 16)))
+plt25$heatmap</code></pre>
 <p><img src="figure/deng.Rmd/fl25-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl25-1">
@@ -917,6 +998,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/fl25-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/fl25-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -930,6 +1022,8 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
+<pre class="r"><code>plt25$stkbar</code></pre>
+<p><img src="figure/deng.Rmd/fl25-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="top-genes" class="section level2">
@@ -969,7 +1063,9 @@ Jason Willwerscheid
 <div id="factor-2-zygote-to-4-cell" class="section level3">
 <h3>Factor 2: zygote to 4-cell</h3>
 <p>Overlaps with the blue cluster in <a href="https://journals.plos.org/plosgenetics/article?id=10.1371/journal.pgen.1006599#sec008">Dey et al.</a>:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 2)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 2)
+#&gt; Warning: ggrepel: 22 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp2-1">
@@ -993,6 +1089,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp2-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp2-1.png" target="_blank">a9459a1</a>
@@ -1023,7 +1130,9 @@ Jason Willwerscheid
 <div id="factor-3-mid-2-cell-to-16-cell" class="section level3">
 <h3>Factor 3: mid 2-cell to 16-cell</h3>
 <p>Some overlap with the yellow cluster in Dey et al.:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 3)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 3)
+#&gt; Warning: ggrepel: 9 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp3-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp3-1">
@@ -1047,6 +1156,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp3-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp3-1.png" target="_blank">a9459a1</a>
@@ -1077,7 +1197,9 @@ Jason Willwerscheid
 <div id="factor-4-early-to-late-blastocyte" class="section level3">
 <h3>Factor 4: early to late blastocyte</h3>
 <p>Overlaps with the orange cluster in Dey et al.:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 4)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 4)
+#&gt; Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp4-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp4-1">
@@ -1101,6 +1223,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp4-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp4-1.png" target="_blank">a9459a1</a>
@@ -1130,7 +1263,9 @@ Jason Willwerscheid
 </div>
 <div id="factor-10-zygote-to-early-2-cell" class="section level3">
 <h3>Factor 10: zygote to early 2-cell</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 10)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 10)
+#&gt; Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp10-1">
@@ -1154,6 +1289,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp10-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp10-1.png" target="_blank">a9459a1</a>
@@ -1184,7 +1330,9 @@ Jason Willwerscheid
 <div id="factor-8-mid-to-late-2-cell" class="section level3">
 <h3>Factor 8: mid to late 2-cell</h3>
 <p>Overlaps with the magenta cluster in Dey et al.:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 8)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 8)
+#&gt; Warning: ggrepel: 16 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp8-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp8-1">
@@ -1210,6 +1358,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp8-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp8-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -1226,7 +1385,9 @@ Jason Willwerscheid
 </div>
 <div id="factor-9-late-2-cell-to-4-cell" class="section level3">
 <h3>Factor 9: late 2-cell to 4-cell</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 9)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 9)
+#&gt; Warning: ggrepel: 10 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp9-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp9-1">
@@ -1250,6 +1411,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp9-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp9-1.png" target="_blank">a9459a1</a>
@@ -1306,6 +1478,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp6-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp6-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -1334,7 +1517,9 @@ Jason Willwerscheid
 <div id="factor-5-early-to-late-blastocyte" class="section level3">
 <h3>Factor 5: early to late blastocyte</h3>
 <p>Overlaps with the purple cluster in Dey et al.:</p>
-<pre class="r"><code>do.volcano.plot(fl25, 5)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 5)
+#&gt; Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp5-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp5-1">
@@ -1358,6 +1543,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp5-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp5-1.png" target="_blank">a9459a1</a>
@@ -1387,7 +1583,9 @@ Jason Willwerscheid
 </div>
 <div id="factor-7-late-blastocyte" class="section level3">
 <h3>Factor 7: late blastocyte</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 7)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 7)
+#&gt; Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp7-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp7-1">
@@ -1411,6 +1609,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp7-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp7-1.png" target="_blank">a9459a1</a>
@@ -1466,6 +1675,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp16-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp16-1.png" target="_blank">a9459a1</a>
 </td>
 <td>
@@ -1482,7 +1702,9 @@ Jason Willwerscheid
 </div>
 <div id="factor-11-mid-blastocyte" class="section level3">
 <h3>Factor 11: mid blastocyte</h3>
-<pre class="r"><code>do.volcano.plot(fl25, 11)</code></pre>
+<pre class="r"><code>do.volcano.plot(fl25, 11)
+#&gt; Warning: ggrepel: 28 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng.Rmd/vp11-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-vp11-1">
@@ -1506,6 +1728,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp11-1.png" target="_blank">801dec2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-04
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/a9459a1ed6d3f96d06e6e9d2a85c658407bc7857/docs/figure/deng.Rmd/vp11-1.png" target="_blank">a9459a1</a>
@@ -1556,37 +1789,42 @@ Jason Willwerscheid
 #&gt; [8] base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] Rtsne_0.15                           singleCellRNASeqMouseDeng2014_0.99.0
-#&gt;  [3] Biobase_2.42.0                       BiocGenerics_0.28.0                 
-#&gt;  [5] ggrepel_0.8.2                        flashier_0.2.27                     
-#&gt;  [7] magrittr_2.0.2                       forcats_0.5.1                       
-#&gt;  [9] stringr_1.4.0                        dplyr_1.0.8                         
-#&gt; [11] purrr_0.3.4                          readr_2.0.0                         
-#&gt; [13] tidyr_1.1.4                          tibble_3.1.6                        
-#&gt; [15] ggplot2_3.3.5                        tidyverse_1.3.1                     
-#&gt; [17] workflowr_1.6.2                     
+#&gt;  [1] fastTopics_0.6-100                   Rtsne_0.15                          
+#&gt;  [3] singleCellRNASeqMouseDeng2014_0.99.0 Biobase_2.42.0                      
+#&gt;  [5] BiocGenerics_0.28.0                  ggrepel_0.9.1                       
+#&gt;  [7] flashier_0.2.27                      magrittr_2.0.2                      
+#&gt;  [9] forcats_0.5.1                        stringr_1.4.0                       
+#&gt; [11] dplyr_1.0.8                          purrr_0.3.4                         
+#&gt; [13] readr_2.0.0                          tidyr_1.2.0                         
+#&gt; [15] tibble_3.1.6                         ggplot2_3.3.5                       
+#&gt; [17] tidyverse_1.3.1                      workflowr_1.6.2                     
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
-#&gt;  [1] fs_1.5.0          lubridate_1.7.10  httr_1.4.2        rprojroot_2.0.2  
-#&gt;  [5] tools_3.5.3       backports_1.1.3   bslib_0.3.1       utf8_1.2.2       
-#&gt;  [9] R6_2.5.1          irlba_2.3.3       DBI_1.0.0         colorspace_2.0-3 
-#&gt; [13] withr_2.4.3       tidyselect_1.1.2  compiler_3.5.3    git2r_0.28.0     
-#&gt; [17] cli_3.2.0         rvest_1.0.0       xml2_1.3.2        labeling_0.4.2   
-#&gt; [21] horseshoe_0.2.0   sass_0.4.0        scales_1.1.1      SQUAREM_2021.1   
-#&gt; [25] mixsqp_0.3-43     digest_0.6.29     rmarkdown_2.11    deconvolveR_1.2-1
-#&gt; [29] pkgconfig_2.0.3   htmltools_0.5.2   highr_0.9         dbplyr_2.1.1     
-#&gt; [33] fastmap_1.1.0     invgamma_1.1      rlang_1.0.1       readxl_1.3.1     
-#&gt; [37] rstudioapi_0.13   farver_2.1.0      jquerylib_0.1.4   generics_0.1.2   
-#&gt; [41] jsonlite_1.7.2    Matrix_1.3-4      Rcpp_1.0.8        munsell_0.5.0    
-#&gt; [45] fansi_1.0.2       lifecycle_1.0.1   stringi_1.4.6     whisker_0.3-2    
-#&gt; [49] yaml_2.2.1        grid_3.5.3        promises_1.1.0    crayon_1.5.0     
-#&gt; [53] lattice_0.20-38   haven_2.3.1       splines_3.5.3     hms_1.1.0        
-#&gt; [57] knitr_1.33        pillar_1.7.0      softImpute_1.4-1  reprex_2.0.0     
-#&gt; [61] glue_1.6.1        evaluate_0.14     trust_0.1-8       modelr_0.1.8     
-#&gt; [65] vctrs_0.3.8       tzdb_0.1.1        httpuv_1.5.2      cellranger_1.1.0 
-#&gt; [69] gtable_0.3.0      ebnm_1.0-8        assertthat_0.2.1  ashr_2.2-54      
-#&gt; [73] xfun_0.29         broom_0.7.6       later_1.0.0       truncnorm_1.0-8  
-#&gt; [77] ellipsis_0.3.2</code></pre>
+#&gt;  [1] colorspace_2.0-3   ellipsis_0.3.2     rprojroot_2.0.2    fs_1.5.0          
+#&gt;  [5] rstudioapi_0.13    farver_2.1.0       MatrixModels_0.4-1 fansi_1.0.2       
+#&gt;  [9] lubridate_1.7.10   xml2_1.3.2         splines_3.5.3      knitr_1.33        
+#&gt; [13] jsonlite_1.8.0     mcmc_0.9-7         broom_0.7.6        ashr_2.2-54       
+#&gt; [17] dbplyr_2.1.1       uwot_0.1.11        compiler_3.5.3     httr_1.4.2        
+#&gt; [21] backports_1.1.3    assertthat_0.2.1   Matrix_1.3-4       fastmap_1.1.0     
+#&gt; [25] lazyeval_0.2.2     cli_3.2.0          later_1.3.0        htmltools_0.5.2   
+#&gt; [29] quantreg_5.51      prettyunits_1.1.1  tools_3.5.3        coda_0.19-3       
+#&gt; [33] gtable_0.3.0       glue_1.6.2         Rcpp_1.0.8         softImpute_1.4-1  
+#&gt; [37] cellranger_1.1.0   jquerylib_0.1.4    vctrs_0.3.8        xfun_0.29         
+#&gt; [41] trust_0.1-8        rvest_1.0.0        lifecycle_1.0.1    irlba_2.3.3       
+#&gt; [45] MASS_7.3-51.1      scales_1.1.1       hms_1.1.1          promises_1.2.0.1  
+#&gt; [49] SparseM_1.77       RColorBrewer_1.1-2 yaml_2.3.5         pbapply_1.5-0     
+#&gt; [53] sass_0.4.0         stringi_1.4.6      SQUAREM_2021.1     highr_0.9         
+#&gt; [57] deconvolveR_1.2-1  truncnorm_1.0-8    horseshoe_0.2.0    rlang_1.0.2       
+#&gt; [61] pkgconfig_2.0.3    ebnm_1.0-8         evaluate_0.14      lattice_0.20-38   
+#&gt; [65] invgamma_1.1       labeling_0.4.2     htmlwidgets_1.5.4  cowplot_1.1.1     
+#&gt; [69] tidyselect_1.1.2   R6_2.5.1           generics_0.1.2     DBI_1.0.0         
+#&gt; [73] pillar_1.7.0       haven_2.3.1        whisker_0.3-2      withr_2.5.0       
+#&gt; [77] mixsqp_0.3-43      modelr_0.1.8       crayon_1.5.0       utf8_1.2.2        
+#&gt; [81] plotly_4.10.0      tzdb_0.1.1         rmarkdown_2.11     progress_1.2.2    
+#&gt; [85] grid_3.5.3         readxl_1.3.1       data.table_1.14.2  git2r_0.28.0      
+#&gt; [89] reprex_2.0.0       digest_0.6.29      httpuv_1.5.2       MCMCpack_1.4-4    
+#&gt; [93] RcppParallel_5.1.5 munsell_0.5.0      viridisLite_0.4.0  bslib_0.3.1       
+#&gt; [97] quadprog_1.5-8</code></pre>
 </div>
 </div>
 </div>
