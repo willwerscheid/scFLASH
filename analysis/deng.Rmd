@@ -51,7 +51,7 @@ After removing genes with nonzero counts in fewer than 10 cells, there remain co
 I fit 6, 10, and 25 semi-nonnegative EBMF factors using `flashier`. Code is [here](https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R). In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained. I also show stacked bar plots for purposes of comparison with STRUCTURE plots.
 
 ```{r fl.plot}
-do.plots <- function(fl, fct_order) {
+do.heatmap <- function(fl) {
   FF <- ldf(fl, type = "I")$F
   FF <- FF[, order(fl$pve, decreasing = TRUE)]
   colnames(FF) <- 1:ncol(FF) 
@@ -93,7 +93,7 @@ do.plots <- function(fl, fct_order) {
     mutate(Factor = as.numeric(Factor))
   
   cell_type_breaks <- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  heatmap <- ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
     geom_tile() +
     scale_fill_gradient(low = "white", high = "red") +
     labs(y = "") +
@@ -102,23 +102,42 @@ do.plots <- function(fl, fct_order) {
                        labels = levels(tib$Cell.type)) +
     theme_minimal() +
     geom_hline(yintercept = -cell_type_breaks, size = 0.1)
-  
-  tib <- tib %>%
-    filter(Factor %in% fct_order) %>%
-    mutate(Factor = factor(Factor, levels = fct_order))
-  stkbar <- ggplot(tib, aes(x = Cell.idx, y = Loading, fill = Factor, color = Factor)) +
-    geom_bar(position = "stack", stat = "identity") +
-    scale_fill_brewer(palette = "Set3") +
-    scale_color_brewer(palette = "Set3") +
-    theme_minimal() +
-    labs(x = "", y = "") +
-    scale_x_continuous(breaks = cell_type_breaks,
-                       minor_breaks = NULL,
-                       labels = levels(tib$Cell.type)) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-          axis.text.y = element_blank())
-  
-  return(list(heatmap = heatmap, stkbar = stkbar))
+}
+
+do.struct.plot <- function(fl, kset, group_by_embryo = FALSE) {
+  tm <- init_poisson_nmf(X = t(Deng$dat), k = fl$n.factors, init.method = "random")
+  tm <- poisson2multinom(tm)
+  L <- ldf(fl)$F %*% diag(ldf(fl)$D)
+  L <- L[, order(fl$pve, decreasing = TRUE)]
+  colnames(L) <- paste0("k", 1:ncol(L))
+  L[, setdiff(1:fl$n.factors, kset)] <- 0
+  tm$L <- L
+  topic_colors <- rep("black", fl$n.factors)
+  topic_colors[kset] <- c("gainsboro", "forestgreen", "tomato", "skyblue", "royalblue",
+                          "darkorange", "peru", "gold", "limegreen", "darkmagenta")[1:length(kset)]
+  cell_type <- factor(
+    meta_data$cell_type,
+    levels = c("zy", "early2cell", "mid2cell", "late2cell", "4cell", "8cell",
+               "16cell", "earlyblast", "midblast", "lateblast")
+  )
+  embryo <- factor(
+    paste0(meta_data$cell_type, "/", meta_data$embryo_id),
+    levels = paste0(rep(levels(cell_type), each = length(levels(meta_data$embryo_id))),
+                   "/", levels(meta_data$embryo_id))
+  )
+  embryo <- droplevels(embryo)
+  embed_with_pca <- function (fit, ...) {
+    drop(pca_from_topics(fit, dims = 1,...))
+  }
+  if (group_by_embryo) {
+    grp <- embryo
+  } else {
+    grp <- cell_type
+  }
+  set.seed(1)
+  structure_plot(tm, grouping = grp, colors = topic_colors,
+                 gap = 2, topics = kset, embed_method = embed_with_pca) +
+    labs(y = "loading", color = "factor", fill = "factor")
 }
 ```
 
@@ -126,27 +145,30 @@ do.plots <- function(fl, fct_order) {
 
 ```{r fl6}
 fl6 <- readRDS("./output/deng/deng_fl6.rds")
-plt6 <- do.plots(fl6, rev(c(6, 4, 2, 3, 5)))
-plt6$heatmap
-plt6$stkbar
+do.heatmap(fl6)
+do.struct.plot(fl6, c(4, 6, 5, 2, 3))
 ```
 
 ### 10-factor fit
 
 ```{r fl10}
 fl10 <- readRDS("./output/deng/deng_fl10.rds")
-plt10 <- do.plots(fl10, rev(c(6, 4, 5, 3, 2, 7, 9, 8)))
-plt10$heatmap
-plt10$stkbar
+do.heatmap(fl10)
+do.struct.plot(fl10, c(5, 4, 6, 7, 8, 9, 3, 2))
 ```
 
 ### 25-factor fit
 
 ```{r fl25}
 fl25 <- readRDS("./output/deng/deng_fl25.rds")
-plt25 <- do.plots(fl25, rev(c(13, 11, 5, 4, 7, 3, 2, 10, 9, 8, 16)))
-plt25$heatmap
-plt25$stkbar
+do.heatmap(fl25)
+do.struct.plot(fl25, c(16, 11, 7, 5, 4, 6, 9, 8, 10, 3, 2))
+```
+
+Here I also group by cell type + embryo to show that factor 16 only appears in 2 of 3 embryos that furnished early blastocyte cells:
+
+```{r fl25.2}
+do.struct.plot(fl25, c(16, 11, 7, 5, 4, 6, 9, 8, 10, 3, 2), group_by_embryo = TRUE)
 ```
 
 ## Top genes
