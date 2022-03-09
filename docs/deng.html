@@ -392,7 +392,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-06
+<strong>Last updated:</strong> 2022-03-08
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree09e9cc23b724722cb18a5e6600a55e401295871btargetblank09e9cc2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/09e9cc23b724722cb18a5e6600a55e401295871b" target="_blank">09e9cc2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed8ff170b52aa6d828c864344dba2a5d0ed959e8etargetblankd8ff170a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/d8ff170b52aa6d828c864344dba2a5d0ed959e8e" target="_blank">d8ff170</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree09e9cc23b724722cb18a5e6600a55e401295871btargetblank09e9cc2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreed8ff170b52aa6d828c864344dba2a5d0ed959e8etargetblankd8ff170a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/09e9cc23b724722cb18a5e6600a55e401295871b" target="_blank">09e9cc2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/d8ff170b52aa6d828c864344dba2a5d0ed959e8e" target="_blank">d8ff170</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -579,6 +579,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/d8ff170b52aa6d828c864344dba2a5d0ed959e8e/analysis/deng.Rmd" target="_blank">d8ff170</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-08
+</td>
+<td>
+wflow_publish(“./analysis/deng.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/deng.html" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -785,7 +819,7 @@ Deng &lt;- preprocess(counts)</code></pre>
 <p>The dataset, from <a href="https://www.science.org/doi/10.1126/science.1245316">Deng et al.</a>, is made available by <code>kkdey</code>’s <code>R</code> package <code>singleCellRNASeqMouseDeng2014</code>, which I installed using command <code>remotes::install_github(&quot;kkdey/singleCellRNASeqMouseDeng2014&quot;)</code>.</p>
 <p>After removing genes with nonzero counts in fewer than 10 cells, there remain counts for 17176 genes and 259 cells. Each cell has been labelled as one of 10 cell types (or rather, one of 10 embryonic stages ranging from zygote to late blastocyte).</p>
 <p>I fit 6, 10, and 25 semi-nonnegative EBMF factors using <code>flashier</code>. Code is <a href="https://github.com/willwerscheid/scFLASH/blob/master/code/deng/deng.R">here</a>. In the heatmaps below, rows correspond to individual cells, and factors (columns) are arranged in order of decreasing proportion of variance explained. I also show stacked bar plots for purposes of comparison with STRUCTURE plots.</p>
-<pre class="r"><code>do.plots &lt;- function(fl, fct_order) {
+<pre class="r"><code>do.heatmap &lt;- function(fl) {
   FF &lt;- ldf(fl, type = &quot;I&quot;)$F
   FF &lt;- FF[, order(fl$pve, decreasing = TRUE)]
   colnames(FF) &lt;- 1:ncol(FF) 
@@ -827,7 +861,7 @@ Deng &lt;- preprocess(counts)</code></pre>
     mutate(Factor = as.numeric(Factor))
   
   cell_type_breaks &lt;- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  heatmap &lt;- ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
     geom_tile() +
     scale_fill_gradient(low = &quot;white&quot;, high = &quot;red&quot;) +
     labs(y = &quot;&quot;) +
@@ -836,29 +870,47 @@ Deng &lt;- preprocess(counts)</code></pre>
                        labels = levels(tib$Cell.type)) +
     theme_minimal() +
     geom_hline(yintercept = -cell_type_breaks, size = 0.1)
-  
-  tib &lt;- tib %&gt;%
-    filter(Factor %in% fct_order) %&gt;%
-    mutate(Factor = factor(Factor, levels = fct_order))
-  stkbar &lt;- ggplot(tib, aes(x = Cell.idx, y = Loading, fill = Factor, color = Factor)) +
-    geom_bar(position = &quot;stack&quot;, stat = &quot;identity&quot;) +
-    scale_fill_brewer(palette = &quot;Set3&quot;) +
-    scale_color_brewer(palette = &quot;Set3&quot;) +
-    theme_minimal() +
-    labs(x = &quot;&quot;, y = &quot;&quot;) +
-    scale_x_continuous(breaks = cell_type_breaks,
-                       minor_breaks = NULL,
-                       labels = levels(tib$Cell.type)) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1),
-          axis.text.y = element_blank())
-  
-  return(list(heatmap = heatmap, stkbar = stkbar))
+}
+
+do.struct.plot &lt;- function(fl, kset, group_by_embryo = FALSE) {
+  tm &lt;- init_poisson_nmf(X = t(Deng$dat), k = fl$n.factors, init.method = &quot;random&quot;)
+  tm &lt;- poisson2multinom(tm)
+  L &lt;- ldf(fl)$F %*% diag(ldf(fl)$D)
+  L &lt;- L[, order(fl$pve, decreasing = TRUE)]
+  colnames(L) &lt;- paste0(&quot;k&quot;, 1:ncol(L))
+  L[, setdiff(1:fl$n.factors, kset)] &lt;- 0
+  tm$L &lt;- L
+  topic_colors &lt;- rep(&quot;black&quot;, fl$n.factors)
+  topic_colors[kset] &lt;- c(&quot;gainsboro&quot;, &quot;forestgreen&quot;, &quot;tomato&quot;, &quot;skyblue&quot;, &quot;royalblue&quot;,
+                          &quot;darkorange&quot;, &quot;peru&quot;, &quot;gold&quot;, &quot;limegreen&quot;, &quot;darkmagenta&quot;)[1:length(kset)]
+  cell_type &lt;- factor(
+    meta_data$cell_type,
+    levels = c(&quot;zy&quot;, &quot;early2cell&quot;, &quot;mid2cell&quot;, &quot;late2cell&quot;, &quot;4cell&quot;, &quot;8cell&quot;,
+               &quot;16cell&quot;, &quot;earlyblast&quot;, &quot;midblast&quot;, &quot;lateblast&quot;)
+  )
+  embryo &lt;- factor(
+    paste0(meta_data$cell_type, &quot;/&quot;, meta_data$embryo_id),
+    levels = paste0(rep(levels(cell_type), each = length(levels(meta_data$embryo_id))),
+                   &quot;/&quot;, levels(meta_data$embryo_id))
+  )
+  embryo &lt;- droplevels(embryo)
+  embed_with_pca &lt;- function (fit, ...) {
+    drop(pca_from_topics(fit, dims = 1,...))
+  }
+  if (group_by_embryo) {
+    grp &lt;- embryo
+  } else {
+    grp &lt;- cell_type
+  }
+  set.seed(1)
+  structure_plot(tm, grouping = grp, colors = topic_colors,
+                 gap = 2, topics = kset, embed_method = embed_with_pca) +
+    labs(y = &quot;loading&quot;, color = &quot;factor&quot;, fill = &quot;factor&quot;)
 }</code></pre>
 <div id="factor-fit" class="section level3">
 <h3>6-factor fit</h3>
 <pre class="r"><code>fl6 &lt;- readRDS(&quot;./output/deng/deng_fl6.rds&quot;)
-plt6 &lt;- do.plots(fl6, rev(c(6, 4, 2, 3, 5)))
-plt6$heatmap</code></pre>
+do.heatmap(fl6)</code></pre>
 <p><img src="figure/deng.Rmd/fl6-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl6-1">
@@ -908,14 +960,50 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plt6$stkbar</code></pre>
+<pre class="r"><code>do.struct.plot(fl6, c(4, 6, 5, 2, 3))</code></pre>
 <p><img src="figure/deng.Rmd/fl6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl6-2">
+Past versions of fl6-2.png
+</button>
+</p>
+<div id="fig-fl6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/fl6-2.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factor-fit-1" class="section level3">
 <h3>10-factor fit</h3>
 <pre class="r"><code>fl10 &lt;- readRDS(&quot;./output/deng/deng_fl10.rds&quot;)
-plt10 &lt;- do.plots(fl10, rev(c(6, 4, 5, 3, 2, 7, 9, 8)))
-plt10$heatmap</code></pre>
+do.heatmap(fl10)</code></pre>
 <p><img src="figure/deng.Rmd/fl10-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl10-1">
@@ -965,14 +1053,50 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plt10$stkbar</code></pre>
+<pre class="r"><code>do.struct.plot(fl10, c(5, 4, 6, 7, 8, 9, 3, 2))</code></pre>
 <p><img src="figure/deng.Rmd/fl10-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl10-2">
+Past versions of fl10-2.png
+</button>
+</p>
+<div id="fig-fl10-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/fl10-2.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factor-fit-2" class="section level3">
 <h3>25-factor fit</h3>
 <pre class="r"><code>fl25 &lt;- readRDS(&quot;./output/deng/deng_fl25.rds&quot;)
-plt25 &lt;- do.plots(fl25, rev(c(13, 11, 5, 4, 7, 3, 2, 10, 9, 8, 16)))
-plt25$heatmap</code></pre>
+do.heatmap(fl25)</code></pre>
 <p><img src="figure/deng.Rmd/fl25-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl25-1">
@@ -1022,8 +1146,48 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<pre class="r"><code>plt25$stkbar</code></pre>
+<pre class="r"><code>do.struct.plot(fl25, c(16, 11, 7, 5, 4, 6, 9, 8, 10, 3, 2))</code></pre>
 <p><img src="figure/deng.Rmd/fl25-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-fl25-2">
+Past versions of fl25-2.png
+</button>
+</p>
+<div id="fig-fl25-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/fl25-2.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<p>Here I also group by cell type + embryo to show that factor 16 only appears in 2 of 3 embryos that furnished early blastocyte cells:</p>
+<pre class="r"><code>do.struct.plot(fl25, c(16, 11, 7, 5, 4, 6, 9, 8, 10, 3, 2), group_by_embryo = TRUE)</code></pre>
+<p><img src="figure/deng.Rmd/fl25.2-1.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
 </div>
 <div id="top-genes" class="section level2">
@@ -1089,6 +1253,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp2-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp2-1.png" target="_blank">801dec2</a>
@@ -1158,6 +1333,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp3-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp3-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1225,6 +1411,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp4-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp4-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1289,6 +1486,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp10-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp10-1.png" target="_blank">801dec2</a>
@@ -1358,6 +1566,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp8-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp8-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1411,6 +1630,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp9-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp9-1.png" target="_blank">801dec2</a>
@@ -1476,6 +1706,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp6-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp6-1.png" target="_blank">801dec2</a>
@@ -1545,6 +1786,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp5-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp5-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1611,6 +1863,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp7-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp7-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1675,6 +1938,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp16-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp16-1.png" target="_blank">801dec2</a>
 </td>
 <td>
@@ -1728,6 +2002,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/bf3d3b8a70872eb5928274d6224e8c3cd8ab8d78/docs/figure/deng.Rmd/vp11-1.png" target="_blank">bf3d3b8</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-06
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/801dec26e9b9dd6874d98be2489c01db6b3ee90d/docs/figure/deng.Rmd/vp11-1.png" target="_blank">801dec2</a>
@@ -1789,7 +2074,7 @@ Jason Willwerscheid
 #&gt; [8] base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] fastTopics_0.6-100                   Rtsne_0.15                          
+#&gt;  [1] fastTopics_0.6-101                   Rtsne_0.15                          
 #&gt;  [3] singleCellRNASeqMouseDeng2014_0.99.0 Biobase_2.42.0                      
 #&gt;  [5] BiocGenerics_0.28.0                  ggrepel_0.9.1                       
 #&gt;  [7] flashier_0.2.27                      magrittr_2.0.2                      
@@ -1812,19 +2097,18 @@ Jason Willwerscheid
 #&gt; [37] cellranger_1.1.0   jquerylib_0.1.4    vctrs_0.3.8        xfun_0.29         
 #&gt; [41] trust_0.1-8        rvest_1.0.0        lifecycle_1.0.1    irlba_2.3.3       
 #&gt; [45] MASS_7.3-51.1      scales_1.1.1       hms_1.1.1          promises_1.2.0.1  
-#&gt; [49] SparseM_1.77       RColorBrewer_1.1-2 yaml_2.3.5         pbapply_1.5-0     
-#&gt; [53] sass_0.4.0         stringi_1.4.6      SQUAREM_2021.1     highr_0.9         
-#&gt; [57] deconvolveR_1.2-1  truncnorm_1.0-8    horseshoe_0.2.0    rlang_1.0.2       
-#&gt; [61] pkgconfig_2.0.3    ebnm_1.0-8         evaluate_0.14      lattice_0.20-38   
-#&gt; [65] invgamma_1.1       labeling_0.4.2     htmlwidgets_1.5.4  cowplot_1.1.1     
-#&gt; [69] tidyselect_1.1.2   R6_2.5.1           generics_0.1.2     DBI_1.0.0         
-#&gt; [73] pillar_1.7.0       haven_2.3.1        whisker_0.3-2      withr_2.5.0       
-#&gt; [77] mixsqp_0.3-43      modelr_0.1.8       crayon_1.5.0       utf8_1.2.2        
-#&gt; [81] plotly_4.10.0      tzdb_0.1.1         rmarkdown_2.11     progress_1.2.2    
-#&gt; [85] grid_3.5.3         readxl_1.3.1       data.table_1.14.2  git2r_0.28.0      
-#&gt; [89] reprex_2.0.0       digest_0.6.29      httpuv_1.5.2       MCMCpack_1.4-4    
-#&gt; [93] RcppParallel_5.1.5 munsell_0.5.0      viridisLite_0.4.0  bslib_0.3.1       
-#&gt; [97] quadprog_1.5-8</code></pre>
+#&gt; [49] SparseM_1.77       yaml_2.3.5         pbapply_1.5-0      sass_0.4.0        
+#&gt; [53] stringi_1.4.6      SQUAREM_2021.1     highr_0.9          deconvolveR_1.2-1 
+#&gt; [57] truncnorm_1.0-8    horseshoe_0.2.0    rlang_1.0.2        pkgconfig_2.0.3   
+#&gt; [61] ebnm_1.0-8         evaluate_0.14      lattice_0.20-38    invgamma_1.1      
+#&gt; [65] labeling_0.4.2     htmlwidgets_1.5.4  cowplot_1.1.1      tidyselect_1.1.2  
+#&gt; [69] R6_2.5.1           generics_0.1.2     DBI_1.0.0          pillar_1.7.0      
+#&gt; [73] haven_2.3.1        whisker_0.3-2      withr_2.5.0        mixsqp_0.3-43     
+#&gt; [77] modelr_0.1.8       crayon_1.5.0       utf8_1.2.2         plotly_4.10.0     
+#&gt; [81] tzdb_0.1.1         rmarkdown_2.11     progress_1.2.2     grid_3.5.3        
+#&gt; [85] readxl_1.3.1       data.table_1.14.2  git2r_0.28.0       reprex_2.0.0      
+#&gt; [89] digest_0.6.29      httpuv_1.5.2       MCMCpack_1.4-4     RcppParallel_5.1.5
+#&gt; [93] munsell_0.5.0      viridisLite_0.4.0  bslib_0.3.1        quadprog_1.5-8</code></pre>
 </div>
 </div>
 </div>
