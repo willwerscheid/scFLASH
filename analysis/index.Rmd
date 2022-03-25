@@ -38,6 +38,7 @@ output:
 ## Other
 
 1. [Deng et al.](deng.html)
+1. [SNMF on data simulated from an NMF model.](snmf_on_nmf.html)
 
 ## Archived
 
