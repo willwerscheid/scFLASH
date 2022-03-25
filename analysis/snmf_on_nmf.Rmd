@@ -15,7 +15,14 @@ knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
 library(flashier)
 library(tidyverse)
 
-sim_data <- function(n = 100, p = 200, K = 6, L.nn = 10, F.nn = 20, se = 0.1, seed = 666) {
+sim_data <- function(n = 100, 
+                     p = 200, 
+                     K = 6, 
+                     L.nn = 10, 
+                     F.nn = 20, 
+                     se = 0.1, 
+                     K.dense = 1, 
+                     seed = 666) {
   set.seed(seed)
   
   LL <- matrix(rexp(n * K), nrow = n, ncol = K)
@@ -25,9 +32,9 @@ sim_data <- function(n = 100, p = 200, K = 6, L.nn = 10, F.nn = 20, se = 0.1, se
   LL[, 1] <- 3
   
   # Additional sparse nonnegative factors.
-  for (k in 2:K) {
-    L.nn.idx <- seq((k - 2) * L.nn + 1, (k - 1) * L.nn)
-    F.nn.idx <- seq((k - 2) * (F.nn / 2) + 1, k * (F.nn / 2))
+  for (k in (K.dense + 1):K) {
+    L.nn.idx <- seq((k - K.dense - 1) * L.nn + 1, (k - K.dense) * L.nn)
+    F.nn.idx <- seq((k - K.dense - 1) * (F.nn / 2) + 1, (k + K.dense) * (F.nn / 2))
     LL[setdiff(1:n, L.nn.idx), k] <- 0
     FF[setdiff(1:p, F.nn.idx), k] <- 0
   }
@@ -54,19 +61,28 @@ plot_it <- function(simdat, nnmf_res, snmf_res) {
     )
   }
   
-  suppressMessages(
+  
+  suppressMessages({
     tib <- to_tibble(simdat$LL, "True loadings") %>%
       bind_rows(to_tibble(simdat$FF, "True factors")) %>%
-      bind_rows(to_tibble(nnmf_res$W, "NMF loadings")) %>%
-      bind_rows(to_tibble(t(nnmf_res$H), "NMF factors")) %>%
       bind_rows(to_tibble(snmf_res$L.pm, "SNMF loadings")) %>%
-      bind_rows(to_tibble(snmf_res$F.pm, "SNMF factors")) %>%
+      bind_rows(to_tibble(snmf_res$F.pm, "SNMF factors")) 
+    if (inherits(nnmf_res, "flash")) {
+      tib <- tib %>%
+        bind_rows(to_tibble(nnmf_res$L.pm, "NMF loadings")) %>%
+        bind_rows(to_tibble(nnmf_res$F.pm, "NMF factors")) 
+    } else {
+      tib <- tib %>%
+        bind_rows(to_tibble(nnmf_res$W, "NMF loadings")) %>%
+        bind_rows(to_tibble(t(nnmf_res$H), "NMF factors")) 
+    }
+    tib <- tib %>%
       mutate(k = as.numeric(str_remove_all(k, "\\."))) %>%
       mutate(type = factor(type, levels = c(
         "True loadings", "NMF loadings", "SNMF loadings",
         "True factors", "NMF factors", "SNMF factors"
       )))
-  )
+  })
   
   ggplot(tib, aes(x = k, y = row, fill = value)) +
     geom_tile() +
@@ -97,7 +113,7 @@ snmf_res1 <- flash.init(sim1$Y) %>%
 plot_it(sim1, nnmf_res1, snmf_res1)
 ```
 
-Not only is the SNMF basically nonnegative, but it does a better job recovering the true factors than NMF!
+Not only is SNMF basically nonnegative, but it does a better job recovering the true factors than NMF!
 
 Next I fit NMF and SNMF using more factors than necessary:
 
@@ -116,18 +132,33 @@ snmf_res1b <- flash.init(sim1$Y) %>%
 plot_it(sim1, nnmf_res1b, snmf_res1b)
 ```
 
-The SNMF recovers the correct number of factors, which NMF is of course unable to do.
+SNMF (almost) recovers the correct number of factors, which NMF is of course unable to do. If, however, I initialize EBMF using the NMF fit and then backfit using point-exponential priors, I get a better NMF fit:
 
-Finally I make the simulation scenario a bit more difficult (more noise, less sparsity) and try again with the correct number of factors:
+```{r sim1_nnebmf}
+nnmf_res1c <- flash.init(sim1$Y) %>%
+  flash.set.verbose(0) %>%
+  flash.init.factors(
+    list(nnmf_res1b$W, t(nnmf_res1b$H)),
+    ebnm.fn = ebnm::ebnm_point_exponential
+  ) %>%
+  flash.backfit(maxiter = 200) %>%
+  flash.nullcheck() %>%
+  flash.backfit() %>%
+  flash.nullcheck()
+
+plot_it(sim1, nnmf_res1c, snmf_res1b)
+```
+
+Finally I make the simulation scenario a bit more difficult (more noise, less sparsity, additional dense factors) and try again with the correct number of factors:
 
 ```{r sim2}
-sim2 <- sim_data(K = 6, se = 1, L.nn = 20, F.nn = 40)
+sim2 <- sim_data(K = 8, se = 1, L.nn = 20, F.nn = 40, K.dense = 3)
 
-nnmf_res2 <- NNLM::nnmf(sim2$Y, k = 6, verbose = 0)
+nnmf_res2 <- NNLM::nnmf(sim2$Y, k = 8, verbose = 0)
 snmf_res2 <- flash.init(sim2$Y) %>%
   flash.set.verbose(0) %>%
   flash.add.greedy(
-    Kmax = 6,
+    Kmax = 8,
     ebnm.fn = c(ebnm::ebnm_point_normal, ebnm::ebnm_point_exponential),
     init.fn = function(fl) init.fn.default(fl, dim.signs = c(0, 1))
   ) %>%
@@ -137,4 +168,5 @@ snmf_res2 <- flash.init(sim2$Y) %>%
 plot_it(sim2, nnmf_res2, snmf_res2)
 ```
 
-SNMF again does quite a bit better!
+SNMF again does quite a bit better on the sparse factors, but the dense factors now show a mixture of positive and negative loadings.
+
