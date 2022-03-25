@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree73c4bb2cfdf412dad085d9bfeefd59b2165432ddtargetblank73c4bb2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/73c4bb2cfdf412dad085d9bfeefd59b2165432dd" target="_blank">73c4bb2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree1611b1a8a55fcd1d92c9585c279f74369c1633b4targetblank1611b1aa"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/1611b1a8a55fcd1d92c9585c279f74369c1633b4" target="_blank">1611b1a</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree73c4bb2cfdf412dad085d9bfeefd59b2165432ddtargetblank73c4bb2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree1611b1a8a55fcd1d92c9585c279f74369c1633b4targetblank1611b1aa" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/73c4bb2cfdf412dad085d9bfeefd59b2165432dd" target="_blank">73c4bb2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/1611b1a8a55fcd1d92c9585c279f74369c1633b4" target="_blank">1611b1a</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -580,6 +580,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1611b1a8a55fcd1d92c9585c279f74369c1633b4/analysis/snmf_on_nmf.Rmd" target="_blank">1611b1a</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+wflow_publish(“./analysis/snmf_on_nmf.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/12703e14ab22cf6431b61a4b1f0defcba5772684/docs/snmf_on_nmf.html" target="_blank">12703e1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -768,6 +802,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/12703e14ab22cf6431b61a4b1f0defcba5772684/docs/figure/snmf_on_nmf.Rmd/sim1_trueK-1.png" target="_blank">12703e1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/cbf2aff84e4d423a62c0ea4d0e2658d0359b0edf/docs/figure/snmf_on_nmf.Rmd/sim1_trueK-1.png" target="_blank">cbf2aff</a>
 </td>
 <td>
@@ -820,6 +865,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/12703e14ab22cf6431b61a4b1f0defcba5772684/docs/figure/snmf_on_nmf.Rmd/sim1_nottrueK-1.png" target="_blank">12703e1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/cbf2aff84e4d423a62c0ea4d0e2658d0359b0edf/docs/figure/snmf_on_nmf.Rmd/sim1_nottrueK-1.png" target="_blank">cbf2aff</a>
 </td>
 <td>
@@ -833,25 +889,58 @@ Jason Willwerscheid
 </table>
 </div>
 </div>
-<p>SNMF (almost) recovers the correct number of factors, which NMF is of course unable to do. If, however, I initialize EBMF using the NMF fit and then backfit using point-exponential priors, I get a better NMF fit:</p>
+<p>SNMF (almost) recovers the correct number of factors, which NMF is of course unable to do. Interestingly, however, if I use EBMF to fit NMF, I get approximately the same fit as SNMF:</p>
 <pre class="r"><code>nnmf_res1c &lt;- flash.init(sim1$Y) %&gt;%
   flash.set.verbose(0) %&gt;%
-  flash.init.factors(
-    list(nnmf_res1b$W, t(nnmf_res1b$H)),
-    ebnm.fn = ebnm::ebnm_point_exponential
+  flash.add.greedy(
+    Kmax = 10,
+    ebnm.fn = ebnm::ebnm_point_exponential,
+    init.fn = function(fl) init.fn.default(fl, dim.signs = c(1, 1))
   ) %&gt;%
-  flash.backfit(maxiter = 200) %&gt;%
-  flash.nullcheck() %&gt;%
   flash.backfit() %&gt;%
   flash.nullcheck()
-#&gt; Warning in report.maxiter.reached(verbose.lvl): Maximum number of iterations
-#&gt; reached.
-
-#&gt; Warning in report.maxiter.reached(verbose.lvl): Maximum number of iterations
-#&gt; reached.
+#&gt; Warning in scale.EF(EF): Fitting stopped after the initialization function
+#&gt; failed to find a non-zero factor.
 
 plot_it(sim1, nnmf_res1c, snmf_res1b)</code></pre>
 <p><img src="figure/snmf_on_nmf.Rmd/sim1_nnebmf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-sim1_nnebmf-1">
+Past versions of sim1_nnebmf-1.png
+</button>
+</p>
+<div id="fig-sim1_nnebmf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/12703e14ab22cf6431b61a4b1f0defcba5772684/docs/figure/snmf_on_nmf.Rmd/sim1_nnebmf-1.png" target="_blank">12703e1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Finally I make the simulation scenario a bit more difficult (more noise, less sparsity, additional dense factors) and try again with the correct number of factors:</p>
 <pre class="r"><code>sim2 &lt;- sim_data(K = 8, se = 1, L.nn = 20, F.nn = 40, K.dense = 3)
 
@@ -892,6 +981,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/12703e14ab22cf6431b61a4b1f0defcba5772684/docs/figure/snmf_on_nmf.Rmd/sim2-1.png" target="_blank">12703e1</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-25
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/cbf2aff84e4d423a62c0ea4d0e2658d0359b0edf/docs/figure/snmf_on_nmf.Rmd/sim2-1.png" target="_blank">cbf2aff</a>
 </td>
 <td>
@@ -906,6 +1006,19 @@ Jason Willwerscheid
 </div>
 </div>
 <p>SNMF again does quite a bit better on the sparse factors, but the dense factors now show a mixture of positive and negative loadings.</p>
+<p>I try this more complex scenario again but use EBMF to fit NMF:</p>
+<pre class="r"><code>nnmf_res2b &lt;- flash.init(sim2$Y) %&gt;%
+  flash.set.verbose(0) %&gt;%
+  flash.add.greedy(
+    Kmax = 8,
+    ebnm.fn = ebnm::ebnm_point_exponential,
+    init.fn = function(fl) init.fn.default(fl, dim.signs = c(1, 1))
+  ) %&gt;%
+  flash.backfit() %&gt;%
+  flash.nullcheck()
+
+plot_it(sim2, nnmf_res2b, snmf_res2)</code></pre>
+<p><img src="figure/snmf_on_nmf.Rmd/sim2b-1.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
