@@ -132,17 +132,16 @@ snmf_res1b <- flash.init(sim1$Y) %>%
 plot_it(sim1, nnmf_res1b, snmf_res1b)
 ```
 
-SNMF (almost) recovers the correct number of factors, which NMF is of course unable to do. If, however, I initialize EBMF using the NMF fit and then backfit using point-exponential priors, I get a better NMF fit:
+SNMF (almost) recovers the correct number of factors, which NMF is of course unable to do. Interestingly, however, if I use EBMF to fit NMF, I get approximately the same fit as SNMF:
 
 ```{r sim1_nnebmf}
 nnmf_res1c <- flash.init(sim1$Y) %>%
   flash.set.verbose(0) %>%
-  flash.init.factors(
-    list(nnmf_res1b$W, t(nnmf_res1b$H)),
-    ebnm.fn = ebnm::ebnm_point_exponential
+  flash.add.greedy(
+    Kmax = 10,
+    ebnm.fn = ebnm::ebnm_point_exponential,
+    init.fn = function(fl) init.fn.default(fl, dim.signs = c(1, 1))
   ) %>%
-  flash.backfit(maxiter = 200) %>%
-  flash.nullcheck() %>%
   flash.backfit() %>%
   flash.nullcheck()
 
@@ -169,4 +168,20 @@ plot_it(sim2, nnmf_res2, snmf_res2)
 ```
 
 SNMF again does quite a bit better on the sparse factors, but the dense factors now show a mixture of positive and negative loadings.
+
+I try this more complex scenario again but use EBMF to fit NMF:
+
+```{r sim2b}
+nnmf_res2b <- flash.init(sim2$Y) %>%
+  flash.set.verbose(0) %>%
+  flash.add.greedy(
+    Kmax = 8,
+    ebnm.fn = ebnm::ebnm_point_exponential,
+    init.fn = function(fl) init.fn.default(fl, dim.signs = c(1, 1))
+  ) %>%
+  flash.backfit() %>%
+  flash.nullcheck()
+
+plot_it(sim2, nnmf_res2b, snmf_res2)
+```
 
