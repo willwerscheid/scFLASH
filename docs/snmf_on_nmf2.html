@@ -1,0 +1,1124 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+
+<meta name="author" content="Jason Willwerscheid" />
+
+
+<title>SNMF on Data Simulated from an NMF model: Part II</title>
+
+<script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="site_libs/jqueryui-1.11.4/jquery-ui.min.js"></script>
+<link href="site_libs/tocify-1.9.1/jquery.tocify.css" rel="stylesheet" />
+<script src="site_libs/tocify-1.9.1/jquery.tocify.js"></script>
+<script src="site_libs/navigation-1.1/tabsets.js"></script>
+<script src="site_libs/navigation-1.1/codefolding.js"></script>
+<link href="site_libs/highlightjs-9.12.0/textmate.css" rel="stylesheet" />
+<script src="site_libs/highlightjs-9.12.0/highlight.js"></script>
+<link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet" />
+<link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet" />
+
+<link rel="icon" href="https://github.com/workflowr/workflowr-assets/raw/master/img/reproducible.png">
+<!-- Add a small amount of space between sections. -->
+<style type="text/css">
+div.section {
+  padding-top: 12px;
+}
+</style>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+<style type="text/css">code{white-space: pre;}</style>
+<script type="text/javascript">
+if (window.hljs) {
+  hljs.configure({languages: []});
+  hljs.initHighlightingOnLoad();
+  if (document.readyState && document.readyState === "complete") {
+    window.setTimeout(function() { hljs.initHighlighting(); }, 0);
+  }
+}
+</script>
+
+
+
+
+
+
+
+
+<style type = "text/css">
+.main-container {
+  max-width: 940px;
+  margin-left: auto;
+  margin-right: auto;
+}
+img {
+  max-width:100%;
+}
+.tabbed-pane {
+  padding-top: 12px;
+}
+.html-widget {
+  margin-bottom: 20px;
+}
+button.code-folding-btn:focus {
+  outline: none;
+}
+summary {
+  display: list-item;
+}
+pre code {
+  padding: 0;
+}
+</style>
+
+
+<style type="text/css">
+.dropdown-submenu {
+  position: relative;
+}
+.dropdown-submenu>.dropdown-menu {
+  top: 0;
+  left: 100%;
+  margin-top: -6px;
+  margin-left: -1px;
+  border-radius: 0 6px 6px 6px;
+}
+.dropdown-submenu:hover>.dropdown-menu {
+  display: block;
+}
+.dropdown-submenu>a:after {
+  display: block;
+  content: " ";
+  float: right;
+  width: 0;
+  height: 0;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px 0 5px 5px;
+  border-left-color: #cccccc;
+  margin-top: 5px;
+  margin-right: -10px;
+}
+.dropdown-submenu:hover>a:after {
+  border-left-color: #adb5bd;
+}
+.dropdown-submenu.pull-left {
+  float: none;
+}
+.dropdown-submenu.pull-left>.dropdown-menu {
+  left: -100%;
+  margin-left: 10px;
+  border-radius: 6px 0 6px 6px;
+}
+</style>
+
+<script type="text/javascript">
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+
+  // mark it active
+  menuAnchor.tab('show');
+
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+
+  // Navbar adjustments
+  var navHeight = $(".navbar").first().height() + 15;
+  var style = document.createElement('style');
+  var pt = "padding-top: " + navHeight + "px; ";
+  var mt = "margin-top: -" + navHeight + "px; ";
+  var css = "";
+  // offset scroll position for anchor links (for fixed navbar)
+  for (var i = 1; i <= 6; i++) {
+    css += ".section h" + i + "{ " + pt + mt + "}\n";
+  }
+  style.innerHTML = "body {" + pt + "padding-bottom: 40px; }\n" + css;
+  document.head.appendChild(style);
+});
+</script>
+
+<!-- tabsets -->
+
+<style type="text/css">
+.tabset-dropdown > .nav-tabs {
+  display: inline-table;
+  max-height: 500px;
+  min-height: 44px;
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.tabset-dropdown > .nav-tabs > li.active:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li.active:before {
+  content: "&#xe258;";
+  border: none;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open:before {
+  content: "";
+  font-family: 'Glyphicons Halflings';
+  display: inline-block;
+  padding: 10px;
+  border-right: 1px solid #ddd;
+}
+
+.tabset-dropdown > .nav-tabs > li.active {
+  display: block;
+}
+
+.tabset-dropdown > .nav-tabs > li > a,
+.tabset-dropdown > .nav-tabs > li > a:focus,
+.tabset-dropdown > .nav-tabs > li > a:hover {
+  border: none;
+  display: inline-block;
+  border-radius: 4px;
+  background-color: transparent;
+}
+
+.tabset-dropdown > .nav-tabs.nav-tabs-open > li {
+  display: block;
+  float: none;
+}
+
+.tabset-dropdown > .nav-tabs > li {
+  display: none;
+}
+</style>
+
+<!-- code folding -->
+<style type="text/css">
+.code-folding-btn { margin-bottom: 4px; }
+</style>
+
+
+
+<style type="text/css">
+
+#TOC {
+  margin: 25px 0px 20px 0px;
+}
+@media (max-width: 768px) {
+#TOC {
+  position: relative;
+  width: 100%;
+}
+}
+
+@media print {
+.toc-content {
+  /* see https://github.com/w3c/csswg-drafts/issues/4434 */
+  float: right;
+}
+}
+
+.toc-content {
+  padding-left: 30px;
+  padding-right: 40px;
+}
+
+div.main-container {
+  max-width: 1200px;
+}
+
+div.tocify {
+  width: 20%;
+  max-width: 260px;
+  max-height: 85%;
+}
+
+@media (min-width: 768px) and (max-width: 991px) {
+  div.tocify {
+    width: 25%;
+  }
+}
+
+@media (max-width: 767px) {
+  div.tocify {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+.tocify ul, .tocify li {
+  line-height: 20px;
+}
+
+.tocify-subheader .tocify-item {
+  font-size: 0.90em;
+}
+
+.tocify .list-group-item {
+  border-radius: 0px;
+}
+
+
+</style>
+
+
+
+</head>
+
+<body>
+
+
+<div class="container-fluid main-container">
+
+
+<!-- setup 3col/9col grid for toc_float and main content  -->
+<div class="row">
+<div class="col-xs-12 col-sm-4 col-md-3">
+<div id="TOC" class="tocify">
+</div>
+</div>
+
+<div class="toc-content col-xs-12 col-sm-8 col-md-9">
+
+
+
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="index.html">scFLASH</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        <li>
+  <a href="index.html">Home</a>
+</li>
+<li>
+  <a href="about.html">About</a>
+</li>
+<li>
+  <a href="license.html">License</a>
+</li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+        <li>
+  <a href="https://github.com/willwerscheid/scFLASH">
+    <span class="fa fa-github"></span>
+     
+  </a>
+</li>
+      </ul>
+    </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+
+<div id="header">
+
+<div class="btn-group pull-right float-right">
+<button type="button" class="btn btn-default btn-xs btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span>Code</span> <span class="caret"></span></button>
+<ul class="dropdown-menu dropdown-menu-right" style="min-width: 50px;">
+<li><a id="rmd-show-all-code" href="#">Show All Code</a></li>
+<li><a id="rmd-hide-all-code" href="#">Hide All Code</a></li>
+</ul>
+</div>
+
+
+
+<h1 class="title toc-ignore">SNMF on Data Simulated from an NMF model: Part II</h1>
+<h4 class="author">Jason Willwerscheid</h4>
+<h4 class="date">3/24/2022</h4>
+
+</div>
+
+
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-report" data-toggle="collapse" data-target="#workflowr-report">
+<span class="glyphicon glyphicon-list" aria-hidden="true"></span> workflowr <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span>
+</button>
+</p>
+<div id="workflowr-report" class="collapse">
+<ul class="nav nav-tabs">
+<li class="active">
+<a data-toggle="tab" href="#summary">Summary</a>
+</li>
+<li>
+<a data-toggle="tab" href="#checks"> Checks <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> </a>
+</li>
+<li>
+<a data-toggle="tab" href="#versions">Past versions</a>
+</li>
+</ul>
+<div class="tab-content">
+<div id="summary" class="tab-pane fade in active">
+<p>
+<strong>Last updated:</strong> 2022-03-26
+</p>
+<p>
+<strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
+</p>
+<p>
+<strong>Knit directory:</strong> <code>scFLASH/</code> <span class="glyphicon glyphicon-question-sign" aria-hidden="true" title="This is the local directory in which the code in this file was executed."> </span>
+</p>
+<p>
+This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis was created with <a
+  href="https://github.com/jdblischak/workflowr">workflowr</a> (version 1.6.2). The <em>Checks</em> tab describes the reproducibility checks that were applied when the results were created. The <em>Past versions</em> tab lists the development history.
+</p>
+<hr>
+</div>
+<div id="checks" class="tab-pane fade">
+<div id="workflowr-checks" class="panel-group">
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRMarkdownfilestronguptodate"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>R Markdown file:</strong> up-to-date </a>
+</p>
+</div>
+<div id="strongRMarkdownfilestronguptodate" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great! Since the R Markdown file has been committed to the Git repository, you know the exact version of the code that produced these results.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongEnvironmentstrongempty"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Environment:</strong> empty </a>
+</p>
+</div>
+<div id="strongEnvironmentstrongempty" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! The global environment was empty. Objects defined in the global environment can affect the analysis in your R Markdown file in unknown ways. For reproduciblity it’s best to always run the code in an empty environment.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSeedstrongcodesetseed20181103code"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Seed:</strong> <code>set.seed(20181103)</code> </a>
+</p>
+</div>
+<div id="strongSeedstrongcodesetseed20181103code" class="panel-collapse collapse">
+<div class="panel-body">
+<p>The command <code>set.seed(20181103)</code> was run prior to running the code in the R Markdown file. Setting a seed ensures that any results that rely on randomness, e.g. subsampling or permutations, are reproducible.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongSessioninformationstrongrecorded"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Session information:</strong> recorded </a>
+</p>
+</div>
+<div id="strongSessioninformationstrongrecorded" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Recording the operating system, R version, and package versions is critical for reproducibility.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongCachestrongnone"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Cache:</strong> none </a>
+</p>
+</div>
+<div id="strongCachestrongnone" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Nice! There were no cached chunks for this analysis, so you can be confident that you successfully produced the results during this run.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongFilepathsstrongrelative"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>File paths:</strong> relative </a>
+</p>
+</div>
+<div id="strongFilepathsstrongrelative" class="panel-collapse collapse">
+<div class="panel-body">
+<p>Great job! Using relative paths to the files within your workflowr project makes it easier to run your code on other machines.</p>
+</div>
+</div>
+</div>
+<div class="panel panel-default">
+<div class="panel-heading">
+<p class="panel-title">
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec98017dc539022620cbd6b2ca84d55131ebe856dtargetblankc98017da"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/c98017dc539022620cbd6b2ca84d55131ebe856d" target="_blank">c98017d</a> </a>
+</p>
+</div>
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreec98017dc539022620cbd6b2ca84d55131ebe856dtargetblankc98017da" class="panel-collapse collapse">
+<div class="panel-body">
+<p>
+Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
+</p>
+<p>
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/c98017dc539022620cbd6b2ca84d55131ebe856d" target="_blank">c98017d</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+</p>
+<p>
+Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
+</p>
+<pre><code>
+Ignored files:
+    Ignored:    .DS_Store
+    Ignored:    .Rhistory
+    Ignored:    .Rproj.user/
+    Ignored:    code/initialization/
+    Ignored:    data-raw/10x_assigned_cell_types.R
+    Ignored:    data/.DS_Store
+    Ignored:    data/10x/
+    Ignored:    data/Ensembl2Reactome.txt
+    Ignored:    data/droplet.rds
+    Ignored:    data/mus_pathways.rds
+    Ignored:    output/backfit/
+    Ignored:    output/final_montoro/
+    Ignored:    output/lowrank/
+    Ignored:    output/prior_type/
+    Ignored:    output/pseudocount/
+    Ignored:    output/pseudocount_redux/
+    Ignored:    output/size_factors/
+    Ignored:    output/var_reg/
+    Ignored:    output/var_type/
+
+Untracked files:
+    Untracked:  analysis/NBapprox.Rmd
+    Untracked:  analysis/final_pbmc.Rmd
+    Untracked:  analysis/trachea4.Rmd
+    Untracked:  code/alt_montoro/
+    Untracked:  code/final_pbmc/
+    Untracked:  code/missing_data.R
+    Untracked:  code/prior_type/priortype_fits_pbmc.R
+    Untracked:  code/pseudocount_redux/pseudocount_fits_pbmc.R
+    Untracked:  code/pulseseq/
+    Untracked:  code/size_factors/sizefactor_fits_pbmc.R
+    Untracked:  code/trachea4.R
+    Untracked:  mixsqp_fail.rds
+    Untracked:  output/alt_montoro/
+    Untracked:  output/deng/
+    Untracked:  output/final_pbmc/
+    Untracked:  output/pulseseq_fit.rds
+    Untracked:  tmp.txt
+
+Unstaged changes:
+    Modified:   code/deng/deng.R
+    Modified:   code/utils.R
+    Modified:   data-raw/pbmc.R
+
+</code></pre>
+<p>
+Note that any generated files, e.g. HTML, png, CSS, etc., are not included in this status report because it is ok for generated content to have uncommitted changes.
+</p>
+</div>
+</div>
+</div>
+</div>
+<hr>
+</div>
+<div id="versions" class="tab-pane fade">
+
+<p>
+These are the previous versions of the repository in which changes were made to the R Markdown (<code>analysis/snmf_on_nmf2.Rmd</code>) and HTML (<code>docs/snmf_on_nmf2.html</code>) files. If you’ve configured a remote Git repository (see <code>?wflow_git_remote</code>), click on the hyperlinks in the table below to view the files as they were in that past version.
+</p>
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+File
+</th>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+<th>
+Message
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/c98017dc539022620cbd6b2ca84d55131ebe856d/analysis/snmf_on_nmf2.Rmd" target="_blank">c98017d</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-26
+</td>
+<td>
+wflow_publish(“analysis/snmf_on_nmf2.Rmd”)
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<hr>
+</div>
+</div>
+</div>
+<p>Here I’d like to take a closer look at non-negative EBMF. In the <a href="snmf_on_nmf.html">previous analysis</a>, I showed that it does a very good job finding the “true” structure even in a more complex simulation scenario. There, I used the greedy + backfit algorithm with point-exponential priors. Peter Carbonetto raised the question of initialization: can we initialize using the <code>nnlm</code> solution and then refine via a <code>flashier</code> backfit? Relatedly, what does the greedy “initialization” look like? How does <code>flashier</code> get from the greedy fit to the “correct” backfit solution? Finally, Matthew Stephens suggested that it might be computationally advantageous to use point-exponential priors with mode to be estimated for loadings. Any non-zero modes can then be absorbed into a fixed mean loadings vector of ones. How does this approach compare to the results I’ve already obtained?</p>
+<p>I use the same simulation function and a similar plot function to the previous analysis.</p>
+<pre class="r"><code>library(flashier)
+#&gt; Loading required package: magrittr
+library(tidyverse)
+#&gt; ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.1 ──
+#&gt; ✓ ggplot2 3.3.5     ✓ purrr   0.3.4
+#&gt; ✓ tibble  3.1.6     ✓ dplyr   1.0.8
+#&gt; ✓ tidyr   1.2.0     ✓ stringr 1.4.0
+#&gt; ✓ readr   2.0.0     ✓ forcats 0.5.1
+#&gt; ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+#&gt; x tidyr::extract()   masks magrittr::extract()
+#&gt; x dplyr::filter()    masks stats::filter()
+#&gt; x dplyr::lag()       masks stats::lag()
+#&gt; x purrr::set_names() masks magrittr::set_names()
+
+sim_data &lt;- function(n = 100, 
+                     p = 200, 
+                     K = 6, 
+                     L.nn = 10, 
+                     F.nn = 20, 
+                     se = 0.1, 
+                     K.dense = 1, 
+                     seed = 666) {
+  set.seed(seed)
+  
+  LL &lt;- matrix(rexp(n * K), nrow = n, ncol = K)
+  FF &lt;- matrix(rexp(p * K), nrow = p, ncol = K)
+  
+  # &quot;Mean&quot; factor.
+  LL[, 1] &lt;- 3
+  
+  # Additional sparse nonnegative factors.
+  for (k in (K.dense + 1):K) {
+    L.nn.idx &lt;- seq((k - K.dense - 1) * L.nn + 1, (k - K.dense) * L.nn)
+    F.nn.idx &lt;- seq((k - K.dense - 1) * (F.nn / 2) + 1, (k + K.dense) * (F.nn / 2))
+    LL[setdiff(1:n, L.nn.idx), k] &lt;- 0
+    FF[setdiff(1:p, F.nn.idx), k] &lt;- 0
+  }
+  
+  # Add normal noise.
+  Y &lt;- LL %*% t(FF) + rnorm(n * p, sd = se)
+  
+  # Add a constant (which can be absorbed by mean factor) to ensure nonnegativity.
+  Y &lt;- Y - min(Y)
+  
+  return(list(LL = LL, FF = FF, Y = Y))
+}
+
+plot_it &lt;- function(simdat, snmf_res) {
+  LL &lt;- simdat$LL
+
+  to_tibble &lt;- function(mat, type) {
+    mat &lt;- scale(mat, center = FALSE, scale = apply(mat, 2, function(x) max(abs(x))))
+    return(
+      as_tibble(mat, .name_repair = &quot;unique&quot;) %&gt;%
+        mutate(row = row_number()) %&gt;%
+        pivot_longer(!row, names_to = &quot;k&quot;, values_to = &quot;value&quot;) %&gt;%
+        add_column(type = type)     
+    )
+  }
+  
+  
+  suppressMessages({
+    tib &lt;- to_tibble(simdat$LL, &quot;True loadings&quot;) %&gt;%
+      bind_rows(to_tibble(simdat$FF, &quot;True factors&quot;)) %&gt;%
+      bind_rows(to_tibble(snmf_res$L.pm, &quot;EBMF loadings&quot;)) %&gt;%
+      bind_rows(to_tibble(snmf_res$F.pm, &quot;EBMF factors&quot;)) %&gt;%
+      mutate(k = as.numeric(str_remove_all(k, &quot;\\.&quot;))) %&gt;%
+      mutate(type = factor(type, levels = c(
+        &quot;True loadings&quot;, &quot;EBMF loadings&quot;,
+        &quot;True factors&quot;, &quot;EBMF factors&quot;
+      )))
+  })
+  
+  ggplot(tib, aes(x = k, y = row, fill = value)) +
+    geom_tile() +
+    scale_fill_gradient2() +
+    facet_wrap(~type, nrow = 2, ncol = 2, dir = &quot;h&quot;, scales = &quot;free&quot;) +
+    theme_void()
+ }</code></pre>
+<div id="greedy-fit" class="section level2">
+<h2>Greedy fit</h2>
+<p>This fit is slightly different to the previous analysis is that I use a fixed “mean” vector of ones for the first vector of loadings.</p>
+<p>The greedy fit appears as follows:</p>
+<pre class="r"><code>simdat &lt;- sim_data(K = 8, se = 1, L.nn = 20, F.nn = 40, K.dense = 3)
+
+ones &lt;- matrix(1, nrow = nrow(simdat$Y), ncol = 1)
+ls.soln &lt;- t(solve(crossprod(ones), crossprod(ones, simdat$Y)))
+
+greedy_res &lt;- flash.init(simdat$Y) %&gt;%
+  flash.set.verbose(0) %&gt;%
+  flash.init.factors(init = list(ones, ls.soln)) %&gt;%
+  flash.fix.factors(kset = 1, mode = 1) %&gt;%
+  flash.add.greedy(
+    Kmax = 7,
+    ebnm.fn = ebnm::ebnm_point_exponential,
+    init.fn = function(fl) init.fn.default(fl, dim.signs = c(1, 1))
+  )
+
+plot_it(simdat, greedy_res)</code></pre>
+<p><img src="figure/snmf_on_nmf2.Rmd/greedy-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>So it already captures the correct structure, but the loadings and factors are a bit “thinner” or sparser than they should be.</p>
+</div>
+<div id="backfit-from-greedy" class="section level2">
+<h2>Backfit from greedy</h2>
+<p>The results using greedy + backfit are as follows. (This method was used in the previous analysis.)</p>
+<pre class="r"><code>bf_t &lt;- system.time({
+  bf_res &lt;- greedy_res %&gt;%
+    flash.backfit()
+})
+
+plot_it(simdat, bf_res)</code></pre>
+<p><img src="figure/snmf_on_nmf2.Rmd/bf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Very nice! And fast – this backfit took only 1.703 seconds.</p>
+</div>
+<div id="backfit-from-nnlm" class="section level2">
+<h2>Backfit from NNLM</h2>
+<p>Recall from the previous analysis that the <code>nnlm</code> fit is not nearly as clean as the <code>flashier</code> fit. Can EBMF improve upon the <code>nnlm</code> results?</p>
+<pre class="r"><code>nnmf_res &lt;- NNLM::nnmf(simdat$Y, init = list(W0 = ones), k = 7, verbose = 0)
+nnlmbf_t &lt;- system.time({
+  nnlmbf_res &lt;- flash.init(simdat$Y) %&gt;%
+    flash.set.verbose(0) %&gt;%
+    flash.init.factors(
+      list(nnmf_res$W[, c(8, 1:7)], t(nnmf_res$H[c(8, 1:7), ])),
+      ebnm.fn = ebnm::ebnm_point_exponential
+    ) %&gt;%
+    flash.fix.factors(kset = 1, mode = 1) %&gt;%
+    flash.backfit()
+})
+
+plot_it(simdat, nnlmbf_res)</code></pre>
+<p><img src="figure/snmf_on_nmf2.Rmd/nnlm_bf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>Still pretty good! Loadings are not exactly sparse, but close enough. This method does take a bit longer: this backfit took 3.795 seconds.</p>
+</div>
+<div id="point-exponential-priors-with-non-zero-shift" class="section level2">
+<h2>Point-exponential priors with non-zero shift</h2>
+<p>Can using point-exponential priors with a non-zero mode improve either the fit or the computation time? The greedy + backfit algorithm already works really well on this scenario, so I’ll focus instead on backfitting the <code>nnlm</code> fit.</p>
+<pre class="r"><code>nzpe_t &lt;- system.time({
+  nzpe_res &lt;- flash.init(simdat$Y) %&gt;%
+    flash.set.verbose(3) %&gt;%
+    flash.init.factors(
+      list(nnmf_res$W[, c(8, 1:7)], t(nnmf_res$H[c(8, 1:7), ])),
+      ebnm.fn = c(
+        as.ebnm.fn(prior_family = &quot;point_exponential&quot;, mode = &quot;estimate&quot;),
+        ebnm::ebnm_point_exponential
+      )
+    ) %&gt;%
+    flash.fix.factors(kset = 1, mode = 1) %&gt;%
+    flash.backfit()
+})
+#&gt; Convergence tolerance set to 2.98e-04.
+#&gt; Backfitting 8 factors (tolerance: 2.98e-04)...
+#&gt;     Iteration  Factor   ELBO Diff     Max Chg
+#&gt;             1     all          NA    2.39e-02 
+#&gt;             2     all    8.54e+01   -1.52e-02 
+#&gt;             3     all    5.24e+01   -1.16e-02 
+#&gt;             4     all    3.61e+01   -9.74e-03 
+#&gt;             5     all    2.73e+01   -1.29e-02 
+#&gt;             6     all    1.95e+01   -1.09e-02 
+#&gt;             7     all    1.45e+01   -7.95e-03 
+#&gt;             8     all    1.22e+01   -1.39e-02 
+#&gt;             9     all    1.07e+01   -1.33e-02 
+#&gt;            10     all    1.01e+01   -2.19e-02 
+#&gt;            11     all    8.74e+00    1.28e-02 
+#&gt;            12     all    7.50e+00   -2.67e-02 
+#&gt;            13     all    2.94e+00   -2.21e-02 
+#&gt;            14     all    1.16e+01    7.53e-03 
+#&gt;            15     all    8.57e+00    8.36e-03 
+#&gt;            16     all    5.90e+00    9.16e-03 
+#&gt;            17     all    6.30e+00    9.83e-03 
+#&gt;            18     all    9.30e+00    1.43e-02 
+#&gt;            19     all    8.49e+00    2.52e-02 
+#&gt;            20     all    1.11e+01   -4.30e-03 
+#&gt;            21     all    1.14e+01   -5.88e-03 
+#&gt;            22     all    7.92e+00    7.05e-03 
+#&gt;            23     all    2.08e+00    9.22e-03 
+#&gt;            24     all    3.29e+00   -3.01e-03 
+#&gt;            25     all    3.36e+00   -4.18e-03 
+#&gt;            26     all    3.41e+00   -5.53e-03 
+#&gt;            27     all    4.29e+00   -5.83e-03 
+#&gt;            28     all    6.75e+00    7.18e-03 
+#&gt;            29     all    1.26e+01    1.19e-02 
+#&gt;            30     all    2.45e+01    2.32e-02 
+#&gt;            31     all    3.46e+01   -3.56e-02 
+#&gt;            32     all    8.68e+00    6.29e-03 
+#&gt;            33     all    7.40e+00   -6.84e-03 
+#&gt;            34     all    3.57e+00   -8.69e-03 
+#&gt;            35     all    1.46e+00   -3.88e-03 
+#&gt;            36     all    1.23e+00    5.20e-03 
+#&gt;            37     all    1.18e+00    4.87e-03 
+#&gt;            38     all    1.56e+00    2.98e-03 
+#&gt;            39     all    2.19e+00    4.53e-03 
+#&gt;            40     all    3.09e+00    5.16e-03 
+#&gt;            41     all    4.48e+00   -9.42e-03 
+#&gt;            42     all    4.51e+00   -1.51e-02 
+#&gt;            43     all    2.12e+00    7.33e-03 
+#&gt;            44     all    1.64e+00    9.43e-03 
+#&gt;            45     all    8.99e-01   -6.82e-03 
+#&gt;            46     all    1.13e+00   -9.79e-03 
+#&gt;            47     all    1.22e+00   -1.19e-02 
+#&gt;            48     all    2.09e+00    9.15e-03 
+#&gt;            49     all    1.14e+00    8.75e-03 
+#&gt;            50     all    7.37e-02    9.97e-03 
+#&gt;            51     all    9.03e-01   -5.95e-03 
+#&gt;            52     all    5.74e-01   -5.19e-03 
+#&gt;            53     all    3.46e-01   -4.26e-03 
+#&gt;            54     all    4.82e-01    3.85e-03 
+#&gt;            55     all    7.70e-01    4.51e-03 
+#&gt;            56     all    1.04e+00    6.43e-03 
+#&gt;            57     all    1.41e+00   -1.14e-02 
+#&gt;            58     all    1.89e+00   -1.51e-02 
+#&gt;            59     all    2.12e+00    8.76e-03 
+#&gt;            60     all    9.06e-01    1.20e-02 
+#&gt;            61     all    4.31e-01    3.42e-03 
+#&gt;            62     all    3.05e-01    2.55e-03 
+#&gt;            63     all    2.34e-01   -2.53e-03 
+#&gt;            64     all    2.74e-01   -2.01e-03 
+#&gt;            65     all    3.49e-01   -1.98e-03 
+#&gt;            66     all    4.70e-01    2.90e-03 
+#&gt;            67     all    6.97e-01   -2.70e-03 
+#&gt;            68     all    1.13e+00    3.87e-03 
+#&gt;            69     all    1.88e+00   -7.25e-03 
+#&gt;            70     all    2.49e+00   -1.40e-02 
+#&gt;            71     all    3.07e-01   -2.66e-02 
+#&gt;            72     all    4.42e+00    9.61e-03 
+#&gt;            73     all    3.41e+00    1.36e-02 
+#&gt;            74     all    1.92e+00    1.13e-02 
+#&gt;            75     all    1.52e+00   -1.62e-02 
+#&gt;            76     all    2.39e+00   -8.88e-03 
+#&gt;            77     all    1.34e+00    8.84e-03 
+#&gt;            78     all    4.83e-01    9.24e-03 
+#&gt;            79     all    7.15e-01    9.95e-03 
+#&gt;            80     all    1.27e+00    9.52e-03 
+#&gt;            81     all    8.99e-01   -1.99e-02 
+#&gt;            82     all    2.97e+00    9.43e-03 
+#&gt;            83     all    1.27e+00    1.21e-02 
+#&gt;            84     all    5.97e-01   -3.76e-03 
+#&gt;            85     all    4.50e-01   -4.07e-03 
+#&gt;            86     all    3.99e-01   -2.53e-03 
+#&gt;            87     all    4.93e-01   -2.45e-03 
+#&gt;            88     all    6.59e-01   -2.33e-03 
+#&gt;            89     all    9.39e-01    3.13e-03 
+#&gt;            90     all    1.46e+00    3.65e-03 
+#&gt;            91     all    2.58e+00    6.92e-03 
+#&gt;            92     all    4.96e+00    1.43e-02 
+#&gt;            93     all    8.59e+00    2.83e-02 
+#&gt;            94     all    9.26e+00    4.21e-02 
+#&gt;            95     all    4.52e+00    1.25e-02 
+#&gt;            96     all    2.46e+00    1.24e-02 
+#&gt;            97     all    9.23e-01   -4.29e-03 
+#&gt;            98     all    7.74e-01   -4.93e-03 
+#&gt;            99     all    5.73e-01   -2.81e-03 
+#&gt;           100     all    4.94e-01    3.32e-03 
+#&gt;           101     all    4.08e-01    3.36e-03 
+#&gt;           102     all    1.81e-01    3.92e-03 
+#&gt;           103     all    1.75e-01   -2.10e-03 
+#&gt;           104     all    1.46e-01   -2.48e-03 
+#&gt;           105     all    1.07e-01    1.68e-03 
+#&gt;           106     all    1.19e-01    2.10e-03 
+#&gt;           107     all    1.50e-01    2.12e-03 
+#&gt;           108     all    1.50e-01    3.11e-03 
+#&gt;           109     all    8.63e-02    4.42e-03 
+#&gt;           110     all    2.33e-01   -2.43e-03 
+#&gt;           111     all    1.66e-01    3.01e-03 
+#&gt;           112     all    8.04e-02    2.48e-03 
+#&gt;           113     all    3.70e-02    3.49e-03 
+#&gt;           114     all    1.31e-01   -2.42e-03 
+#&gt;           115     all    8.27e-02   -2.47e-03 
+#&gt;           116     all    3.22e-02   -2.21e-03 
+#&gt;           117     all    4.06e-02    2.50e-03 
+#&gt;           118     all    9.20e-02    3.03e-03 
+#&gt;           119     all    7.38e-02    4.53e-03 
+#&gt;           120     all    1.74e-01   -2.63e-03 
+#&gt;           121     all    9.45e-02   -3.55e-03 
+#&gt;           122     all    3.79e-02    1.09e-03 
+#&gt;           123     all    3.01e-02    1.08e-03 
+#&gt;           124     all    2.77e-02    7.98e-04 
+#&gt;           125     all    3.24e-02    5.58e-04 
+#&gt;           126     all    4.21e-02   -7.94e-04 
+#&gt;           127     all    5.92e-02   -8.56e-04 
+#&gt;           128     all    8.71e-02   -9.46e-04 
+#&gt;           129     all    1.45e-01    1.55e-03 
+#&gt;           130     all    2.46e-01    2.47e-03 
+#&gt;           131     all    2.48e-01   -4.66e-03 
+#&gt;           132     all    1.21e-01   -2.21e-03 
+#&gt;           133     all    6.19e-02   -3.04e-03 
+#&gt;           134     all    1.96e-02    1.00e-03 
+#&gt;           135     all    1.16e-02    8.52e-04 
+#&gt;           136     all    5.89e-03    6.49e-04 
+#&gt;           137     all    3.94e-03    4.67e-04 
+#&gt;           138     all    4.22e-03   -5.72e-04 
+#&gt;           139     all    4.62e-03   -7.96e-04 
+#&gt;           140     all    2.58e-03   -8.42e-04 
+#&gt;           141     all    1.22e-03   -1.09e-03 
+#&gt;           142     all    1.74e-02    6.47e-04 
+#&gt;           143     all    9.28e-03   -1.01e-03 
+#&gt;           144     all    1.01e-03   -8.75e-04 
+#&gt;           145     all    6.22e-03   -4.76e-04 
+#&gt;           146     all    3.29e-03    5.77e-04 
+#&gt;           147     all    2.04e-03    3.74e-04 
+#&gt;           148     all    2.69e-03    3.36e-04 
+#&gt;           149     all    3.73e-03   -5.14e-04 
+#&gt;           150     all    5.78e-03   -6.33e-04 
+#&gt;           151     all    6.66e-03   -8.61e-04 
+#&gt;           152     all    3.38e-03    1.35e-03 
+#&gt;           153     all    1.80e-02    9.16e-04 
+#&gt;           154     all    6.90e-03    8.57e-04 
+#&gt;           155     all    2.85e-03   -2.94e-04 
+#&gt;           156     all    2.08e-03   -3.46e-04 
+#&gt;           157     all    1.33e-03   -1.82e-04 
+#&gt;           158     all    1.41e-03   -1.91e-04 
+#&gt;           159     all    1.90e-03    2.27e-04 
+#&gt;           160     all    2.30e-03   -2.15e-04 
+#&gt;           161     all    3.10e-03   -3.89e-04 
+#&gt;           162     all    4.94e-03   -4.90e-04 
+#&gt;           163     all    5.12e-03   -5.56e-04 
+#&gt;           164     all    5.16e-03    4.51e-04 
+#&gt;           165     all    3.28e-03    5.83e-04 
+#&gt;           166     all    1.15e-03    1.88e-04 
+#&gt;           167     all    9.75e-04    1.45e-04 
+#&gt;           168     all    8.26e-04   -1.32e-04 
+#&gt;           169     all    8.25e-04    1.13e-04 
+#&gt;           170     all    9.47e-04    1.30e-04 
+#&gt;           171     all    1.15e-03   -1.47e-04 
+#&gt;           172     all    1.37e-03   -2.21e-04 
+#&gt;           173     all    1.62e-03   -3.77e-04 
+#&gt;           174     all    5.89e-04   -7.01e-04 
+#&gt;           175     all    1.90e-03   -2.74e-04 
+#&gt;           176     all    1.61e-03   -2.49e-04 
+#&gt;           177     all    9.49e-04    2.71e-04 
+#&gt;           178     all    3.77e-04   -3.63e-04 
+#&gt;           179     all    1.22e-03   -2.31e-04 
+#&gt;           180     all    6.96e-04   -2.12e-04 
+#&gt;           181     all    2.39e-04   -8.72e-05 
+#&gt; Wrapping up...
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+#&gt; Done.
+
+# Shift loadings for visualization purposes.
+shifts &lt;- sapply(nzpe_res$L.ghat[2:8], function(g) g$shift[1])
+nzpe_res$L.pm[, 2:8] &lt;- nzpe_res$L.pm[, 2:8] - rep(shifts, each = nrow(simdat$Y))
+
+plot_it(simdat, nzpe_res)</code></pre>
+<p><img src="figure/snmf_on_nmf2.Rmd/nzpe-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>I don’t think that these more complicated priors help much in this case, either in terms of the fit or in terms of performance (this backfit took 7.281 seconds). We should try again using a more complex scenario.</p>
+<br>
+<p>
+<button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
+<span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> Session information
+</button>
+</p>
+<div id="workflowr-sessioninfo" class="collapse">
+<pre class="r"><code>sessionInfo()
+#&gt; R version 3.5.3 (2019-03-11)
+#&gt; Platform: x86_64-apple-darwin15.6.0 (64-bit)
+#&gt; Running under: macOS Mojave 10.14.6
+#&gt; 
+#&gt; Matrix products: default
+#&gt; BLAS: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRblas.0.dylib
+#&gt; LAPACK: /Library/Frameworks/R.framework/Versions/3.5/Resources/lib/libRlapack.dylib
+#&gt; 
+#&gt; locale:
+#&gt; [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+#&gt; 
+#&gt; attached base packages:
+#&gt; [1] stats     graphics  grDevices utils     datasets  methods   base     
+#&gt; 
+#&gt; other attached packages:
+#&gt;  [1] forcats_0.5.1   stringr_1.4.0   dplyr_1.0.8     purrr_0.3.4    
+#&gt;  [5] readr_2.0.0     tidyr_1.2.0     tibble_3.1.6    ggplot2_3.3.5  
+#&gt;  [9] tidyverse_1.3.1 flashier_0.2.27 magrittr_2.0.2  workflowr_1.6.2
+#&gt; 
+#&gt; loaded via a namespace (and not attached):
+#&gt;  [1] fs_1.5.0          lubridate_1.7.10  httr_1.4.2        rprojroot_2.0.2  
+#&gt;  [5] tools_3.5.3       backports_1.1.3   bslib_0.3.1       utf8_1.2.2       
+#&gt;  [9] R6_2.5.1          irlba_2.3.3       DBI_1.0.0         colorspace_2.0-3 
+#&gt; [13] withr_2.5.0       tidyselect_1.1.2  compiler_3.5.3    git2r_0.28.0     
+#&gt; [17] cli_3.2.0         rvest_1.0.0       xml2_1.3.2        labeling_0.4.2   
+#&gt; [21] horseshoe_0.2.0   sass_0.4.0        scales_1.1.1      SQUAREM_2021.1   
+#&gt; [25] mixsqp_0.3-43     digest_0.6.29     rmarkdown_2.11    deconvolveR_1.2-1
+#&gt; [29] pkgconfig_2.0.3   htmltools_0.5.2   dbplyr_2.1.1      fastmap_1.1.0    
+#&gt; [33] invgamma_1.1      highr_0.9         rlang_1.0.2       readxl_1.3.1     
+#&gt; [37] rstudioapi_0.13   jquerylib_0.1.4   generics_0.1.2    farver_2.1.0     
+#&gt; [41] jsonlite_1.8.0    Matrix_1.3-4      Rcpp_1.0.8        munsell_0.5.0    
+#&gt; [45] fansi_1.0.2       lifecycle_1.0.1   stringi_1.4.6     whisker_0.3-2    
+#&gt; [49] yaml_2.3.5        grid_3.5.3        parallel_3.5.3    promises_1.2.0.1 
+#&gt; [53] crayon_1.5.0      lattice_0.20-38   haven_2.3.1       splines_3.5.3    
+#&gt; [57] hms_1.1.1         knitr_1.33        pillar_1.7.0      softImpute_1.4-1 
+#&gt; [61] reprex_2.0.0      glue_1.6.2        evaluate_0.14     trust_0.1-8      
+#&gt; [65] modelr_0.1.8      vctrs_0.3.8       tzdb_0.1.1        httpuv_1.5.2     
+#&gt; [69] cellranger_1.1.0  gtable_0.3.0      ebnm_1.0-11       assertthat_0.2.1 
+#&gt; [73] ashr_2.2-54       xfun_0.29         broom_0.7.6       NNLM_0.4.2       
+#&gt; [77] later_1.3.0       truncnorm_1.0-8   ellipsis_0.3.2</code></pre>
+</div>
+</div>
+
+
+<!-- Adjust MathJax settings so that all math formulae are shown using
+TeX fonts only; see
+http://docs.mathjax.org/en/latest/configuration.html.  This will make
+the presentation more consistent at the cost of the webpage sometimes
+taking slightly longer to load. Note that this only works because the
+footer is added to webpages before the MathJax javascript. -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({
+    "HTML-CSS": { availableFonts: ["TeX"] }
+  });
+</script>
+
+
+</div>
+</div>
+
+</div>
+
+<script>
+
+// add bootstrap table styles to pandoc tables
+function bootstrapStylePandocTables() {
+  $('tr.odd').parent('tbody').parent('table').addClass('table table-condensed');
+}
+$(document).ready(function () {
+  bootstrapStylePandocTables();
+});
+
+
+</script>
+
+<!-- tabsets -->
+
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+
+$(document).ready(function () {
+  $('.tabset-dropdown > .nav-tabs > li').click(function () {
+    $(this).parent().toggleClass('nav-tabs-open');
+  });
+});
+</script>
+
+<!-- code folding -->
+<script>
+$(document).ready(function () {
+  window.initializeCodeFolding("hide" === "show");
+});
+</script>
+
+<script>
+$(document).ready(function ()  {
+
+    // temporarily add toc-ignore selector to headers for the consistency with Pandoc
+    $('.unlisted.unnumbered').addClass('toc-ignore')
+
+    // move toc-ignore selectors from section div to header
+    $('div.section.toc-ignore')
+        .removeClass('toc-ignore')
+        .children('h1,h2,h3,h4,h5').addClass('toc-ignore');
+
+    // establish options
+    var options = {
+      selectors: "h1,h2,h3",
+      theme: "bootstrap3",
+      context: '.toc-content',
+      hashGenerator: function (text) {
+        return text.replace(/[.\\/?&!#<>]/g, '').replace(/\s/g, '_');
+      },
+      ignoreSelector: ".toc-ignore",
+      scrollTo: 0
+    };
+    options.showAndHide = true;
+    options.smoothScroll = true;
+
+    // tocify
+    var toc = $("#TOC").tocify(options).data("toc-tocify");
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
