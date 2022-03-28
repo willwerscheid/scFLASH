@@ -29,20 +29,32 @@ Deng <- preprocess(counts)
 
 # Run flashier. ---------------------------------------------------------------
 
-# fl <- flash.init(Deng$fl.dat, var.type = 1) %>%
-#   flash.add.greedy(
-#     Kmax = 20,
-#     ebnm.fn = ebnm::ebnm_point_normal
-#   ) %>%
-#   flash.backfit(verbose = 3) %>%
-#   flash.nullcheck()
+disp.min.sd <- function(new, old, k) {
+  return(sqrt(min(1 / ff.tau(new))))
+}
 
-snmf.fl <- flash.init(Deng$fl.dat, var.type = 1) %>%
-  flash.add.greedy(
-    Kmax = 25,
-    ebnm.fn = c(ebnm::ebnm_normal_scale_mixture, ebnm::ebnm_point_exponential),
-    init.fn = function(f) init.fn.default(f, dim.signs = c(0, 1))
-  ) %>%
-  flash.backfit(verbose = 3)
+do.fit <- function(K) {
+  fl <- flash.init(
+      Deng$fl.dat,
+      S = min(Deng$fl.dat[Deng$fl.dat > 0]) / sqrt(ncol(Deng$fl.dat)),
+      var.type = 1
+    ) %>%
+    flash.add.greedy(
+      Kmax = K,
+      ebnm.fn = c(ebnm::ebnm_normal_scale_mixture, ebnm::ebnm_point_exponential),
+      init.fn = function(f) init.fn.default(f, dim.signs = c(0, 1))
+    ) %>%
+    flash.set.verbose(
+      disp.fns = c(display.elbo, display.elbo.diff, display.F.max.chg, disp.min.sd),
+      colnames = c("ELBO", "Diff", "Max Chg (F)", "Min SD"),
+      colwidths = c(18, 14, 14, 14)
+    ) %>%
+    flash.backfit(verbose = 3)
 
-saveRDS(snmf.fl, "./data/deng_fl.rds")
+  saveRDS(fl, paste0("./output/deng/deng_fl", K, ".rds"))
+  return(fl)
+}
+
+fl6  <- do.fit(6)
+fl10 <- do.fit(10)
+fl25 <- do.fit(25)
