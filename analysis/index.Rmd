@@ -39,6 +39,7 @@ output:
 
 1. [Deng et al.](deng.html)
 1. SNMF on data simulated from an NMF model: [Part I.](snmf_on_nmf.html) [Part II.](snmf_on_nmf2.html) 
+1. [Nonnegative fits to Deng et al.](deng_nn.html)
 
 ## Archived
 
