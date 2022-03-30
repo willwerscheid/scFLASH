@@ -1,0 +1,146 @@
+---
+title: "PBMCs dataset: nonnegative fits"
+author: "Jason Willwerscheid"
+date: "3/30/2022"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+## Overview
+
+```{r read.data}
+library(tidyverse)
+library(flashier)
+library(ggrepel)
+library(Matrix)
+library(Rtsne)
+library(fastTopics)
+
+preprocess <- function(dat, min.nzcts = 10) {
+  size.factors <- colSums(dat)
+  size.factors <- size.factors / mean(size.factors)
+  gene_cts <- rowSums(dat > 0)
+  dat <- dat[gene_cts >= min.nzcts, ]
+
+  lunpc <- max(1 / min(size.factors) - 1 / max(size.factors), 1)
+  fl.dat <- log1p(t(t(dat) / size.factors) / lunpc)
+
+  return(list(
+    dat = dat,
+    fl.dat = fl.dat,
+    size.factors = size.factors,
+    pc = lunpc,
+    excluded.genes = gene_cts < min.nzcts)
+  )
+}
+
+pbmc <- readRDS("../flashier-chapter/data/pbmc.rds")
+pbmc <- pbmc[, colSums(pbmc) < 15000]
+pbmc <- preprocess(pbmc)
+
+pbmc.celltype <- sapply(strsplit(colnames(pbmc$fl.dat), "_"), `[[`, 2)
+```
+
+```{r fl.plot}
+do.heatmap <- function(res) {
+  fl <- res$fl
+  
+  FF <- ldf(fl, type = "I")$F
+  FF <- FF[, -1]
+  FF <- FF[, order(res$fl$pve[-1], decreasing = TRUE)]
+  colnames(FF) <- 1:ncol(FF) 
+  
+  cell_type <- pbmc.celltype
+  
+  tib <- as_tibble(FF) %>%
+    mutate(Cell.type = cell_type)
+  
+  tsne_res <- Rtsne(
+    as.matrix(tib %>% select(-Cell.type)),
+    dims = 1,
+    perplexity = pmax(1, floor((nrow(tib) - 1) / 3) - 1),
+    pca = FALSE,
+    normalize = FALSE,
+    theta = 0.1,
+    check_duplicates = FALSE,
+    verbose = FALSE
+  )$Y[, 1]
+  tib <- tib %>%
+    mutate(tsne_res = unlist(tsne_res)) %>%
+    arrange(Cell.type, tsne_res) %>%
+    mutate(Cell.idx = row_number()) %>%
+    select(-tsne_res)
+  
+  cell_type <- tib$Cell.type
+  
+  tib <- tib %>%
+    pivot_longer(
+      -c(Cell.idx, Cell.type),
+      names_to = "Factor",
+      values_to = "Loading",
+      values_drop_na = TRUE
+    ) %>%
+    mutate(Factor = as.numeric(Factor))
+  
+  cell_type_breaks <- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "red") +
+    labs(y = "") +
+    scale_y_continuous(breaks = -cell_type_breaks,
+                       minor_breaks = NULL,
+                       labels = unique(tib$Cell.type)) +
+    theme_minimal() +
+    geom_hline(yintercept = -cell_type_breaks, size = 0.1)
+}
+```
+
+I give a semi-nonnegative and three non-negative `flashier` fits to the PBMCs dataset that I also looked at in my thesis. The nonnegative fits were obtained by backfitting from a greedy nonnegative fit and from a NNMF obtained via `NNLM`.
+
+### Semi-nonnegative fit
+
+```{r smnf}
+smnf <- readRDS("./output/pbmc/smnf.rds")
+do.heatmap(smnf)
+```
+
+<!-- ### Greedy nonnegative fit -->
+
+<!-- ```{r greedy2} -->
+<!-- greedy2 <- readRDS("./output/pbmc/greedy2.rds") -->
+<!-- do.heatmap(greedy2) -->
+<!-- ``` -->
+
+### Nonnegative fit (from greedy)
+
+```{r bf2}
+bf <- readRDS("./output/pbmc/bf.rds")
+do.heatmap(bf)
+```
+
+<!-- ### NNLM fit -->
+
+<!-- ```{r nnlm} -->
+<!-- nnlm <- readRDS("./output/pbmc/nnlm.rds") -->
+<!-- do.heatmap(nnlm) -->
+<!-- ``` -->
+
+### Nonnegative fit (from NNLM)
+
+```{r nnlmbf}
+nnlmbf <- readRDS("./output/pbmc/nnlmbf.rds")
+do.heatmap(nnlmbf)
+```
+
+### Nonnegative fit (from NNLM, shifted point-exponential priors)
+```{r nzpe}
+nzpe <- readRDS("./output/pbmc/nzpe.rds")
+shifts <- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
+nzpe$fl$flash.fit$EF[[2]][, -1] <- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(pbmc$fl.dat))
+do.heatmap(nzpe)
+```
