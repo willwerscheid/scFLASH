@@ -392,7 +392,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-29
+<strong>Last updated:</strong> 2022-03-30
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a7b0b0dce4c46eb5e9747b31dc2ee176a3374c3targetblank2a7b0b0a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/2a7b0b0dce4c46eb5e9747b31dc2ee176a3374c3" target="_blank">2a7b0b0</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6bba1ed169d36244ece99f38183749c6c5c041bftargetblank6bba1eda"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/6bba1ed169d36244ece99f38183749c6c5c041bf" target="_blank">6bba1ed</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2a7b0b0dce4c46eb5e9747b31dc2ee176a3374c3targetblank2a7b0b0a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6bba1ed169d36244ece99f38183749c6c5c041bftargetblank6bba1eda" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/2a7b0b0dce4c46eb5e9747b31dc2ee176a3374c3" target="_blank">2a7b0b0</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/6bba1ed169d36244ece99f38183749c6c5c041bf" target="_blank">6bba1ed</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -524,7 +524,6 @@ Untracked files:
     Untracked:  analysis/final_pbmc.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/alt_montoro/
-    Untracked:  code/deng/deng2.R
     Untracked:  code/final_pbmc/
     Untracked:  code/missing_data.R
     Untracked:  code/prior_type/priortype_fits_pbmc.R
@@ -536,10 +535,12 @@ Untracked files:
     Untracked:  output/alt_montoro/
     Untracked:  output/deng/
     Untracked:  output/final_pbmc/
+    Untracked:  output/pbmc/
     Untracked:  output/pulseseq_fit.rds
     Untracked:  tmp.txt
 
 Unstaged changes:
+    Modified:   analysis/pbmc_nn.Rmd
     Modified:   code/utils.R
     Modified:   data-raw/pbmc.R
 
@@ -580,6 +581,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/6bba1ed169d36244ece99f38183749c6c5c041bf/analysis/deng_nn.Rmd" target="_blank">6bba1ed</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+<td>
+wflow_publish(“analysis/deng_nn.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/deng_nn.html" target="_blank">769dadc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-29
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 html
@@ -793,7 +828,14 @@ do.struct.plot &lt;- function(fl, kset, group_by_embryo = FALSE) {
 <div id="semi-nonnegative-fit" class="section level3">
 <h3>Semi-nonnegative fit</h3>
 <pre class="r"><code>smnf &lt;- readRDS(&quot;./output/deng/smnf.rds&quot;)
-do.heatmap(smnf)</code></pre>
+cat(&quot;ELBO:&quot;, smnf$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: -3568905</p>
+<pre class="r"><code>units(smnf$t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(smnf$t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 15 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(smnf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(smnf)</code></pre>
 <p><img src="figure/deng_nn.Rmd/smnf-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-smnf-1">
@@ -819,6 +861,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/smnf-1.png" target="_blank">769dadc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/smnf-1.png" target="_blank">c322aa6</a>
 </td>
 <td>
@@ -840,8 +893,19 @@ Jason Willwerscheid
 </div>
 <div id="nonnegative-fit-from-greedy" class="section level3">
 <h3>Nonnegative fit (from greedy)</h3>
-<pre class="r"><code>bf2 &lt;- readRDS(&quot;./output/deng/bf2.rds&quot;)
-do.heatmap(bf2)</code></pre>
+<pre class="r"><code>greedy &lt;- readRDS(&quot;./output/deng/greedy.rds&quot;)
+greedy2 &lt;- readRDS(&quot;./output/deng/greedy2.rds&quot;)
+bf &lt;- readRDS(&quot;./output/deng/bf.rds&quot;)
+bf2 &lt;- readRDS(&quot;./output/deng/bf2.rds&quot;)
+bf.t &lt;- bf$t + bf2$t + greedy$t + greedy2$t
+cat(&quot;ELBO:&quot;, bf2$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: -3558153</p>
+<pre class="r"><code>units(bf.t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(bf.t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 27 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(bf2$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(bf2)</code></pre>
 <p><img src="figure/deng_nn.Rmd/bf2-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bf2-1">
@@ -867,6 +931,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/bf2-1.png" target="_blank">769dadc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/bf2-1.png" target="_blank">c322aa6</a>
 </td>
 <td>
@@ -889,7 +964,14 @@ Jason Willwerscheid
 <div id="nonnegative-fit-from-nnlm" class="section level3">
 <h3>Nonnegative fit (from NNLM)</h3>
 <pre class="r"><code>nnlmbf &lt;- readRDS(&quot;./output/deng/nnlmbf.rds&quot;)
-do.heatmap(nnlmbf)</code></pre>
+cat(&quot;ELBO:&quot;, nnlmbf$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: -3562831</p>
+<pre class="r"><code>units(nnlmbf$t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(nnlmbf$t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 33 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nnlmbf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: TRUE</p>
+<pre class="r"><code>do.heatmap(nnlmbf)</code></pre>
 <p><img src="figure/deng_nn.Rmd/nnlmbf-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nnlmbf-1">
@@ -915,6 +997,17 @@ Date
 <tbody>
 <tr>
 <td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/nnlmbf-1.png" target="_blank">769dadc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
+<tr>
+<td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/nnlmbf-1.png" target="_blank">c322aa6</a>
 </td>
 <td>
@@ -932,9 +1025,18 @@ Jason Willwerscheid
 <div id="nonnegative-fit-from-nnlm-shifted-point-exponential-priors" class="section level3">
 <h3>Nonnegative fit (from NNLM, shifted point-exponential priors)</h3>
 <pre class="r"><code>nzpe &lt;- readRDS(&quot;./output/deng/nzpe.rds&quot;)
-shifts &lt;- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
-nzpe$fl$flash.fit$EF[[2]][, -1] &lt;- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(Deng$fl.dat))
-do.heatmap(nzpe)</code></pre>
+nzpe2 &lt;- readRDS(&quot;./output/deng/nzpe2.rds&quot;)
+# shifts &lt;- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
+# nzpe$fl$flash.fit$EF[[2]][, -1] &lt;- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(Deng$fl.dat))
+nzpe.t &lt;- nzpe$t + nzpe2$t
+cat(&quot;ELBO:&quot;, nzpe2$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: -3564428</p>
+<pre class="r"><code>units(nzpe.t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(nzpe.t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 65 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nzpe2$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: TRUE</p>
+<pre class="r"><code>do.heatmap(nzpe2)</code></pre>
 <p><img src="figure/deng_nn.Rmd/nzpe-1.png" width="672" style="display: block; margin: auto;" /></p>
 <p>
 <button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nzpe-1">
@@ -958,6 +1060,17 @@ Date
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/nzpe-1.png" target="_blank">769dadc</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-29
+</td>
+</tr>
 <tr>
 <td>
 <a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/nzpe-1.png" target="_blank">c322aa6</a>
