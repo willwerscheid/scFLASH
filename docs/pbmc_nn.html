@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreea522ee5443b49f5cfec1fe38d918bebedbb0766ctargetblanka522ee5a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/a522ee5443b49f5cfec1fe38d918bebedbb0766c" target="_blank">a522ee5</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2c96a523fac2f1f0b41cc6486e1e7261b486ad30targetblank2c96a52a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/2c96a523fac2f1f0b41cc6486e1e7261b486ad30" target="_blank">2c96a52</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreea522ee5443b49f5cfec1fe38d918bebedbb0766ctargetblanka522ee5a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree2c96a523fac2f1f0b41cc6486e1e7261b486ad30targetblank2c96a52a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/a522ee5443b49f5cfec1fe38d918bebedbb0766c" target="_blank">a522ee5</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/2c96a523fac2f1f0b41cc6486e1e7261b486ad30" target="_blank">2c96a52</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -524,8 +524,6 @@ Untracked files:
     Untracked:  analysis/final_pbmc.Rmd
     Untracked:  analysis/trachea4.Rmd
     Untracked:  code/alt_montoro/
-    Untracked:  code/deng/deng2.R
-    Untracked:  code/deng/pbmc_nn.R
     Untracked:  code/final_pbmc/
     Untracked:  code/missing_data.R
     Untracked:  code/prior_type/priortype_fits_pbmc.R
@@ -582,6 +580,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/2c96a523fac2f1f0b41cc6486e1e7261b486ad30/analysis/pbmc_nn.Rmd" target="_blank">2c96a52</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+<td>
+wflow_publish(“analysis/pbmc_nn.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/f2643e0156da13f79c1cb977d7dea71baa69067c/docs/pbmc_nn.html" target="_blank">f2643e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -715,8 +747,52 @@ pbmc.celltype &lt;- sapply(strsplit(colnames(pbmc$fl.dat), &quot;_&quot;), `[[`,
 <div id="semi-nonnegative-fit" class="section level3">
 <h3>Semi-nonnegative fit</h3>
 <pre class="r"><code>smnf &lt;- readRDS(&quot;./output/pbmc/smnf.rds&quot;)
-do.heatmap(smnf)</code></pre>
+cat(&quot;ELBO:&quot;, smnf$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: 68092738</p>
+<pre class="r"><code>units(smnf$t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(smnf$t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 28 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(smnf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(smnf)</code></pre>
 <p><img src="figure/pbmc_nn.Rmd/smnf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-smnf-1">
+Past versions of smnf-1.png
+</button>
+</p>
+<div id="fig-smnf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2643e0156da13f79c1cb977d7dea71baa69067c/docs/figure/pbmc_nn.Rmd/smnf-1.png" target="_blank">f2643e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <!-- ### Greedy nonnegative fit -->
 <!-- ```{r greedy2} -->
 <!-- greedy2 <- readRDS("./output/pbmc/greedy2.rds") -->
@@ -725,9 +801,55 @@ do.heatmap(smnf)</code></pre>
 </div>
 <div id="nonnegative-fit-from-greedy" class="section level3">
 <h3>Nonnegative fit (from greedy)</h3>
-<pre class="r"><code>bf &lt;- readRDS(&quot;./output/pbmc/bf.rds&quot;)
-do.heatmap(bf)</code></pre>
+<pre class="r"><code>greedy &lt;- readRDS(&quot;./output/pbmc/greedy.rds&quot;)
+bf &lt;- readRDS(&quot;./output/pbmc/bf.rds&quot;)
+bf.t &lt;- bf$t + greedy$t
+cat(&quot;ELBO:&quot;, bf$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: 67987962</p>
+<pre class="r"><code>units(bf.t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(bf.t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 29 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(bf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(bf)</code></pre>
 <p><img src="figure/pbmc_nn.Rmd/bf2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bf2-1">
+Past versions of bf2-1.png
+</button>
+</p>
+<div id="fig-bf2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2643e0156da13f79c1cb977d7dea71baa69067c/docs/figure/pbmc_nn.Rmd/bf2-1.png" target="_blank">f2643e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <!-- ### NNLM fit -->
 <!-- ```{r nnlm} -->
 <!-- nnlm <- readRDS("./output/pbmc/nnlm.rds") -->
@@ -737,16 +859,106 @@ do.heatmap(bf)</code></pre>
 <div id="nonnegative-fit-from-nnlm" class="section level3">
 <h3>Nonnegative fit (from NNLM)</h3>
 <pre class="r"><code>nnlmbf &lt;- readRDS(&quot;./output/pbmc/nnlmbf.rds&quot;)
-do.heatmap(nnlmbf)</code></pre>
+cat(&quot;ELBO:&quot;, nnlmbf$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: 68042615</p>
+<pre class="r"><code>units(nnlmbf$t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(nnlmbf$t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 110 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nnlmbf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(nnlmbf)</code></pre>
 <p><img src="figure/pbmc_nn.Rmd/nnlmbf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nnlmbf-1">
+Past versions of nnlmbf-1.png
+</button>
+</p>
+<div id="fig-nnlmbf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2643e0156da13f79c1cb977d7dea71baa69067c/docs/figure/pbmc_nn.Rmd/nnlmbf-1.png" target="_blank">f2643e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="nonnegative-fit-from-nnlm-shifted-point-exponential-priors" class="section level3">
 <h3>Nonnegative fit (from NNLM, shifted point-exponential priors)</h3>
 <pre class="r"><code>nzpe &lt;- readRDS(&quot;./output/pbmc/nzpe.rds&quot;)
-shifts &lt;- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
-nzpe$fl$flash.fit$EF[[2]][, -1] &lt;- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(pbmc$fl.dat))
-do.heatmap(nzpe)</code></pre>
+nzpe2 &lt;- readRDS(&quot;./output/pbmc/nzpe2.rds&quot;)
+# shifts &lt;- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
+# nzpe$fl$flash.fit$EF[[2]][, -1] &lt;- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(pbmc$fl.dat))
+nzpe.t &lt;- nzpe$t + nzpe2$t
+cat(&quot;ELBO:&quot;, nzpe2$fl$elbo, &quot;\n&quot;)</code></pre>
+<p>ELBO: 68021342</p>
+<pre class="r"><code>units(nzpe.t) &lt;- &quot;mins&quot;
+cat(&quot;Time to fit:&quot;, format(nzpe.t, digits = 1), &quot;\n&quot;)</code></pre>
+<p>Time to fit: 85 mins</p>
+<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nzpe2$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
+<p>Maximum iterations reached: FALSE</p>
+<pre class="r"><code>do.heatmap(nzpe2)</code></pre>
 <p><img src="figure/pbmc_nn.Rmd/nzpe-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nzpe-1">
+Past versions of nzpe-1.png
+</button>
+</p>
+<div id="fig-nzpe-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/f2643e0156da13f79c1cb977d7dea71baa69067c/docs/figure/pbmc_nn.Rmd/nzpe-1.png" target="_blank">f2643e0</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
