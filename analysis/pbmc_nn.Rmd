@@ -104,8 +104,12 @@ I give a semi-nonnegative and three non-negative `flashier` fits to the PBMCs da
 
 ### Semi-nonnegative fit
 
-```{r smnf}
+```{r smnf, results = 'asis'}
 smnf <- readRDS("./output/pbmc/smnf.rds")
+cat("ELBO:", smnf$fl$elbo, "\n")
+units(smnf$t) <- "mins"
+cat("Time to fit:", format(smnf$t, digits = 1), "\n")
+cat("Maximum iterations reached:", !is.null(smnf$fl$flash.fit$maxiter.reached), "\n")
 do.heatmap(smnf)
 ```
 
@@ -118,8 +122,14 @@ do.heatmap(smnf)
 
 ### Nonnegative fit (from greedy)
 
-```{r bf2}
+```{r bf2, results = 'asis'}
+greedy <- readRDS("./output/pbmc/greedy.rds")
 bf <- readRDS("./output/pbmc/bf.rds")
+bf.t <- bf$t + greedy$t
+cat("ELBO:", bf$fl$elbo, "\n")
+units(bf.t) <- "mins"
+cat("Time to fit:", format(bf.t, digits = 1), "\n")
+cat("Maximum iterations reached:", !is.null(bf$fl$flash.fit$maxiter.reached), "\n")
 do.heatmap(bf)
 ```
 
@@ -132,15 +142,25 @@ do.heatmap(bf)
 
 ### Nonnegative fit (from NNLM)
 
-```{r nnlmbf}
+```{r nnlmbf, results = 'asis'}
 nnlmbf <- readRDS("./output/pbmc/nnlmbf.rds")
+cat("ELBO:", nnlmbf$fl$elbo, "\n")
+units(nnlmbf$t) <- "mins"
+cat("Time to fit:", format(nnlmbf$t, digits = 1), "\n")
+cat("Maximum iterations reached:", !is.null(nnlmbf$fl$flash.fit$maxiter.reached), "\n")
 do.heatmap(nnlmbf)
 ```
 
 ### Nonnegative fit (from NNLM, shifted point-exponential priors)
-```{r nzpe}
+```{r nzpe, results = 'asis'}
 nzpe <- readRDS("./output/pbmc/nzpe.rds")
-shifts <- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
-nzpe$fl$flash.fit$EF[[2]][, -1] <- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(pbmc$fl.dat))
-do.heatmap(nzpe)
+nzpe2 <- readRDS("./output/pbmc/nzpe2.rds")
+# shifts <- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
+# nzpe$fl$flash.fit$EF[[2]][, -1] <- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(pbmc$fl.dat))
+nzpe.t <- nzpe$t + nzpe2$t
+cat("ELBO:", nzpe2$fl$elbo, "\n")
+units(nzpe.t) <- "mins"
+cat("Time to fit:", format(nzpe.t, digits = 1), "\n")
+cat("Maximum iterations reached:", !is.null(nzpe2$fl$flash.fit$maxiter.reached), "\n")
+do.heatmap(nzpe2)
 ```
