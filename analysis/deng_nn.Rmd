@@ -121,7 +121,7 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
                      labels = levels(tib$Cell.type)) +
   theme_minimal() +
   theme(axis.text.y=element_text(angle = 45, size = 6)) +
-  facet_wrap(~Fit, nrow = 2)
+  facet_wrap(~Fit, nrow = 1)
 ```
 
 ## Factors
