@@ -392,7 +392,7 @@ div.tocify {
 <div class="tab-content">
 <div id="summary" class="tab-pane fade in active">
 <p>
-<strong>Last updated:</strong> 2022-03-30
+<strong>Last updated:</strong> 2022-04-01
 </p>
 <p>
 <strong>Checks:</strong> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> 7 <span class="glyphicon glyphicon-exclamation-sign text-danger" aria-hidden="true"></span> 0
@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6bba1ed169d36244ece99f38183749c6c5c041bftargetblank6bba1eda"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/6bba1ed169d36244ece99f38183749c6c5c041bf" target="_blank">6bba1ed</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreee51fee2e3c90c7f61e8dc42cf36256adc21e02betargetblanke51fee2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/e51fee2e3c90c7f61e8dc42cf36256adc21e02be" target="_blank">e51fee2</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtree6bba1ed169d36244ece99f38183749c6c5c041bftargetblank6bba1eda" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreee51fee2e3c90c7f61e8dc42cf36256adc21e02betargetblanke51fee2a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/6bba1ed169d36244ece99f38183749c6c5c041bf" target="_blank">6bba1ed</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/e51fee2e3c90c7f61e8dc42cf36256adc21e02be" target="_blank">e51fee2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -540,7 +540,7 @@ Untracked files:
     Untracked:  tmp.txt
 
 Unstaged changes:
-    Modified:   analysis/pbmc_nn.Rmd
+    Modified:   code/deng/deng2.R
     Modified:   code/utils.R
     Modified:   data-raw/pbmc.R
 
@@ -581,6 +581,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/e51fee2e3c90c7f61e8dc42cf36256adc21e02be/analysis/deng_nn.Rmd" target="_blank">e51fee2</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+<td>
+workflowr::wflow_publish(“analysis/deng_nn.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/c1aab04cce90c128652164229904c929643c5565/docs/deng_nn.html" target="_blank">c1aab04</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-03-30
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -677,7 +711,6 @@ library(flashier)
 #&gt; The following object is masked from &#39;package:tidyr&#39;:
 #&gt; 
 #&gt;     extract
-library(ggrepel)
 library(singleCellRNASeqMouseDeng2014)
 #&gt; Loading required package: Biobase
 #&gt; Loading required package: BiocGenerics
@@ -710,7 +743,8 @@ library(singleCellRNASeqMouseDeng2014)
 #&gt;     &#39;browseVignettes()&#39;. To cite Bioconductor, see
 #&gt;     &#39;citation(&quot;Biobase&quot;)&#39;, and for packages &#39;citation(&quot;pkgname&quot;)&#39;.
 library(Rtsne)
-library(fastTopics)
+library(ggrepel)
+# library(fastTopics)
 
 counts &lt;- exprs(Deng2014MouseESC)
 meta_data &lt;- pData(Deng2014MouseESC)
@@ -733,27 +767,31 @@ preprocess &lt;- function(dat, min.nzcts = 10) {
   )
 }
 Deng &lt;- preprocess(counts)</code></pre>
-<pre class="r"><code>do.heatmap &lt;- function(res) {
-  fl &lt;- res$fl
-  
-  FF &lt;- ldf(fl, type = &quot;I&quot;)$F
-  FF &lt;- FF[, -1]
-  FF &lt;- FF[, order(res$fl$pve[-1], decreasing = TRUE)]
-  colnames(FF) &lt;- 1:ncol(FF) 
-  
-  cell_type &lt;- meta_data$cell_type
-  
-  tib &lt;- as_tibble(FF) %&gt;%
-    mutate(Cell.type = cell_type) %&gt;%
-    mutate(Cell.type = fct_relevel(Cell.type, c(
-      &quot;zy&quot;,
-      &quot;early2cell&quot;, &quot;mid2cell&quot;, &quot;late2cell&quot;,
-      &quot;4cell&quot;, &quot;8cell&quot;, &quot;16cell&quot;,
-      &quot;earlyblast&quot;, &quot;midblast&quot;, &quot;lateblast&quot;
-    )))
-  
-  tsne_res &lt;- Rtsne(
-    as.matrix(tib %&gt;% select(-Cell.type)),
+<p>I give semi-nonnegative and non-negative <code>flashier</code> fits to the Deng et al. dataset (see <a href="deng.html">here</a> for an introduction). For both, I added factors greedily. I used point-exponential priors for factors and point-Laplace or point-exponential priors for loadings. I also fix a “mean factor” (shown as factor 1 below).</p>
+<pre class="r"><code>snmf &lt;- readRDS(&quot;./output/deng/snmf.rds&quot;)
+nmf &lt;- readRDS(&quot;./output/deng/nmf.rds&quot;)
+
+snmf$fl &lt;- flash.reorder.factors(snmf$fl, c(1, order(snmf$fl$pve[-1], decreasing = TRUE) + 1))
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+nmf$fl &lt;- flash.reorder.factors(nmf$fl, c(1, order(nmf$fl$pve[-1], decreasing = TRUE) + 1))
+#&gt; Warning in ebnm_workhorse(x = x, s = s, mode = mode, scale = scale, g_init =
+#&gt; g_init, : Since they&#39;re not well defined for nonzero modes, local false sign
+#&gt; rates won&#39;t be returned.
+
+get.factors &lt;- function(res, colnames.prefix) {
+  FF &lt;- ldf(res$fl, type = &quot;I&quot;)$F
+  colnames(FF) &lt;- paste0(colnames.prefix, 1:ncol(FF))
+  return(FF)
+}
+
+snmf.F &lt;- get.factors(snmf, &quot;SNMF&quot;)
+nmf.F &lt;- get.factors(nmf, &quot;NMF&quot;)
+tib &lt;- cbind(snmf.F, nmf.F)
+
+tsne_res &lt;- Rtsne(
+    tib,
     dims = 1,
     perplexity = pmax(1, floor((nrow(tib) - 1) / 3) - 1),
     pca = FALSE,
@@ -762,330 +800,189 @@ Deng &lt;- preprocess(counts)</code></pre>
     check_duplicates = FALSE,
     verbose = FALSE
   )$Y[, 1]
+
+tib &lt;- as_tibble(tib) %&gt;%
+  mutate(tsne_res = unlist(tsne_res)) %&gt;%
+  mutate(Cell.type = fct_relevel(meta_data$cell_type, c(
+    &quot;zy&quot;,
+    &quot;early2cell&quot;, &quot;mid2cell&quot;, &quot;late2cell&quot;,
+    &quot;4cell&quot;, &quot;8cell&quot;, &quot;16cell&quot;,
+    &quot;earlyblast&quot;, &quot;midblast&quot;, &quot;lateblast&quot;
+  )))
+
+tsne.zy &lt;- tib %&gt;% filter(Cell.type == &quot;zy&quot;) %&gt;% summarize(mean(tsne_res))
+tsne.late &lt;- tib %&gt;% filter(Cell.type == &quot;lateblast&quot;) %&gt;% summarize(mean(tsne_res))
+if (tsne.zy &lt; tsne.late) {
   tib &lt;- tib %&gt;%
-    mutate(tsne_res = unlist(tsne_res)) %&gt;%
-    arrange(Cell.type, tsne_res) %&gt;%
-    mutate(Cell.idx = row_number()) %&gt;%
-    select(-tsne_res)
-  
+    arrange(Cell.type, tsne_res)
+} else {
   tib &lt;- tib %&gt;%
-    pivot_longer(
-      -c(Cell.idx, Cell.type),
-      names_to = &quot;Factor&quot;,
-      values_to = &quot;Loading&quot;,
-      values_drop_na = TRUE
-    ) %&gt;%
-    mutate(Factor = as.numeric(Factor))
-  
-  cell_type_breaks &lt;- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
-  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
-    geom_tile() +
-    scale_fill_gradient(low = &quot;white&quot;, high = &quot;red&quot;) +
-    labs(y = &quot;&quot;) +
-    scale_y_continuous(breaks = -cell_type_breaks,
-                       minor_breaks = NULL,
-                       labels = levels(tib$Cell.type)) +
-    theme_minimal() +
-    geom_hline(yintercept = -cell_type_breaks, size = 0.1)
+    arrange(Cell.type, -tsne_res)
 }
 
-do.struct.plot &lt;- function(fl, kset, group_by_embryo = FALSE) {
-  tm &lt;- init_poisson_nmf(X = t(Deng$dat), k = fl$n.factors, init.method = &quot;random&quot;)
-  tm &lt;- poisson2multinom(tm)
-  L &lt;- ldf(fl)$F %*% diag(ldf(fl)$D)
-  L &lt;- L[, order(fl$pve, decreasing = TRUE)]
-  colnames(L) &lt;- paste0(&quot;k&quot;, 1:ncol(L))
-  L[, setdiff(1:fl$n.factors, kset)] &lt;- 0
-  tm$L &lt;- L
-  topic_colors &lt;- rep(&quot;black&quot;, fl$n.factors)
-  topic_colors[kset] &lt;- c(&quot;gainsboro&quot;, &quot;forestgreen&quot;, &quot;tomato&quot;, &quot;skyblue&quot;, &quot;royalblue&quot;,
-                          &quot;darkorange&quot;, &quot;peru&quot;, &quot;gold&quot;, &quot;limegreen&quot;, &quot;darkmagenta&quot;)[1:length(kset)]
-  cell_type &lt;- factor(
-    meta_data$cell_type,
-    levels = c(&quot;zy&quot;, &quot;early2cell&quot;, &quot;mid2cell&quot;, &quot;late2cell&quot;, &quot;4cell&quot;, &quot;8cell&quot;,
-               &quot;16cell&quot;, &quot;earlyblast&quot;, &quot;midblast&quot;, &quot;lateblast&quot;)
+tib &lt;- tib %&gt;%
+  mutate(Cell.idx = row_number()) %&gt;%
+  select(-tsne_res)
+  
+tib &lt;- tib %&gt;%
+  pivot_longer(
+    -c(Cell.idx, Cell.type),
+    names_to = &quot;Factor&quot;,
+    values_to = &quot;Loading&quot;,
+    values_drop_na = TRUE
+  ) %&gt;%
+  mutate(
+    Fit = factor(str_remove(Factor, &quot;[0-9]+&quot;), levels = c(&quot;SNMF&quot;, &quot;NMF&quot;)),
+    Factor = as.numeric(str_extract(Factor, &quot;[0-9]+&quot;))
   )
-  embryo &lt;- factor(
-    paste0(meta_data$cell_type, &quot;/&quot;, meta_data$embryo_id),
-    levels = paste0(rep(levels(cell_type), each = length(levels(meta_data$embryo_id))),
-                   &quot;/&quot;, levels(meta_data$embryo_id))
-  )
-  embryo &lt;- droplevels(embryo)
-  embed_with_pca &lt;- function (fit, ...) {
-    drop(pca_from_topics(fit, dims = 1,...))
+
+cell_type &lt;- tib %&gt;% group_by(Cell.idx) %&gt;% summarize(Cell.type = Cell.type[1]) %&gt;% pull(Cell.type)
+cell_type_breaks &lt;- c(-4, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
+  
+ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+  geom_tile() +
+  scale_fill_gradient(low = &quot;white&quot;, high = &quot;red&quot;) +
+  labs(x = &quot;Factor&quot;, y = &quot;&quot;) +
+  scale_y_continuous(breaks = -cell_type_breaks,
+                     minor_breaks = NULL,
+                     labels = levels(tib$Cell.type)) +
+  theme_minimal() +
+  theme(axis.text.y=element_text(angle = 45, size = 6)) +
+  facet_wrap(~Fit, nrow = 2)</code></pre>
+<p><img src="figure/deng_nn.Rmd/snmf-1.png" width="672" style="display: block; margin: auto;" /></p>
+</div>
+<div id="factors" class="section level2">
+<h2>Factors</h2>
+<p>I’ve tried to group together factors that are very similar for ease of comparison. The headers roughly indicate the embryonic stage where the factors are active.</p>
+<pre class="r"><code>do.volcano.plot &lt;- function(nmf.k = 0, snmf.k = 0, plt.title = &quot;&quot;) {
+  make.tib &lt;- function(fit, fl, k) {
+    if (k == 0) {
+      return(tibble())
+    }
+    
+    tib &lt;- tibble(
+      fit = fit,
+      pm = ldf(fl, type = &quot;I&quot;)$L[, k],
+      z = abs(fl$L.pm[, k]) / pmax(sqrt(.Machine$double.eps), fl$L.psd[, k]),
+      exprmean = log10(rowMeans(Deng$dat)),
+      SYMBOL = rownames(fl$L.pm)
+    ) %&gt;%
+      mutate(SYMBOL = ifelse(
+        z * (abs(pm) &gt; 0.1) &gt; sort(z * (abs(pm) &gt; 0.1), decreasing = TRUE)[16] |
+          (pm &gt; 0.1 &amp; pm &gt; sort(pm, decreasing = TRUE)[11]) |
+          (pm &lt; -0.1 &amp; pm &lt; sort(pm, decreasing = FALSE)[11]), 
+        SYMBOL, 
+        &quot;&quot;
+      )) %&gt;%
+      mutate(fit = paste(fit, &quot;Factor&quot;, k))
+    return(tib)
   }
-  if (group_by_embryo) {
-    grp &lt;- embryo
-  } else {
-    grp &lt;- cell_type
-  }
-  set.seed(1)
-  structure_plot(tm, grouping = grp, colors = topic_colors,
-                 gap = 2, topics = kset, embed_method = embed_with_pca) +
-    labs(y = &quot;loading&quot;, color = &quot;factor&quot;, fill = &quot;factor&quot;)
+  nmf.tib &lt;- make.tib(&quot;NMF&quot;, nmf$fl, nmf.k)
+  snmf.tib &lt;- make.tib(&quot;SNMF&quot;, snmf$fl, snmf.k)
+  tib &lt;- nmf.tib %&gt;% bind_rows(snmf.tib)
+    
+  plt &lt;- ggplot(tib, aes(x = pm, y = z, color = exprmean, label = SYMBOL)) +
+    geom_point() +
+    scale_color_gradient2(low = &quot;deepskyblue&quot;, mid = &quot;gold&quot;, high = &quot;orangered&quot;,
+                          na.value = &quot;gainsboro&quot;,
+                          midpoint = mean(range(tib$exprmean))) +
+    scale_y_sqrt() +
+    geom_text_repel(color = &quot;darkgray&quot;,size = 2.25, fontface = &quot;italic&quot;,
+                    segment.color = &quot;darkgray&quot;, segment.size = 0.25,
+                    min.segment.length = 0, na.rm = TRUE, max.overlaps = 20) +
+    theme_minimal() +
+    labs(
+      x = &quot;Factor Loading (posterior mean)&quot;,
+      y = &quot;|z-score|&quot;,
+      color = &quot;Mean Expression (log10)&quot;,
+      title = plt.title
+    ) +
+    theme(legend.position = &quot;bottom&quot;) +
+    facet_wrap(~fit, scales = &quot;free&quot;, ncol = 1)
+
+  return(plt)
 }</code></pre>
-<p>I give a semi-nonnegative and three non-negative <code>flashier</code> fits to the Deng et al. dataset (see <a href="deng.html">here</a> for an introduction). The nonnegative fits were obtained by backfitting from a greedy nonnegative fit and from a NNMF obtained via <code>NNLM</code>.</p>
-<div id="semi-nonnegative-fit" class="section level3">
-<h3>Semi-nonnegative fit</h3>
-<pre class="r"><code>smnf &lt;- readRDS(&quot;./output/deng/smnf.rds&quot;)
-cat(&quot;ELBO:&quot;, smnf$fl$elbo, &quot;\n&quot;)</code></pre>
-<p>ELBO: -3568905</p>
-<pre class="r"><code>units(smnf$t) &lt;- &quot;mins&quot;
-cat(&quot;Time to fit:&quot;, format(smnf$t, digits = 1), &quot;\n&quot;)</code></pre>
-<p>Time to fit: 15 mins</p>
-<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(smnf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
-<p>Maximum iterations reached: FALSE</p>
-<pre class="r"><code>do.heatmap(smnf)</code></pre>
-<p><img src="figure/deng_nn.Rmd/smnf-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-smnf-1">
-Past versions of smnf-1.png
-</button>
-</p>
-<div id="fig-smnf-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/smnf-1.png" target="_blank">769dadc</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/smnf-1.png" target="_blank">c322aa6</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-28
-</td>
-</tr>
-</tbody>
-</table>
+<div id="zygote-to-mid-2cell" class="section level3">
+<h3>Zygote to mid 2cell</h3>
+<pre class="r"><code>do.volcano.plot(0, 2)
+#&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(6, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(2, 0, &quot;(All but zygote to mid 2cell)&quot;)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v1-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(3, 0, &quot;(All but zygote to mid 2cell)&quot;)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v1-4.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="mid-to-late-2cell" class="section level3">
+<h3>Mid to late 2cell</h3>
+<pre class="r"><code>do.volcano.plot(0, 9)
+#&gt; Warning: ggrepel: 3 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(10, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v2-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<!-- ### Greedy nonnegative fit -->
-<!-- ```{r greedy2} -->
-<!-- greedy2 <- readRDS("./output/deng/greedy2.rds") -->
-<!-- do.heatmap(greedy2) -->
-<!-- ``` -->
+<div id="late-2cell-4cell" class="section level3">
+<h3>Late 2cell / 4cell</h3>
+<pre class="r"><code>do.volcano.plot(0, 8)
+#&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(8, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v3-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="nonnegative-fit-from-greedy" class="section level3">
-<h3>Nonnegative fit (from greedy)</h3>
-<pre class="r"><code>greedy &lt;- readRDS(&quot;./output/deng/greedy.rds&quot;)
-greedy2 &lt;- readRDS(&quot;./output/deng/greedy2.rds&quot;)
-bf &lt;- readRDS(&quot;./output/deng/bf.rds&quot;)
-bf2 &lt;- readRDS(&quot;./output/deng/bf2.rds&quot;)
-bf.t &lt;- bf$t + bf2$t + greedy$t + greedy2$t
-cat(&quot;ELBO:&quot;, bf2$fl$elbo, &quot;\n&quot;)</code></pre>
-<p>ELBO: -3558153</p>
-<pre class="r"><code>units(bf.t) &lt;- &quot;mins&quot;
-cat(&quot;Time to fit:&quot;, format(bf.t, digits = 1), &quot;\n&quot;)</code></pre>
-<p>Time to fit: 27 mins</p>
-<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(bf2$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
-<p>Maximum iterations reached: FALSE</p>
-<pre class="r"><code>do.heatmap(bf2)</code></pre>
-<p><img src="figure/deng_nn.Rmd/bf2-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-bf2-1">
-Past versions of bf2-1.png
-</button>
-</p>
-<div id="fig-bf2-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/bf2-1.png" target="_blank">769dadc</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/bf2-1.png" target="_blank">c322aa6</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-28
-</td>
-</tr>
-</tbody>
-</table>
+<div id="cell-16cell" class="section level3">
+<h3>8cell / 16cell</h3>
+<pre class="r"><code>do.volcano.plot(0, 6)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(4, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v4-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
+<div id="early-blastocyte" class="section level3">
+<h3>Early blastocyte</h3>
+<pre class="r"><code>do.volcano.plot(0, 12)
+#&gt; Warning: ggrepel: 5 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(13, 0, &quot;All but early blastocyte&quot;)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v5-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<!-- ### NNLM fit -->
-<!-- ```{r nnlm} -->
-<!-- nnlm <- readRDS("./output/deng/nnlm.rds") -->
-<!-- do.heatmap(nnlm) -->
-<!-- ``` -->
+<div id="blastocytes" class="section level3">
+<h3>Blastocytes</h3>
+<pre class="r"><code>do.volcano.plot(0, 3)
+#&gt; Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(0, 5)
+#&gt; Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(0, 4)
+#&gt; Warning: ggrepel: 14 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(7, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v6-4.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(5, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v6-5.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-<div id="nonnegative-fit-from-nnlm" class="section level3">
-<h3>Nonnegative fit (from NNLM)</h3>
-<pre class="r"><code>nnlmbf &lt;- readRDS(&quot;./output/deng/nnlmbf.rds&quot;)
-cat(&quot;ELBO:&quot;, nnlmbf$fl$elbo, &quot;\n&quot;)</code></pre>
-<p>ELBO: -3562831</p>
-<pre class="r"><code>units(nnlmbf$t) &lt;- &quot;mins&quot;
-cat(&quot;Time to fit:&quot;, format(nnlmbf$t, digits = 1), &quot;\n&quot;)</code></pre>
-<p>Time to fit: 33 mins</p>
-<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nnlmbf$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
-<p>Maximum iterations reached: TRUE</p>
-<pre class="r"><code>do.heatmap(nnlmbf)</code></pre>
-<p><img src="figure/deng_nn.Rmd/nnlmbf-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nnlmbf-1">
-Past versions of nnlmbf-1.png
-</button>
-</p>
-<div id="fig-nnlmbf-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/nnlmbf-1.png" target="_blank">769dadc</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/nnlmbf-1.png" target="_blank">c322aa6</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-28
-</td>
-</tr>
-</tbody>
-</table>
+<div id="all-over" class="section level3">
+<h3>All over</h3>
+<pre class="r"><code>do.volcano.plot(0, 10)
+#&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
+#&gt; increasing max.overlaps</code></pre>
+<p><img src="figure/deng_nn.Rmd/v7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(9, 0)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v7-2.png" width="672" style="display: block; margin: auto;" /></p>
 </div>
-</div>
-</div>
-<div id="nonnegative-fit-from-nnlm-shifted-point-exponential-priors" class="section level3">
-<h3>Nonnegative fit (from NNLM, shifted point-exponential priors)</h3>
-<pre class="r"><code>nzpe &lt;- readRDS(&quot;./output/deng/nzpe.rds&quot;)
-nzpe2 &lt;- readRDS(&quot;./output/deng/nzpe2.rds&quot;)
-# shifts &lt;- sapply(nzpe$fl$F.ghat[-1], function(k) k$shift[1])
-# nzpe$fl$flash.fit$EF[[2]][, -1] &lt;- nzpe$fl$flash.fit$EF[[2]][, -1] - rep(shifts, each = ncol(Deng$fl.dat))
-nzpe.t &lt;- nzpe$t + nzpe2$t
-cat(&quot;ELBO:&quot;, nzpe2$fl$elbo, &quot;\n&quot;)</code></pre>
-<p>ELBO: -3564428</p>
-<pre class="r"><code>units(nzpe.t) &lt;- &quot;mins&quot;
-cat(&quot;Time to fit:&quot;, format(nzpe.t, digits = 1), &quot;\n&quot;)</code></pre>
-<p>Time to fit: 65 mins</p>
-<pre class="r"><code>cat(&quot;Maximum iterations reached:&quot;, !is.null(nzpe2$fl$flash.fit$maxiter.reached), &quot;\n&quot;)</code></pre>
-<p>Maximum iterations reached: TRUE</p>
-<pre class="r"><code>do.heatmap(nzpe2)</code></pre>
-<p><img src="figure/deng_nn.Rmd/nzpe-1.png" width="672" style="display: block; margin: auto;" /></p>
-<p>
-<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-nzpe-1">
-Past versions of nzpe-1.png
-</button>
-</p>
-<div id="fig-nzpe-1" class="collapse">
-<div class="table-responsive">
-<table class="table table-condensed table-hover">
-<thead>
-<tr>
-<th>
-Version
-</th>
-<th>
-Author
-</th>
-<th>
-Date
-</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/769dadc479f25c9ae1ed90851eaefb7cb1531a72/docs/figure/deng_nn.Rmd/nzpe-1.png" target="_blank">769dadc</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-29
-</td>
-</tr>
-<tr>
-<td>
-<a href="https://github.com/willwerscheid/scFLASH/blob/c322aa6adb70c6ecb76f2eff90bab880c3a90464/docs/figure/deng_nn.Rmd/nzpe-1.png" target="_blank">c322aa6</a>
-</td>
-<td>
-Jason Willwerscheid
-</td>
-<td>
-2022-03-28
-</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
+<div id="nmf-only-factors" class="section level3">
+<h3>NMF-only factors</h3>
+<pre class="r"><code>do.volcano.plot(12, 0, &quot;Zygote / Early 2cell&quot;)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<pre class="r"><code>do.volcano.plot(11, 0, &quot;Late Blastocytes&quot;)</code></pre>
+<p><img src="figure/deng_nn.Rmd/v8-2.png" width="672" style="display: block; margin: auto;" /></p>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
@@ -1110,41 +1007,37 @@ Jason Willwerscheid
 #&gt; [8] base     
 #&gt; 
 #&gt; other attached packages:
-#&gt;  [1] fastTopics_0.6-101                   Rtsne_0.15                          
+#&gt;  [1] ggrepel_0.9.1                        Rtsne_0.15                          
 #&gt;  [3] singleCellRNASeqMouseDeng2014_0.99.0 Biobase_2.42.0                      
-#&gt;  [5] BiocGenerics_0.28.0                  ggrepel_0.9.1                       
-#&gt;  [7] flashier_0.2.29                      magrittr_2.0.2                      
-#&gt;  [9] forcats_0.5.1                        stringr_1.4.0                       
-#&gt; [11] dplyr_1.0.8                          purrr_0.3.4                         
-#&gt; [13] readr_2.0.0                          tidyr_1.2.0                         
-#&gt; [15] tibble_3.1.6                         ggplot2_3.3.5                       
-#&gt; [17] tidyverse_1.3.1                      workflowr_1.6.2                     
+#&gt;  [5] BiocGenerics_0.28.0                  flashier_0.2.32                     
+#&gt;  [7] magrittr_2.0.2                       forcats_0.5.1                       
+#&gt;  [9] stringr_1.4.0                        dplyr_1.0.8                         
+#&gt; [11] purrr_0.3.4                          readr_2.0.0                         
+#&gt; [13] tidyr_1.2.0                          tibble_3.1.6                        
+#&gt; [15] ggplot2_3.3.5                        tidyverse_1.3.1                     
+#&gt; [17] workflowr_1.6.2                     
 #&gt; 
 #&gt; loaded via a namespace (and not attached):
-#&gt;  [1] colorspace_2.0-3   ellipsis_0.3.2     rprojroot_2.0.2    fs_1.5.0          
-#&gt;  [5] rstudioapi_0.13    farver_2.1.0       MatrixModels_0.4-1 fansi_1.0.2       
-#&gt;  [9] lubridate_1.7.10   xml2_1.3.2         splines_3.5.3      knitr_1.33        
-#&gt; [13] jsonlite_1.8.0     mcmc_0.9-7         broom_0.7.6        ashr_2.2-54       
-#&gt; [17] dbplyr_2.1.1       uwot_0.1.11        compiler_3.5.3     httr_1.4.2        
-#&gt; [21] backports_1.1.3    assertthat_0.2.1   Matrix_1.3-4       fastmap_1.1.0     
-#&gt; [25] lazyeval_0.2.2     cli_3.2.0          later_1.3.0        htmltools_0.5.2   
-#&gt; [29] quantreg_5.51      prettyunits_1.1.1  tools_3.5.3        coda_0.19-3       
-#&gt; [33] gtable_0.3.0       glue_1.6.2         Rcpp_1.0.8         softImpute_1.4-1  
-#&gt; [37] cellranger_1.1.0   jquerylib_0.1.4    vctrs_0.3.8        xfun_0.29         
-#&gt; [41] trust_0.1-8        rvest_1.0.0        lifecycle_1.0.1    irlba_2.3.3       
-#&gt; [45] MASS_7.3-51.1      scales_1.1.1       hms_1.1.1          promises_1.2.0.1  
-#&gt; [49] SparseM_1.77       yaml_2.3.5         pbapply_1.5-0      sass_0.4.0        
-#&gt; [53] stringi_1.4.6      SQUAREM_2021.1     highr_0.9          deconvolveR_1.2-1 
-#&gt; [57] truncnorm_1.0-8    horseshoe_0.2.0    rlang_1.0.2        pkgconfig_2.0.3   
-#&gt; [61] ebnm_1.0-11        evaluate_0.14      lattice_0.20-38    invgamma_1.1      
-#&gt; [65] labeling_0.4.2     htmlwidgets_1.5.4  cowplot_1.1.1      tidyselect_1.1.2  
-#&gt; [69] R6_2.5.1           generics_0.1.2     DBI_1.0.0          pillar_1.7.0      
-#&gt; [73] haven_2.3.1        whisker_0.3-2      withr_2.5.0        mixsqp_0.3-43     
-#&gt; [77] modelr_0.1.8       crayon_1.5.0       utf8_1.2.2         plotly_4.10.0     
-#&gt; [81] tzdb_0.1.1         rmarkdown_2.11     progress_1.2.2     grid_3.5.3        
-#&gt; [85] readxl_1.3.1       data.table_1.14.2  git2r_0.28.0       reprex_2.0.0      
-#&gt; [89] digest_0.6.29      httpuv_1.5.2       MCMCpack_1.4-4     RcppParallel_5.1.5
-#&gt; [93] munsell_0.5.0      viridisLite_0.4.0  bslib_0.3.1        quadprog_1.5-8</code></pre>
+#&gt;  [1] fs_1.5.0          lubridate_1.7.10  httr_1.4.2        rprojroot_2.0.2  
+#&gt;  [5] tools_3.5.3       backports_1.1.3   bslib_0.3.1       utf8_1.2.2       
+#&gt;  [9] R6_2.5.1          irlba_2.3.3       DBI_1.0.0         colorspace_2.0-3 
+#&gt; [13] withr_2.5.0       tidyselect_1.1.2  compiler_3.5.3    git2r_0.28.0     
+#&gt; [17] cli_3.2.0         rvest_1.0.0       xml2_1.3.2        labeling_0.4.2   
+#&gt; [21] horseshoe_0.2.0   sass_0.4.0        scales_1.1.1      SQUAREM_2021.1   
+#&gt; [25] mixsqp_0.3-43     digest_0.6.29     rmarkdown_2.11    deconvolveR_1.2-1
+#&gt; [29] pkgconfig_2.0.3   htmltools_0.5.2   highr_0.9         dbplyr_2.1.1     
+#&gt; [33] fastmap_1.1.0     invgamma_1.1      rlang_1.0.2       readxl_1.3.1     
+#&gt; [37] rstudioapi_0.13   farver_2.1.0      jquerylib_0.1.4   generics_0.1.2   
+#&gt; [41] jsonlite_1.8.0    Matrix_1.3-4      Rcpp_1.0.8        munsell_0.5.0    
+#&gt; [45] fansi_1.0.2       lifecycle_1.0.1   stringi_1.4.6     whisker_0.3-2    
+#&gt; [49] yaml_2.3.5        grid_3.5.3        promises_1.2.0.1  crayon_1.5.0     
+#&gt; [53] lattice_0.20-38   haven_2.3.1       splines_3.5.3     hms_1.1.1        
+#&gt; [57] knitr_1.33        pillar_1.7.0      softImpute_1.4-1  reprex_2.0.0     
+#&gt; [61] glue_1.6.2        evaluate_0.14     trust_0.1-8       modelr_0.1.8     
+#&gt; [65] vctrs_0.3.8       tzdb_0.1.1        httpuv_1.5.2      cellranger_1.1.0 
+#&gt; [69] gtable_0.3.0      ebnm_1.0-11       assertthat_0.2.1  ashr_2.2-54      
+#&gt; [73] xfun_0.29         broom_0.7.6       later_1.3.0       truncnorm_1.0-8  
+#&gt; [77] ellipsis_0.3.2</code></pre>
 </div>
 </div>
 </div>
