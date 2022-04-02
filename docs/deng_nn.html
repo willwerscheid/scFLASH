@@ -483,16 +483,16 @@ This reproducible <a href="http://rmarkdown.rstudio.com">R Markdown</a> analysis
 <div class="panel panel-default">
 <div class="panel-heading">
 <p class="panel-title">
-<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreee51fee2e3c90c7f61e8dc42cf36256adc21e02betargetblanke51fee2a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/e51fee2e3c90c7f61e8dc42cf36256adc21e02be" target="_blank">e51fee2</a> </a>
+<a data-toggle="collapse" data-parent="#workflowr-checks" href="#strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeaf729482298618a1ff07821ea71876ba95f6ea39targetblankaf72948a"> <span class="glyphicon glyphicon-ok text-success" aria-hidden="true"></span> <strong>Repository version:</strong> <a href="https://github.com/willwerscheid/scFLASH/tree/af729482298618a1ff07821ea71876ba95f6ea39" target="_blank">af72948</a> </a>
 </p>
 </div>
-<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreee51fee2e3c90c7f61e8dc42cf36256adc21e02betargetblanke51fee2a" class="panel-collapse collapse">
+<div id="strongRepositoryversionstrongahrefhttpsgithubcomwillwerscheidscFLASHtreeaf729482298618a1ff07821ea71876ba95f6ea39targetblankaf72948a" class="panel-collapse collapse">
 <div class="panel-body">
 <p>
 Great! You are using Git for version control. Tracking code development and connecting the code version to the results is critical for reproducibility.
 </p>
 <p>
-The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/e51fee2e3c90c7f61e8dc42cf36256adc21e02be" target="_blank">e51fee2</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
+The results in this page were generated with repository version <a href="https://github.com/willwerscheid/scFLASH/tree/af729482298618a1ff07821ea71876ba95f6ea39" target="_blank">af72948</a>. See the <em>Past versions</em> tab to see a history of the changes made to the R Markdown and HTML files.
 </p>
 <p>
 Note that you need to be careful to ensure that all relevant files for the analysis have been committed to Git prior to generating the results (you can use <code>wflow_publish</code> or <code>wflow_git_commit</code>). workflowr only checks the R Markdown file, but you know if there are other scripts or data files that it depends on. Below is the status of the Git repository when the results were generated:
@@ -581,6 +581,40 @@ Message
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>
+Rmd
+</td>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/af729482298618a1ff07821ea71876ba95f6ea39/analysis/deng_nn.Rmd" target="_blank">af72948</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+<td>
+workflowr::wflow_publish(“analysis/deng_nn.Rmd”)
+</td>
+</tr>
+<tr>
+<td>
+html
+</td>
+<td>
+<a href="https://rawcdn.githack.com/willwerscheid/scFLASH/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/deng_nn.html" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+<td>
+Build site.
+</td>
+</tr>
 <tr>
 <td>
 Rmd
@@ -848,8 +882,45 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
                      labels = levels(tib$Cell.type)) +
   theme_minimal() +
   theme(axis.text.y=element_text(angle = 45, size = 6)) +
-  facet_wrap(~Fit, nrow = 2)</code></pre>
+  facet_wrap(~Fit, nrow = 1)</code></pre>
 <p><img src="figure/deng_nn.Rmd/snmf-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-snmf-1">
+Past versions of snmf-1.png
+</button>
+</p>
+<div id="fig-snmf-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/snmf-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="factors" class="section level2">
 <h2>Factors</h2>
@@ -908,12 +979,160 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v1-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v1-1">
+Past versions of v1-1.png
+</button>
+</p>
+<div id="fig-v1-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v1-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(6, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v1-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v1-2">
+Past versions of v1-2.png
+</button>
+</p>
+<div id="fig-v1-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v1-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(2, 0, &quot;(All but zygote to mid 2cell)&quot;)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v1-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v1-3">
+Past versions of v1-3.png
+</button>
+</p>
+<div id="fig-v1-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v1-3.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(3, 0, &quot;(All but zygote to mid 2cell)&quot;)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v1-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v1-4">
+Past versions of v1-4.png
+</button>
+</p>
+<div id="fig-v1-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v1-4.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="mid-to-late-2cell" class="section level3">
 <h3>Mid to late 2cell</h3>
@@ -921,8 +1140,82 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 3 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v2-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v2-1">
+Past versions of v2-1.png
+</button>
+</p>
+<div id="fig-v2-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v2-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(10, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v2-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v2-2">
+Past versions of v2-2.png
+</button>
+</p>
+<div id="fig-v2-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v2-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="late-2cell-4cell" class="section level3">
 <h3>Late 2cell / 4cell</h3>
@@ -930,15 +1223,163 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v3-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v3-1">
+Past versions of v3-1.png
+</button>
+</p>
+<div id="fig-v3-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v3-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(8, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v3-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v3-2">
+Past versions of v3-2.png
+</button>
+</p>
+<div id="fig-v3-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v3-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="cell-16cell" class="section level3">
 <h3>8cell / 16cell</h3>
 <pre class="r"><code>do.volcano.plot(0, 6)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v4-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v4-1">
+Past versions of v4-1.png
+</button>
+</p>
+<div id="fig-v4-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v4-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(4, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v4-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v4-2">
+Past versions of v4-2.png
+</button>
+</p>
+<div id="fig-v4-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v4-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="early-blastocyte" class="section level3">
 <h3>Early blastocyte</h3>
@@ -946,8 +1387,82 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 5 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v5-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v5-1">
+Past versions of v5-1.png
+</button>
+</p>
+<div id="fig-v5-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v5-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(13, 0, &quot;All but early blastocyte&quot;)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v5-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v5-2">
+Past versions of v5-2.png
+</button>
+</p>
+<div id="fig-v5-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v5-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="blastocytes" class="section level3">
 <h3>Blastocytes</h3>
@@ -955,18 +1470,203 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v6-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v6-1">
+Past versions of v6-1.png
+</button>
+</p>
+<div id="fig-v6-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v6-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(0, 5)
 #&gt; Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v6-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v6-2">
+Past versions of v6-2.png
+</button>
+</p>
+<div id="fig-v6-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v6-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(0, 4)
 #&gt; Warning: ggrepel: 14 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v6-3.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v6-3">
+Past versions of v6-3.png
+</button>
+</p>
+<div id="fig-v6-3" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v6-3.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(7, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v6-4.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v6-4">
+Past versions of v6-4.png
+</button>
+</p>
+<div id="fig-v6-4" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v6-4.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(5, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v6-5.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v6-5">
+Past versions of v6-5.png
+</button>
+</p>
+<div id="fig-v6-5" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v6-5.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="all-over" class="section level3">
 <h3>All over</h3>
@@ -974,15 +1674,163 @@ ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
 #&gt; Warning: ggrepel: 1 unlabeled data points (too many overlaps). Consider
 #&gt; increasing max.overlaps</code></pre>
 <p><img src="figure/deng_nn.Rmd/v7-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v7-1">
+Past versions of v7-1.png
+</button>
+</p>
+<div id="fig-v7-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v7-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(9, 0)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v7-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v7-2">
+Past versions of v7-2.png
+</button>
+</p>
+<div id="fig-v7-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v7-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 </div>
 <div id="nmf-only-factors" class="section level3">
 <h3>NMF-only factors</h3>
 <pre class="r"><code>do.volcano.plot(12, 0, &quot;Zygote / Early 2cell&quot;)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v8-1.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v8-1">
+Past versions of v8-1.png
+</button>
+</p>
+<div id="fig-v8-1" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v8-1.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <pre class="r"><code>do.volcano.plot(11, 0, &quot;Late Blastocytes&quot;)</code></pre>
 <p><img src="figure/deng_nn.Rmd/v8-2.png" width="672" style="display: block; margin: auto;" /></p>
+<p>
+<button type="button" class="btn btn-default btn-xs btn-workflowr btn-workflowr-fig" data-toggle="collapse" data-target="#fig-v8-2">
+Past versions of v8-2.png
+</button>
+</p>
+<div id="fig-v8-2" class="collapse">
+<div class="table-responsive">
+<table class="table table-condensed table-hover">
+<thead>
+<tr>
+<th>
+Version
+</th>
+<th>
+Author
+</th>
+<th>
+Date
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>
+<a href="https://github.com/willwerscheid/scFLASH/blob/1e055ba83018d9a59854f8e64514889c8fcf4357/docs/figure/deng_nn.Rmd/v8-2.png" target="_blank">1e055ba</a>
+</td>
+<td>
+Jason Willwerscheid
+</td>
+<td>
+2022-04-01
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <br>
 <p>
 <button type="button" class="btn btn-default btn-workflowr btn-workflowr-sessioninfo" data-toggle="collapse" data-target="#workflowr-sessioninfo" style="display: block;">
