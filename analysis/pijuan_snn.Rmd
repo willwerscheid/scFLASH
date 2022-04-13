@@ -5,6 +5,7 @@ date: "4/13/2022"
 output:
   workflowr::wflow_html:
     code_folding: hide
+    toc: false
 ---
 
 ```{r setup, include=FALSE}
@@ -22,9 +23,9 @@ I've been looking at some datasets associated with [Pijuan-Sala et al.](https://
 
 As a preliminary proof of concept, I run SNMF on one of these datasets. I use the slightly smaller "Tal1-chimera" dataset, which consists of raw counts for 56122 cells over 29453 genes. I removed genes with nonzero counts in fewer than 10 cells, which left 18515 genes. The resulting dataset occupied a little more than 2 GB in memory.
 
-I added 20 semi-nonnegative factors using `flashier`. I capped the number of backfitting iterations at 100, and the fit was still steadily improving when the maximum number of iterations was reached. (I didn't time the run, but it was reasonably fast: perhaps 4-8 hours on the `mstephens` Rstudio cloud.)
+I added 20 semi-nonnegative factors using `flashier`. I capped the number of backfitting iterations at 100, and the fit was still steadily improving when the maximum number of iterations was reached. (I didn't time the run, but it was reasonably fast: perhaps 4-8 hours on the `mstephens` Rstudio cloud cluster.)
 
-To clean up the plot, I removed cell types for which there were fewer than 500 cells. (That is, I included them in the fit but not in the visualization below.) I grouped by cell type and "tomato" status (i.e., Tal1 depletion) and then used PCA to sort cells within groups. The dashed lines indicate the breaks between non-tomato and tomato (there aren't any non-tomato erythroid cells because, as the paper argues, Tal1 plays a fundamental role in the formation of erythroid cells). Clearly, some of the factors (especially 6) are picking up on the tomato status irrespective of cell type.
+To clean up the plot, I removed cell types for which there were fewer than 500 cells. (That is, I included them in the fit but not in the visualization below.) I grouped by cell type and "tomato" status (i.e., Tal1 depletion) and then used PCA to sort cells within groups. The dashed lines indicate the breaks between non-tomato and tomato (there aren't any non-tomato erythroid cells because, as the paper argues, Tal1 plays a fundamental role in their formation). Clearly, some of the factors (especially the 6th!) are picking up on the tomato status irrespective of cell type.
 
 ```{r fl.plot, fig.height=10, fig.width=8}
 res <- readRDS("./output/pijuan/tal1.snmf.small")
@@ -81,4 +82,50 @@ do.heatmap <- function(res) {
 }
 
 do.heatmap(res)
+```
+
+I include a volcano plot for the 6th factor (the "tomato factor"). The results seem to be really interpretable! The hemoglobin Hba and Hbb genes are among the most upregulated and the erthyroid differentiation regulator gene Erdr1 is the most downregulated.
+
+```{r volcano.code}
+do.volcano.plot <- function(res, k, plt.title = "") {
+  genes <- read_tsv("../EmbryoTimecourse2018/download/chimera-tal1/genes.tsv", col_names = FALSE)$X2
+  fl <- res$fit
+  
+  k <- order(fl$pve[-1], decreasing = TRUE)[k] + 1
+  
+  tib <- tibble(
+    pm = res$fit$L.pm[, k],
+    z = abs(res$fit$L.pm[, k]) / pmax(sqrt(.Machine$double.eps), res$fit$L.psd[, k]),
+    SYMBOL = genes[!res$excl.genes]
+  ) %>%
+    mutate(SYMBOL = ifelse(
+      z > sort(z, decreasing = TRUE)[11] |
+        (pm > sort(pm, decreasing = TRUE)[13]) |
+        (pm < sort(pm, decreasing = FALSE)[11]), 
+      SYMBOL, 
+      ""
+    )) 
+  
+  plt <- ggplot(tib, aes(x = pm, y = z, label = SYMBOL)) +
+    geom_point() +
+    # scale_color_gradient2(low = "deepskyblue", mid = "gold", high = "orangered",
+    #                       na.value = "gainsboro",
+    #                       midpoint = mean(range(tib$exprmean))) +
+    scale_y_sqrt() +
+    geom_text_repel(color = "darkgray",size = 2.25, fontface = "italic",
+                    segment.color = "darkgray", segment.size = 0.25,
+                    min.segment.length = 0, na.rm = TRUE, max.overlaps = 20) +
+    theme_minimal() +
+    labs(
+      x = "Factor Loading (posterior mean)",
+      y = "|z-score|",
+      # color = "Mean Expression (log10)",
+      title = plt.title
+    ) +
+    theme(legend.position = "bottom")
+
+  return(plt)
+}
+
+do.volcano.plot(res, k = 6, plt.title = "Tomato factor")
 ```
