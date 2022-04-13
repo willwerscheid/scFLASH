@@ -1,0 +1,84 @@
+---
+title: "Pijuan-Sala Tal1 depletion dataset: semi-nonnegative fit (preliminary)"
+author: "Jason Willwerscheid"
+date: "4/13/2022"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+```{r read.data}
+library(tidyverse)
+library(flashier)
+library(ggrepel)
+library(Matrix)
+```
+
+I've been looking at some datasets associated with [Pijuan-Sala et al.](https://www.nature.com/articles/s41586-019-0933-9) The datasets can be obtained using the script in the `download` folder in the Marioni lab's associated [GitHub](https://github.com/MarioniLab/EmbryoTimecourse2018). The `analysis_scripts` folder is also well worth looking at, as the various analyses there detail the processing steps.
+
+As a preliminary proof of concept, I run SNMF on one of these datasets. I use the slightly smaller "Tal1-chimera" dataset, which consists of raw counts for 56122 cells over 29453 genes. I removed genes with nonzero counts in fewer than 10 cells, which left 18515 genes. The resulting dataset occupied a little more than 2 GB in memory.
+
+I added 20 semi-nonnegative factors using `flashier`. I capped the number of backfitting iterations at 100, and the fit was still steadily improving when the maximum number of iterations was reached. (I didn't time the run, but it was reasonably fast: perhaps 4-8 hours on the `mstephens` Rstudio cloud.)
+
+To clean up the plot, I removed cell types for which there were fewer than 500 cells. (That is, I included them in the fit but not in the visualization below.) I grouped by cell type and "tomato" status (i.e., Tal1 depletion) and then used PCA to sort cells within groups. The dashed lines indicate the breaks between non-tomato and tomato (there aren't any non-tomato erythroid cells because, as the paper argues, Tal1 plays a fundamental role in the formation of erythroid cells). Clearly, some of the factors (especially 6) are picking up on the tomato status irrespective of cell type.
+
+```{r fl.plot, fig.height=10, fig.width=8}
+res <- readRDS("./output/pijuan/tal1.snmf.small")
+
+do.heatmap <- function(res) {
+  fl <- res$fit
+  
+  FF <- scale(fl$F.pm, center = FALSE, scale = apply(fl$F.pm, 2, max))
+  FF <- FF[, -1]
+  FF <- FF[, order(fl$pve[-1], decreasing = TRUE)]
+  colnames(FF) <- 1:ncol(FF) 
+  
+  # Remove rare cell types for now.
+  tib <- as_tibble(FF) %>%
+    mutate(Cell.type = res$celltype, Tomato = res$tomato) %>%
+    filter(Cell.type %in% names(which(table(res$celltype) > 500)))
+  
+  pca_res <- prcomp(
+    as.matrix(tib %>% select(-Cell.type, -Tomato)),
+    retx = TRUE,
+    center = TRUE,
+    scale. = FALSE
+  )$x[, 1]
+  tib <- tib %>%
+    mutate(pca_res = pca_res) %>%
+    arrange(Cell.type, Tomato, pca_res) %>%
+    mutate(Cell.idx = row_number()) %>%
+    select(-pca_res)
+  
+  cell_type <- tib$Cell.type
+  tomato <- tib$Tomato
+  
+  tib <- tib %>%
+    pivot_longer(
+      -c(Cell.idx, Cell.type, Tomato),
+      names_to = "Factor",
+      values_to = "Loading",
+      values_drop_na = TRUE
+    ) %>%
+    mutate(Factor = as.numeric(Factor))
+  
+  cell_type_breaks <- c(1, which(cell_type[2:nrow(tib)] != cell_type[1:(nrow(tib) - 1)]))
+  tomato_breaks <- which(tomato[2:nrow(tib)] & !(tomato[1:(nrow(tib) - 1)]))
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "red") +
+    labs(y = "") +
+    scale_y_continuous(breaks = -cell_type_breaks,
+                       minor_breaks = NULL,
+                       labels = unique(tib$Cell.type)) +
+    theme_minimal() +
+    geom_hline(yintercept = -cell_type_breaks, size = 0.1) +
+    geom_hline(yintercept = -tomato_breaks, size = 0.1, linetype = "dashed")
+}
+
+do.heatmap(res)
+```
