@@ -35,12 +35,14 @@ output:
 1. [Size factors.](size_factors_pbmc.html)
 1. [Pseudocounts.](pseudocount_redux_pbmc.html)
 
-## Other
+
+## More datasets.
 
 1. [Deng et al.](deng.html)
 1. SNMF on data simulated from an NMF model: [Part I.](snmf_on_nmf.html) [Part II.](snmf_on_nmf2.html) 
 1. [Nonnegative fits to Deng et al.](deng_nn.html)
 1. [Nonnegative fits to PBMCs.](pbmc_nn.html)
+1. [SNMF fit to Pijuan-Sala et al.](pijuan_snn.html)
 
 ## Archived
 
