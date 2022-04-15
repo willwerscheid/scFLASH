@@ -38,10 +38,14 @@ do.heatmap <- function(res) {
   FF <- FF[, order(fl$pve[-1], decreasing = TRUE)]
   colnames(FF) <- 1:ncol(FF) 
   
-  # Remove rare cell types for now.
+  res$celltype <- factor(res$celltype, levels = sort(unique(res$celltype))[c(
+    5, 11, 30, 27, 8, 19, 21, 6, 28, 33, 31, 24, 23, 4, 1, 17, 22, 20, 2, 3, 12:14,
+    10, 26, 32, 7, 25, 18, 34, 36, 16, 15, 29, 37,
+    9, 35
+  )])
+  
   tib <- as_tibble(FF) %>%
-    mutate(Cell.type = res$celltype, Tomato = res$tomato) %>%
-    filter(Cell.type %in% names(which(table(res$celltype) > 500)))
+    mutate(Cell.type = res$celltype, Tomato = res$tomato) 
   
   pca_res <- prcomp(
     as.matrix(tib %>% select(-Cell.type, -Tomato)),
@@ -50,11 +54,33 @@ do.heatmap <- function(res) {
     scale. = FALSE
   )$x[, 1]
   tib <- tib %>%
-    mutate(pca_res = pca_res) %>%
-    arrange(Cell.type, Tomato, pca_res) %>%
-    mutate(Cell.idx = row_number()) %>%
-    select(-pca_res)
+    mutate(pca_res = pca_res) 
+
+  # Remove very rare cell types.
+  tib <- tib %>%
+      filter(Cell.type %in% names(which(table(res$celltype) > 50)))
   
+  # Duplicate rows with rare cell types to make them easier to see in the visualization.
+  tib2 <- tib %>%
+    group_by(Cell.type) %>%
+    filter(n() < 500)
+  
+  tib3 <- tib %>%
+    group_by(Cell.type) %>%
+    filter(n() < 100)
+  
+  
+  tib <- tib %>%
+    bind_rows(tib2) %>%
+    bind_rows(tib2) %>%
+    bind_rows(tib3) %>%
+    bind_rows(tib3) %>%
+    bind_rows(tib3) %>%
+    bind_rows(tib3) %>%
+    arrange(Cell.type, Tomato, pca_res) %>%
+    select(-pca_res) %>%
+    mutate(Cell.idx = row_number())
+        
   cell_type <- tib$Cell.type
   tomato <- tib$Tomato
   
