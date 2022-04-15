@@ -25,7 +25,7 @@ As a preliminary proof of concept, I run SNMF on one of these datasets. I use th
 
 I added 20 semi-nonnegative factors using `flashier`. I capped the number of backfitting iterations at 100, and the fit was still steadily improving when the maximum number of iterations was reached. (I didn't time the run, but it was reasonably fast: perhaps 4-8 hours on the `mstephens` Rstudio cloud cluster.)
 
-To clean up the plot, I removed cell types for which there were fewer than 500 cells. (That is, I included them in the fit but not in the visualization below.) I grouped by cell type and "tomato" status (i.e., Tal1 depletion) and then used PCA to sort cells within groups. The dashed lines indicate the breaks between non-tomato and tomato (there aren't any non-tomato erythroid cells because, as the paper argues, Tal1 plays a fundamental role in their formation). Clearly, some of the factors (especially the 6th!) are picking up on the tomato status irrespective of cell type.
+To clean up the plot, I removed cell types for which there were fewer than 50 cells. (That is, I included them in the fit but not in the visualization below.) I grouped by cell type and "tomato" status (i.e., Tal1 depletion) and then used PCA to sort cells within groups. The dashed lines indicate the breaks between non-tomato and tomato (there aren't any non-tomato erythroid cells because, as the paper argues, Tal1 plays a fundamental role in their formation). Clearly, some of the factors (especially the 6th!) are picking up on the tomato status irrespective of cell type.
 
 ```{r fl.plot, fig.height=10, fig.width=8}
 res <- readRDS("./output/pijuan/tal1.snmf.small")
