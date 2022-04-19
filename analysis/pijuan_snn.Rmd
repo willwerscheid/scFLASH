@@ -153,5 +153,7 @@ do.volcano.plot <- function(res, k, plt.title = "") {
   return(plt)
 }
 
-do.volcano.plot(res, k = 6, plt.title = "Tomato factor")
+do.volcano.plot(res, k = 6, plt.title = "Tomato factor (6)")
+
+do.volcano.plot(res, k = 15, plt.title = "Endothelial factor (15)")
 ```
