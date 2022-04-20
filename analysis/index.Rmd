@@ -43,6 +43,7 @@ output:
 1. [Nonnegative fits to Deng et al.](deng_nn.html)
 1. [Nonnegative fits to PBMCs.](pbmc_nn.html)
 1. [SNMF fit to Pijuan-Sala et al.](pijuan_snn.html)
+1. [Another Pijuan-Sala dataset.](pijuan_atlas_snn.html)
 
 ## Archived
 
