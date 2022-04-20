@@ -1,0 +1,194 @@
+---
+title: "Pijuan-Sala Tal1 depletion dataset: semi-nonnegative fit (preliminary)"
+author: "Jason Willwerscheid"
+date: "4/13/2022"
+output:
+  workflowr::wflow_html:
+    code_folding: hide
+    toc: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, collapse = TRUE, comment = "#>")
+```
+
+```{r read.data}
+library(tidyverse)
+library(flashier)
+library(ggrepel)
+library(Matrix)
+library(xtable)
+library(gt)
+```
+
+The subset of endoderm and gut cells discussed in [Pijuan-Sala et al.](https://www.nature.com/articles/s41586-019-0933-9):
+
+```{r fl.plot}
+res <- readRDS("./output/pijuan/endoderm.snmf.small")
+
+do.heatmap <- function(res, plot.group, rev = FALSE) {
+  FF <- res$fit$F[, -1]
+  colnames(FF) <- 1:ncol(FF) 
+  
+  tib <- as_tibble(FF) %>%
+    mutate(Plot.group = plot.group) 
+  
+  pca_res <- prcomp(
+    as.matrix(tib %>% select(-Plot.group)),
+    retx = TRUE,
+    center = TRUE,
+    scale. = FALSE
+  )$x[, 1]
+  if (rev) {
+    pca_res = -pca_res
+  }
+  tib <- tib %>%
+    mutate(pca_res = pca_res) 
+
+  tib <- tib %>%
+    arrange(Plot.group, pca_res) %>%
+    select(-pca_res) %>%
+    mutate(Cell.idx = row_number())
+        
+  plt_grp <- tib$Plot.group
+
+  tib <- tib %>%
+    pivot_longer(
+      -c(Cell.idx, Plot.group),
+      names_to = "Factor",
+      values_to = "Loading",
+      values_drop_na = TRUE
+    ) %>%
+    mutate(Factor = as.numeric(Factor))
+  
+  grp_breaks <- c(1, which(plt_grp[2:nrow(tib)] != plt_grp[1:(nrow(tib) - 1)]))
+  ggplot(tib, aes(x = Factor, y = -Cell.idx, fill = Loading)) +
+    geom_tile() +
+    scale_fill_gradient(low = "white", high = "red") +
+    labs(y = "") +
+    scale_y_continuous(breaks = -grp_breaks,
+                       minor_breaks = NULL,
+                       labels = unique(tib$Plot.group)) +
+    theme_minimal() +
+    geom_hline(yintercept = -grp_breaks, size = 0.1)
+}
+
+do.heatmap(res, factor(res$celltype, levels = c(
+  "Anterior Primitive Streak", "Def. endoderm", "Gut", "Visceral endoderm"
+)), rev = TRUE)
+```
+
+* Factor 1: visceral endoderm -> gut
+* Factor 2: maybe E7.25 or batch 2?
+* Factor 3: anterior primitive streak -> gut
+* Factor 4: mostly E7.25 to E7.75
+* Factor 5: mixed gastrulation
+* Factor 6: TS12 (and gut)
+* Factor 7: TS11
+* Factor 8: VE -> gut
+* Factor 9: mostly E7.75 to E8.25
+* Factor 10: ??
+* Factor 11: foregut 1, midgut, VE subpopulation
+* Factor 12: VE subpopulation
+* Factor 13: hindgut
+* Factors 14/15: DE subpopulations
+
+
+
+```{r}
+top.genes <- apply(res$fit$L[, -1], 2, function(k) {
+  res$genelist[order(k, decreasing = TRUE)[1:12]]
+})
+colnames(top.genes) <- paste0("k=", formatC(1:ncol(top.genes), width = 2, flag = "0"))
+
+genes.tib <- as_tibble(top.genes) %>%
+  pivot_longer(cols = everything(), names_to = "Factor", values_to = "SYMBOL")
+
+genes.tib <- genes.tib %>%
+  group_by(Factor) %>%
+  summarize(TopGenes = paste(SYMBOL, collapse = ", "))
+
+tbl <- genes.tib %>%
+  gt() %>%
+  cols_label(Factor = "Factor", TopGenes = "Top Genes (pos. loadings only)") %>%
+  cols_align("left", columns = Factor) %>%
+  cols_align("left", columns = TopGenes) %>%
+  cols_width(
+    Factor ~ pct(10),
+    TopGenes ~ pct(90)
+  ) %>%
+  opt_row_striping()
+
+tbl
+```
+
+```{r more.heatmaps}
+do.heatmap(res, factor(res$theiler, levels = c(
+  "TS9", "TS9-10", "TS10", "TS11", "TS12"
+)))
+
+do.heatmap(res, factor(res$stage, levels = c(
+  "E6.5", "E6.75", "E7.0", "E7.25", "E7.5", "E7.75", "E8.0", "E8.25", "E8.5", "mixed_gastrulation"
+)))
+
+do.heatmap(res, factor(res$batch))
+
+cell.type <- ifelse(is.na(res$gut.type), res$celltype, res$gut.type)
+cell.type <- factor(cell.type, levels = c(
+  "Anterior Primitive Streak", "Def. endoderm", "Pharyngeal endoderm", "Foregut 2", "Foregut 1",
+  "Midgut", "Midgut/Hindgut", "Hindgut 2", "Hindgut 1", "Gut", "Visceral endoderm"
+))
+do.heatmap(res, cell.type)
+```
+
+```{r volcano.code}
+# do.volcano.plot <- function(res, k, plt.title = "") {
+#   genes <- res$genelist
+#   fl <- res$fit
+#   
+#   k <- order(fl$pve[-1], decreasing = TRUE)[k] + 1
+#   
+#   tib <- tibble(
+#     pm = res$fit$L,
+#     z = abs(res$fit$L.pm[, k]) / pmax(sqrt(.Machine$double.eps), res$fit$L.psd[, k]),
+#     SYMBOL = genes
+#   ) %>%
+#     mutate(SYMBOL = ifelse(
+#       z > sort(z, decreasing = TRUE)[11] |
+#         (pm > sort(pm, decreasing = TRUE)[11]) |
+#         (pm < sort(pm, decreasing = FALSE)[11]), 
+#       SYMBOL, 
+#       ""
+#     )) 
+#   
+#   plt <- ggplot(tib, aes(x = pm, y = z, label = SYMBOL)) +
+#     geom_point() +
+#     # scale_color_gradient2(low = "deepskyblue", mid = "gold", high = "orangered",
+#     #                       na.value = "gainsboro",
+#     #                       midpoint = mean(range(tib$exprmean))) +
+#     scale_y_sqrt() +
+#     geom_text_repel(color = "darkgray",size = 2.25, fontface = "italic",
+#                     segment.color = "darkgray", segment.size = 0.25,
+#                     min.segment.length = 0, na.rm = TRUE, max.overlaps = 20) +
+#     theme_minimal() +
+#     labs(
+#       x = "Factor Loading (posterior mean)",
+#       y = "|z-score|",
+#       # color = "Mean Expression (log10)",
+#       title = plt.title
+#     ) +
+#     theme(legend.position = "bottom")
+# 
+#   return(plt)
+# }
+# 
+# do.volcano.plot(res, 1, "VE (1)")
+# do.volcano.plot(res, 3, "PS -> Gut (3)")
+# do.volcano.plot(res, 6, "Gut (6)")
+# do.volcano.plot(res, 8, "VE -> Gut (8)")
+# do.volcano.plot(res, 11, "Midgut (11)")
+# do.volcano.plot(res, 12, "VE subpop (12)")
+# do.volcano.plot(res, 13, "Hindgut (13)")
+# do.volcano.plot(res, 14, "DE subpop (14)")
+# do.volcano.plot(res, 15, "DE subpop (15)")
+```
